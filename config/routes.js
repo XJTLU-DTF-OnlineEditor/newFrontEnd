@@ -54,7 +54,12 @@ export default [
     path: '/personal',
     component: './Personal',
   },
-
+  {
+    name: 'code_editor',
+    path: '/editor',
+    component: './EditorPage',
+    icon: 'BulbOutlined'
+  },
   {
     path: '/',
     redirect: '/welcome',
