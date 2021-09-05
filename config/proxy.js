@@ -8,8 +8,10 @@
  */
 export default {
   dev: {
-    '/api/': {
-      target: 'https://preview.pro.ant.design',
+    '/server/':{
+    // '/api/': {
+      // target: 'https://preview.pro.ant.design',
+      target: 'http://www.dannyhao.top:4000/',
       changeOrigin: true,
       pathRewrite: {
         '^': '',

@@ -49,6 +49,13 @@ export default [
     component: './TableList',
   },
   {
+    name: 'personal',
+    icon: 'UserOutlined',
+    path: '/personal',
+    component: './Personal',
+  },
+
+  {
     path: '/',
     redirect: '/welcome',
   },
