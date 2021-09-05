@@ -49,6 +49,12 @@ export default [
     component: './TableList',
   },
   {
+    name: 'code_editor',
+    path: '/editor',
+    component: './EditorPage',
+    icon: 'BulbOutlined'
+  },
+  {
     path: '/',
     redirect: '/welcome',
   },
