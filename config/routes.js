@@ -50,9 +50,12 @@ export default [
   },
   {
     name: 'code_editor',
-    path: '/editor',
+    path: '/editor/:topic_title/:sub_menu/:id',
     component: './EditorPage',
-    icon: 'BulbOutlined'
+    icon: 'BulbOutlined',
+    // routes: [
+    //   { path: '/:id', component: './Welcome' },
+    // ]
   },
   {
     path: '/',

@@ -1,7 +1,7 @@
 import { request } from 'umi'
 
 export const run = async (inputType, source, input, lang, id, terminate) => {
-    const url = 'http://localhost:8001/api/V1/editor/run'
+    const url = 'http://localhost:8000/api/V1/editor/run'
     console.log(inputType + source + input + lang + id + terminate);
     return request(url, {
         method: 'post',
@@ -19,7 +19,7 @@ export const run = async (inputType, source, input, lang, id, terminate) => {
 }
 
 export const send = async (inputType, source, input, lang, id, terminate) => {
-    const url = 'http://localhost:8001/api/V1/editor/run'
+    const url = 'http://localhost:8000/api/V1/editor/run'
     return request(url, {
         method: 'post',
         data: {
@@ -33,5 +33,15 @@ export const send = async (inputType, source, input, lang, id, terminate) => {
             time_limit: 5
         }
     })
+}
+
+export const getExerciseList = async (topic_title, sub_menu) => {
+    const url = `http://localhost:8000/api/V1/exerciseList/${topic_title}/${sub_menu}`
+    return request(url)
+}
+
+export const getExercises = async (topic_title, sub_menu, id) => {
+    const url = `http://localhost:8000/api/V1/exercises/${topic_title}/${sub_menu}/${id}`
+    return request(url)
 }
 

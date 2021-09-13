@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Layout } from 'antd';
 import Editor from './editor.jsx'
-import Input from './input'
-import Result from './result'
+import Input from './input.jsx'
+import Result from './result.jsx'
+import Exercises from './exercises.jsx';
 import './index.less'
 import ProCard from '@ant-design/pro-card';
 import PubSub from 'pubsub-js'
 
 const { Sider, Content } = Layout;
 
-export default function mainPage() {
+export default function mainPage(props) {
 
     const [collapsed, setCollapsed] = useState(true)
     const [resCollapsed, setResCollapsed] = useState(true)
@@ -23,7 +24,7 @@ export default function mainPage() {
     }
 
     useEffect(() => {
-        PubSub.subscribe('resCollapsed', (msg, data) => {
+        PubSub.subscribe('resCollapsed', (_, data) => {
             setResCollapsed(data)
             setCollapsed(!data)
         })
@@ -37,9 +38,10 @@ export default function mainPage() {
                 width='565px' onCollapse={onCollapse}
                 breakpoint="lg" layout="center"
             >
-                <ProCard className='course' title="Course" ghost >
-                    Course goes here
-                </ProCard>
+                <Exercises
+                    url_params={props.match.params}
+                    history={props.history}
+                />
             </Sider>
 
             <Content>
