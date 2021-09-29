@@ -49,6 +49,12 @@ export default [
     component: './TableList',
   },
   {
+    name: 'personal',
+    icon: 'UserOutlined',
+    path: '/personal',
+    component: './Personal',
+  },
+  {
     name: 'code_editor',
     path: '/editor/:topic_title/:sub_menu/:id',
     component: './EditorPage',

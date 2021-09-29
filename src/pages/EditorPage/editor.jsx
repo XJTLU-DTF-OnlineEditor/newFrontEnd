@@ -105,6 +105,7 @@ export default class Editor extends Component {
         const { inputType, source, input, lang } = this.state
         const id = nanoid()
         const result = await run(inputType, source, input, lang, id, terminate)
+        console.log(result);
         const { error_code, data } = result
         const { id: resid, errors, output, need_input } = data
 

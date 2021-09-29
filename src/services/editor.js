@@ -19,7 +19,7 @@ export const run = async (inputType, source, input, lang, id, terminate) => {
 }
 
 export const send = async (inputType, source, input, lang, id, terminate) => {
-    const url = 'http://localhost:8000/api/V1/editor/run'
+    const url = 'http://localhost:8000/api/V1/editor/runn'
     return request(url, {
         method: 'post',
         data: {
