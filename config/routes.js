@@ -56,7 +56,8 @@ export default [
   },
   {
     name: 'code_editor',
-    path: '/editor/:topic_title/:sub_menu/:id',
+    path: '/course/exercise/:topic_title/:id',
+    // path: '/course/exercise/python fundamental/1',
     component: './EditorPage',
     icon: 'BulbOutlined',
     // routes: [
