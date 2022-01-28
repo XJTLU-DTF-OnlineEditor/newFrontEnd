@@ -1,35 +1,27 @@
 export default {
-    'POST /server/V1/editor/run': (req, res) => {
-        res.send({
-            error_code: 200,
-            msg: 'sucess',
-            data: {
-                request_status: "success",
-                errors: '',
-                time_limit: 5,
-                run_status: "OK",
-                output: '请输入一个正整数：\n',
-                id: req.body.id,
-                need_input: true
-            }
-        })
-    },
-    'GET /server/V1/course/exercises/python': (req, res) => {
+    // /server/V1/course/exercises?${teacher_id}
+    'GET /server/V1/course/exercises': (req, res) => {
         res.send({
             "error_code": 200,
-            "msg": "success",
-            "topic_title": "python",
-            "exercise_list": [{
-                "id": 1,
-                "title": "Python递归的经典案例"
-            }, {
-                "id": 2,
-                "title": "Python no.3 py3 环境搭建",
-            }]
+            "msg": 'success',
+            "data": [{
+                    "id": 1,
+                    "title": "python no.2 py2简介",
+                    "topic_title": "python",
+                    "update_date": "2021-08-05",
+                    "views": "55",
+                },
+                {
+                    "id": 2,
+                    "title": "Python no.3 py2 环境搭建",
+                    "topic_title": "python",
+                    "update_date": "2020-01-16",
+                    "views": "0",
+                }
+            ],
         })
     },
     'GET /server/V1/course/exercise/1': (req, res) => {
-
         res.send({
             "error_code": 200,
             "msg": 'success',
@@ -41,16 +33,18 @@ export default {
             'views': "0",
         })
     },
-    'GET /server/V1/course/exercise/2': (req, res) => {
+    'POST /server/V1/course/editCourse/1': (req, res) => {
         res.send({
             "error_code": 200,
             "msg": 'success',
-            'id': 2,
-            'topic_title': 'python',
-            'exercise_title': "mycourses.title",
-            'exercise_content': "mycourses.content",
-            'update_date': "2021-08-05",
-            'views': "55",
+            'id ': 1,
+        })
+    },
+    'POST /server/V1/course/deleteCourse': (req, res) => {
+        res.send({
+            "error_code": 200,
+            "msg": 'success',
+            'id ': 1,
         })
     }
 
