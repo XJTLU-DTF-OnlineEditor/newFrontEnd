@@ -47,6 +47,7 @@
 
 .course {
   padding: 15px;
+  padding-top: 0px;
 }
 
 .edi_inp {
@@ -82,4 +83,18 @@ div.ant-result-subtitle > div {
    font-size: 15px;
  }
 
- 
+ .ck-editor__editable {
+  min-height: 500px;
+}
+
+.ck-editor__editable .ck-editor__nested-editable {
+  min-height: 50px;
+}
+
+.ck.ck-editor__main>.ck-editor__editable{
+  background: transparent;
+}
+
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+  border-color: transparent;
+}

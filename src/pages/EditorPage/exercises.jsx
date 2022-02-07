@@ -3,8 +3,9 @@ import { PageHeader, Button, Descriptions } from 'antd';
 import { BarsOutlined, ArrowRightOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { Dropdown, Menu } from 'antd';
 import ProCard from '@ant-design/pro-card';
-import { getExerciseList, getExercises } from '@/services/editor';
-import { request } from 'umi';
+import { getExerciseList, getExercises } from '@/services/course';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
 
 const Content = ({ children, extra }) => (
   <div className="content">
@@ -41,29 +42,28 @@ export default class Exercises extends Component {
   };
 
   getExercise = async (id) => {
-    const { topic_title } = this.state;
     this.props.history.push(`${id}`);
-    const exercise = await getExercises(topic_title, id);
+    const exercise = await getExercises(id);
     // console.log(exercise + "===========")
 
-    // exercise_title, exercise_content, update_date, views
+    // topic_title, exercise_title, exercise_content, update_date, views
     this.setState(exercise);
   };
 
   render() {
-    let { update_date, views, exercise_list, id, exercise_title, exercise_content } = this.state;
-    let exercise_content_html = exercise_content
-      .replace(('\n', '<br />'))
-      .replace(/#eeeeee/g, '#808080');
+    let { topic_title, update_date, views, exercise_list, id, exercise_title, exercise_content } = this.state;
+    // let exercise_content_html = exercise_content
+    //   .replace(('\n', '<br />'))
+    //   .replace(/#eeeeee/g, '#808080');
 
-    // console.log(exercise_content_html)
-    exercise_content_html = <div dangerouslySetInnerHTML={{ __html: exercise_content_html }} />;
+    // // console.log(exercise_content_html)
+    // exercise_content_html = <div dangerouslySetInnerHTML={{ __html: exercise_content_html }} />;
     id = JSON.parse(id);
 
     const menu = (
       <Menu
         onClick={({ key }) => this.getExercise(+key)}
-        // defaultSelectedKeys={[id - 1]}
+      // defaultSelectedKeys={[id - 1]}
       >
         {exercise_list.map((item) => (
           <Menu.Item key={item.id}>
@@ -73,8 +73,9 @@ export default class Exercises extends Component {
       </Menu>
     );
 
-    const renderContent = (column = 2) => (
+    const renderContent = (column = 3) => (
       <Descriptions size="middle" column={column}>
+        <Descriptions.Item label="related topic">{topic_title}</Descriptions.Item>
         <Descriptions.Item label="update date">{update_date}</Descriptions.Item>
         <Descriptions.Item label="views">
           <a>{views}</a>
@@ -113,8 +114,25 @@ export default class Exercises extends Component {
         >
           <Content>{renderContent()}</Content>
         </PageHeader>
-        <ProCard className={'course'} ghost>
-          {exercise_content_html}
+        <ProCard style={{ height: 600 }} className={'course'} ghost>
+          <CKEditor
+            editor={ClassicEditor}
+            disabled={true}
+            data={this.state.exercise_content}
+            config={{
+              toolbar: {
+                items: [],
+              },
+            }}
+            onError={({ willEditorRestart }) => {
+              // If the editor is restarted, the toolbar element will be created once again.
+              // The `onReady` callback will be called again and the new toolbar will be added.
+              // This is why you need to remove the older toolbar.
+              if (willEditorRestart) {
+                this.editor.ui.view.toolbar.element.remove();
+              }
+            }}
+          />
         </ProCard>
       </div>
     );
