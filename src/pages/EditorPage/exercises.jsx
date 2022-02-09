@@ -16,7 +16,7 @@ const Content = ({ children, extra }) => (
 
 export default class Exercises extends Component {
   state = {
-    topic_title: '',
+    related_topic: '',
     exercise_list: [],
     id: 1,
     update_date: '',
@@ -33,10 +33,10 @@ export default class Exercises extends Component {
   getCatalog = async () => {
     // 获取目录
     const { url_params } = this.props;
-    let { id, topic_title } = url_params;
-    const { exercise_list } = await getExerciseList(topic_title);
+    let { id, related_topic } = url_params;
+    const { exercise_list } = await getExerciseList(related_topic);
     // console.log(exercise_list + "==============")
-    this.setState({ id, exercise_list, topic_title });
+    this.setState({ id, exercise_list, related_topic });
     // 初始化课程
     this.getExercise(id);
   };
@@ -46,12 +46,12 @@ export default class Exercises extends Component {
     const exercise = await getCourseDetail(id);
     // console.log(exercise + "===========")
 
-    // topic_title, exercise_title, exercise_content, update_date, views
+    // related_topic, exercise_title, exercise_content, update_date, views
     this.setState(exercise);
   };
 
   render() {
-    let { topic_title, update_date, views, exercise_list, id, exercise_title, exercise_content } = this.state;
+    let { related_topic, update_date, views, exercise_list, id, exercise_title, exercise_content } = this.state;
     // let exercise_content_html = exercise_content
     //   .replace(('\n', '<br />'))
     //   .replace(/#eeeeee/g, '#808080');
@@ -75,7 +75,7 @@ export default class Exercises extends Component {
 
     const renderContent = (column = 3) => (
       <Descriptions size="middle" column={column}>
-        <Descriptions.Item label="related topic">{topic_title}</Descriptions.Item>
+        <Descriptions.Item label="related topic">{related_topic}</Descriptions.Item>
         <Descriptions.Item label="update date">{update_date}</Descriptions.Item>
         <Descriptions.Item label="views">
           <a>{views}</a>
