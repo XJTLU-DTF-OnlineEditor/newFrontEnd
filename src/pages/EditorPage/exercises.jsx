@@ -3,7 +3,7 @@ import { PageHeader, Button, Descriptions } from 'antd';
 import { BarsOutlined, ArrowRightOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { Dropdown, Menu } from 'antd';
 import ProCard from '@ant-design/pro-card';
-import { getExerciseList, getExercises } from '@/services/course';
+import { getExerciseList, getCourseDetail } from '@/services/course';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
@@ -43,7 +43,7 @@ export default class Exercises extends Component {
 
   getExercise = async (id) => {
     this.props.history.push(`${id}`);
-    const exercise = await getExercises(id);
+    const exercise = await getCourseDetail(id);
     // console.log(exercise + "===========")
 
     // topic_title, exercise_title, exercise_content, update_date, views

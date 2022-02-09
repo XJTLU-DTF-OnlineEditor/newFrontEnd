@@ -7,7 +7,7 @@ import 'codemirror/addon/scroll/simplescrollbars.css'
 import 'codemirror/addon/scroll/simplescrollbars.js'
 import React, { Component } from 'react';
 import { Select } from 'antd';
-import { send } from '@/services/editor'
+import { run } from '@/services/editor'
 import ProCard from '@ant-design/pro-card';
 import PubSub from 'pubsub-js'
 import { nanoid } from 'nanoid'
@@ -67,7 +67,7 @@ export default class Input extends Component {
         if (inputType === 'interactive' && need_input) {
             const id = nanoid()
 
-            const result = await send(inputType, '', input, lang, id, terminate)
+            const result = await run(inputType, '', input, lang, id, terminate)
             const { error_code, data } = result
             const { id: resid, errors, output, need_input } = data
             if (resid === id) {
