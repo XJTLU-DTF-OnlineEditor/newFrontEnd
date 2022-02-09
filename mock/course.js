@@ -1,6 +1,6 @@
 export default {
-    // /server/V1/course/exercises?${teacher_id}
-    'GET /server/V1/course/exercises': (req, res) => {
+    // /server/V1/course/coursesByTeacher
+    'GET /server/V1/course/coursesByTeacher': (req, res) => {
         res.send({
             "error_code": 200,
             "msg": 'success',
@@ -21,7 +21,7 @@ export default {
             ],
         })
     },
-    'GET /server/V1/course/exercise/1': (req, res) => {
+    'GET /server/V1/course/courseDetail/1': (req, res) => {
         res.send({
             "error_code": 200,
             "msg": 'success',
@@ -33,7 +33,7 @@ export default {
             'views': "0",
         })
     },
-    'POST /server/V1/course/editCourse/1': (req, res) => {
+    'POST /server/V1/course/editCourse': (req, res) => {
         res.send({
             "error_code": 200,
             "msg": 'success',

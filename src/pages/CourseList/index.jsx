@@ -99,9 +99,9 @@ export default class App extends Component {
         return (
             <ProTable actionRef={c => this.table = c} columns={this.columns} request={async (params = {}, sort, filter) => {
                 console.log(sort, filter, params, '=====');
-                // const result = request(`/server/V1/course/exercises?${teacher_id}`);
+                // const result = request(`/server/V1/course/coursesByTeacher`);
                 params = { ...params, teacher_id: this.props.location.query.teacher_id }
-                const result = await request(`/server/V1/course/exercises`, {
+                const result = await request(`/server/V1/course/coursesByTeacher`, {
                     params
                 });
                 result.data.forEach(element => {

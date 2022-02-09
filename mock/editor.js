@@ -14,7 +14,7 @@ export default {
             }
         })
     },
-    'GET /server/V1/course/exercises/python': (req, res) => {
+    'GET /server/V1/course/courses/python': (req, res) => {
         res.send({
             "error_code": 200,
             "msg": "success",
@@ -28,7 +28,7 @@ export default {
             }]
         })
     },
-    'GET /server/V1/course/exercise/1': (req, res) => {
+    'GET /server/V1/course/courseDetail/1': (req, res) => {
 
         res.send({
             "error_code": 200,
@@ -41,7 +41,7 @@ export default {
             'views': "0",
         })
     },
-    'GET /server/V1/course/exercise/2': (req, res) => {
+    'GET /server/V1/course/courseDetail/2': (req, res) => {
         res.send({
             "error_code": 200,
             "msg": 'success',

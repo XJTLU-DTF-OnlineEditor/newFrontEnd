@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import { deleteCourse, getExercises } from '@/services/course';
+import { deleteCourse, getCourseDetail } from '@/services/course';
 import './CourseDisplay.less'
 import { Descriptions, Button, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -22,7 +22,7 @@ export default class App extends Component {
 
     getExercise = async () => {
         const { id } = this.state;
-        const exercise = await getExercises(id);
+        const exercise = await getCourseDetail(id);
         // exercise_title, exercise_content, update_date, views
         this.setState(exercise);
     };

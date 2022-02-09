@@ -18,21 +18,4 @@ export const run = async(inputType, source, input, lang, id, terminate) => {
             time_limit: 5,
         },
     });
-};
-
-export const send = async(inputType, source, input, lang, id, terminate) => {
-    const url = 'http://localhost:8000/api/V1/editor/runn';
-    return request(url, {
-        method: 'post',
-        data: {
-            id,
-            lang,
-            terminate,
-            inputType,
-            source,
-            input,
-            memory_limit: 243232,
-            time_limit: 5,
-        },
-    });
-};
+}

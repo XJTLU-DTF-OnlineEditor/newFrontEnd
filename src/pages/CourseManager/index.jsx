@@ -5,7 +5,7 @@ import { Card, message } from 'antd';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import './courseManager.less'
-import { editCourse, getExercises } from '@/services/course';
+import { editCourse, getCourseDetail } from '@/services/course';
 
 export default class App extends Component {
     constructor(props) {
@@ -31,7 +31,7 @@ export default class App extends Component {
 
     getExercise = async () => {
         const { id } = this.state;
-        const exercise = await getExercises(id);
+        const exercise = await getCourseDetail(id);
         console.log(exercise)
         // exercise_title, exercise_content, update_date, views
         this.setState(exercise);
@@ -88,7 +88,9 @@ export default class App extends Component {
             message.warning('please input the course content');
         }else{
             const { topic_title, exercise_title, exercise_content } = this.state;
-            const result = await editCourse(id, topic_title, exercise_title, exercise_content, now);
+            // 【【对接获取teacher_id】】
+            const teacher_id = null
+            const result = await editCourse(id, topic_title, exercise_title, exercise_content, now, teacher_id);
             console.log(result);
             if (result['error_code'] == 200) {
                 message.success('Save success');
