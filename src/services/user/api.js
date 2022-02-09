@@ -37,30 +37,43 @@ export async function logout() {
   console.log(msg);
 
   return request('/server/V1/user/logout', {
-      method: 'GET',
-    },
-  );
+    method: 'GET',
+  });
 }
 
-export const getTags = async () => {
-  return request('/api/user/tags', {
+export const getTag = async () => {
+  return request('/api/V1/user/tags', {
     method: 'GET',
   });
 };
 
-export const delTags = async (data) => {
+export const delTag = async (data) => {
   console.log(data);
-  const url = '/api/user/delTag'
+  const url = '/api/V1/user/delTag';
   return request(url, {
-    method: 'PUT',
-    body: {id: data}
-  })
-}
-
-export const addTags = async (params) => {
-  return request('/api/user/addTag', {
     method: 'POST',
-    params: {...params}
-    }
-  )
-}
+    data: {
+      value: data.value,
+    },
+  });
+};
+
+export const addTag = async (params) => {
+  console.log(params);
+  return request('/api/V1/user/addTag', {
+    method: 'POST',
+    data: {
+      value: params,
+    },
+  });
+};
+
+export const updateTag = async (params) => {
+  console.log(params);
+  return request('/api/V1/user/updateTag', {
+    method: 'POST',
+    data: {
+      value: params,
+    },
+  });
+};
