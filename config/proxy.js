@@ -11,7 +11,7 @@ export default {
     '/server/': {
       // '/api/': {
       // target: 'https://preview.pro.ant.design',
-      target: 'http://www.dannyhao.top:4000/',
+      target: 'http://120.26.46.74:4000/',
       changeOrigin: true,
       pathRewrite: {
         '^/server': '',
