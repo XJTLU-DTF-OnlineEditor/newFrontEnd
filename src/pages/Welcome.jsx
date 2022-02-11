@@ -1,12 +1,48 @@
 import React, { Component } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography, Carousel, Col, Row, Input, Button } from 'antd';
+import { Card, Alert, Typography, Carousel, Col, Row, Input, Button, Select } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
 import styles from './Welcome.less';
 import ProCard from '@ant-design/pro-card';
 import { RightOutlined } from '@ant-design/icons';
-import { getTopic } from '@/services/course/api';
+import { getTopic, search } from '@/services/course/api';
 import { Footer } from 'antd/es/layout/layout';
+import { logout } from '@/services/user/api';
+import { Link } from '@umijs/preset-dumi/lib/theme';
+import Banner from '@/pages/utils/animBanner';
+
+const { Option } = Select;
+
+let timeout;
+let currentValue;
+
+function fetcha(value, callback) {
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  currentValue = value;
+
+  async function fake() {
+    const topic_data = await search(value);
+    if (currentValue === value) {
+      let topic_list = topic_data.topic_list;
+      let data = [];
+      if (topic_list === null) {
+        data = [];
+      } else {
+        topic_list.forEach((r) => {
+          data.push({
+            value: r.topic_title,
+            text: r.topic_title,
+          });
+        });
+      }
+      callback(data);
+    }
+  }
+  timeout = setTimeout(fake, 300);
+}
 
 function handleButtonClick() {
   console.log('Button Click');
@@ -16,13 +52,11 @@ function handleCardClick() {
   console.log('Card Click...');
 }
 
-const onSearch = (value) => console.log(value);
-
-const { Search } = Input;
-
 export default class welcome extends Component {
   state = {
     topics: [], // Length = 5
+    data: [], // data of search
+    value: undefined,
   };
 
   componentDidMount() {
@@ -32,16 +66,32 @@ export default class welcome extends Component {
   }
 
   getData = async () => {
-    const topic_data = await getTopic();
-    const topics = topic_data.topics;
+    const topics = await getTopic();
     console.log(topics);
+    // const topics = topic_data.topics;
+    // console.log(topics);
     this.setState({ topics });
     console.log(this.state);
   };
 
+  handleSearch = (value) => {
+    console.log(value); // value: Input text
+    if (value) {
+      fetcha(value, (data) => this.setState({ data }));
+    } else {
+      this.setState({ data: [] });
+    }
+  };
+
+  handleChange = (value) => {
+    console.log(value); // value: place holder text
+    this.setState({ value });
+  };
+
   render() {
     let { topics } = this.state;
-    console.log(topics[0]);
+    const options = this.state.data.map((d) => <Option key={d.value}>{d.text}</Option>);
+    // console.log(topics[0]);
 
     const contentStyle = {
       height: '220px',
@@ -51,8 +101,6 @@ export default class welcome extends Component {
       background: '#89a7f1',
     };
 
-    const { Meta } = Card;
-
     return (
       <PageContainer
         header={{
@@ -60,18 +108,9 @@ export default class welcome extends Component {
           breadcrumb: {},
         }}
       >
-        <Carousel autoplay dotPosition="bottom">
-          <div>
-            <h1 style={contentStyle}>
-              <font face="Arial" size="8">
-                欢迎来到Python的世界
-              </font>
-            </h1>
-          </div>
-          <div>
-            <h3 style={contentStyle}>Description1</h3>
-          </div>
-        </Carousel>
+        <div>
+          <Banner />
+        </div>
 
         <ProCard
           title={
@@ -83,7 +122,23 @@ export default class welcome extends Component {
           direction="column"
           gutter={[0, 8]}
           extra={
-            <Search placeholder="input search text" onSearch={onSearch} enterButton="Search" />
+            <div>
+              <span>Search course here: </span>
+              <Select
+                showSearch
+                showArrow={false}
+                value={this.state.value}
+                style={{ width: 150 }}
+                placeholder="input search text"
+                defaultActiveFirstOption={false}
+                onSearch={this.handleSearch}
+                onChange={this.handleChange}
+                filterOption={false}
+                notFoundContent="No such course"
+              >
+                {options}
+              </Select>
+            </div>
           }
         >
           {topics.map((item, index) => {
@@ -112,7 +167,6 @@ export default class welcome extends Component {
             );
           })}
         </ProCard>
-
         <Footer style={{ textAlign: 'center' }}>XJTLU ©2022 Online Editor</Footer>
       </PageContainer>
     );

@@ -64,6 +64,8 @@
     "nanoid": "^3.1.25",
     "omit.js": "^2.0.2",
     "pubsub-js": "^1.9.3",
+    "rc-banner-anim": "^2.4.5",
+    "rc-tween-one": "^3.0.3",
     "react": "^17.0.0",
     "react-codemirror2": "^7.2.1",
     "react-dev-inspector": "^1.1.1",
