@@ -51,7 +51,7 @@ export default [{
     },
     {
         name: 'code_editor',
-        path: '/course/exercise/:topic_title/:id',
+        path: '/course/exercise/:related_topic/:id',
         // path: '/course/exercise/python fundamental/1',
         component: './EditorPage',
         icon: 'BulbOutlined',
@@ -60,10 +60,14 @@ export default [{
         // ]
     },
     {
-        name: 'courseList',
-        icon: 'UserOutlined',
         path: '/courseList',
         component: './CourseList',
+    },
+    {
+        name: 'courseAdmin',
+        icon: 'UserOutlined',
+        path: '/courseAdmin',
+        component: './CourseAdmin',
     },
     {
         path: '/courseManager',
@@ -72,6 +76,12 @@ export default [{
     {
         path: '/courseDisplay',
         component: './CourseDisplay',
+    },
+    {
+        name: 'courseOutline',
+        icon: 'UserOutlined',
+        path: '/course/exercise/:related_topic',
+        component: './CourseOutline',
     },
     {
         path: '/',

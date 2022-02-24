@@ -16,8 +16,8 @@ const Content = ({ children, extra }) => (
 
 export default class Exercises extends Component {
   state = {
-    related_topic: '',
-    exercise_list: [],
+    topic_title: '',
+    course_list: [],
     id: 1,
     update_date: '',
     views: '',
@@ -34,24 +34,24 @@ export default class Exercises extends Component {
     // 获取目录
     const { url_params } = this.props;
     let { id, related_topic } = url_params;
-    const { exercise_list } = await getExerciseList(related_topic);
-    // console.log(exercise_list + "==============")
-    this.setState({ id, exercise_list, related_topic });
+    const { course_list } = await getExerciseList(related_topic);
+    // console.log(course_list + "==============")
+    this.setState({ id, course_list, topic_title: related_topic });
     // 初始化课程
     this.getExercise(id);
   };
 
   getExercise = async (id) => {
     this.props.history.push(`${id}`);
-    const exercise = await getCourseDetail(id);
+    const exercise = await getCourseDetail(this.state.topic_title, id);
     // console.log(exercise + "===========")
 
-    // related_topic, exercise_title, exercise_content, update_date, views
+    // topic_title, exercise_title, exercise_content, update_date, views
     this.setState(exercise);
   };
 
   render() {
-    let { related_topic, update_date, views, exercise_list, id, exercise_title, exercise_content } = this.state;
+    let { topic_title, update_date, views, course_list, id, exercise_title } = this.state;
     // let exercise_content_html = exercise_content
     //   .replace(('\n', '<br />'))
     //   .replace(/#eeeeee/g, '#808080');
@@ -65,7 +65,7 @@ export default class Exercises extends Component {
         onClick={({ key }) => this.getExercise(+key)}
       // defaultSelectedKeys={[id - 1]}
       >
-        {exercise_list.map((item) => (
+        {course_list.map((item) => (
           <Menu.Item key={item.id}>
             <a target="_blank">{item.title}</a>
           </Menu.Item>
@@ -75,7 +75,7 @@ export default class Exercises extends Component {
 
     const renderContent = (column = 3) => (
       <Descriptions size="middle" column={column}>
-        <Descriptions.Item label="related topic">{related_topic}</Descriptions.Item>
+        <Descriptions.Item label="related topic">{topic_title}</Descriptions.Item>
         <Descriptions.Item label="update date">{update_date}</Descriptions.Item>
         <Descriptions.Item label="views">
           <a>{views}</a>
@@ -87,7 +87,9 @@ export default class Exercises extends Component {
       <div>
         <PageHeader
           className="site-page-header-responsive course"
-          onBack={() => this.props.history.push('/')} // 返回上级目录
+          onBack={() => 
+            this.props.history.go(-1)
+          } // 返回上级目录
           title={exercise_title}
           ghost
           extra={[
@@ -98,7 +100,7 @@ export default class Exercises extends Component {
             <Button
               key="2"
               onClick={() => this.getExercise(id + 1)}
-              disabled={id + 1 > exercise_list.length}
+              disabled={id + 1 > course_list.length}
             >
               next exercise
               <ArrowRightOutlined />

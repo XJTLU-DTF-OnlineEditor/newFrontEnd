@@ -98,7 +98,7 @@ export default class welcome extends Component {
                 <ProCard colSpan="30%" ghost>
                   <center>
                     <font face="verdana">
-                      {item.topic_title}
+                      {item.related_topic}
                       <RightOutlined />
                     </font>
                   </center>

@@ -51,5 +51,6 @@ export default {
     'menu.editor.koni': '拓扑编辑器',
     'menu.personal': '我的',
     'menu.code_editor': '编辑器',
-    'menu.courseList': '课程管理后台'
+    'menu.courseAdmin': '课程管理后台',
+    'menu.courseOutline': '课程大纲'
 };
