@@ -44,10 +44,6 @@ function fetcha(value, callback) {
   timeout = setTimeout(fake, 300);
 }
 
-function handleButtonClick() {
-  console.log('Button Click');
-}
-
 function handleCardClick() {
   console.log('Card Click...');
 }
@@ -114,7 +110,7 @@ export default class welcome extends Component {
 
         <ProCard
           title={
-            <Button type="text" onClick={handleButtonClick}>
+            <Button type="text" onClick={() => this.props.history.push('/courses')}>
               所有课程
               <RightOutlined />
             </Button>
