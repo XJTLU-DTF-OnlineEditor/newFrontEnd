@@ -153,7 +153,7 @@ export default class welcome extends Component {
                 <ProCard colSpan="30%" ghost>
                   <center>
                     <font face="verdana">
-                      {item.related_topic}
+                      {item.topic_title}
                       <RightOutlined />
                     </font>
                   </center>
