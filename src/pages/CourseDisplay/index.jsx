@@ -6,8 +6,6 @@ import './CourseDisplay.less'
 import { Descriptions, Button, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
-import { editCourse } from '@/services/course';
-import { nanoid } from 'nanoid'
 import { Popconfirm } from 'antd';
 
 export default class App extends Component {

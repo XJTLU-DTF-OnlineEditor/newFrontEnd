@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
-import { Button, Tag } from 'antd';
+import { Button } from 'antd';
 import { EyeOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import ProList from '@ant-design/pro-list';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { deleteTopic, editTopic, getTopicByTeacher, newTopic } from '@/services/course';
-import { StepsForm, ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
-import ProForm, {
+import {ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
+import {
   ModalForm,
   ProFormText,
-  ProFormDateRangePicker,
-  ProFormSelect,
 } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
 import { Popconfirm, message } from 'antd';

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Typography, Button } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Layout, Descriptions } from 'antd';
+import { Descriptions } from 'antd';
 import { getExerciseList } from '@/services/course';
-import { List, Space } from 'antd';
+import { List } from 'antd';
 import ProCard from '@ant-design/pro-card';
 
 export default class CourseOutline extends Component {
@@ -92,7 +92,6 @@ export default class CourseOutline extends Component {
                   style={{ textDecoration: 'none', color: 'black' }}
                 >
                   <Typography.Text mark>[EXERCISE]</Typography.Text> {item.topic_tite}
-                  {console.log(item)}
                 </a>
               </List.Item>
             )}

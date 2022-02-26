@@ -65,11 +65,25 @@ export default class Exercises extends Component {
         onClick={({ key }) => this.getExercise(+key)}
       // defaultSelectedKeys={[id - 1]}
       >
-        {course_list.map((item) => (
-          <Menu.Item key={item.id}>
-            <a target="_blank">{item.title}</a>
-          </Menu.Item>
-        ))}
+        {/* {{
+          if(course_list){
+            course_list.map((item) => (
+              <Menu.Item key={item.id}>
+                <a target="_blank">{item.title}</a>
+              </Menu.Item>
+            ))
+          }
+        }} */}
+        {
+          console.log(typeof(course_list))
+        }
+        {typeof(course_list)=='object' ?
+          course_list.map((item) => (
+            <Menu.Item key={item.id}>
+              <a target="_blank">{item.title}</a>
+            </Menu.Item>
+          )) 
+          : []}
       </Menu>
     );
 
@@ -87,7 +101,7 @@ export default class Exercises extends Component {
       <div>
         <PageHeader
           className="site-page-header-responsive course"
-          onBack={() => 
+          onBack={() =>
             this.props.history.go(-1)
           } // 返回上级目录
           title={exercise_title}
