@@ -12,18 +12,18 @@ export default class App extends Component {
     state = {
         topic_title: this.props.location.query.topic_title,
         id: this.props.location.query.id,
-        exercise_title: '',
-        update_date: '',
-        views: '',
-        exercise_content: '',
+        courseDetail: {},
     }
 
 
     getExercise = async () => {
         const { topic_title, id } = this.state;
-        const exercise = await getCourseDetail(topic_title, id);
-        // exercise_title, exercise_content, update_date, views
-        this.setState(exercise);
+        const res = await getCourseDetail(topic_title, id);
+        if(res.error_code==200){
+            // related_topic, title, content, update_date, views, subtopic_id
+            this.setState({courseDetail: res.data});
+        }
+        
     };
 
     componentDidMount() {
@@ -32,6 +32,7 @@ export default class App extends Component {
     }
 
     render() {
+        const {courseDetail, topic_title, id} = this.state
         return (
             <div
                 style={{
@@ -40,22 +41,22 @@ export default class App extends Component {
             >
                 <PageContainer
                     ghost
-                    onBack={() => this.props.history.push('/courseList?topic_title=' + this.state.topic_title)}
+                    onBack={() => this.props.history.push('/courseAdmin/courseList?topic_title=' + topic_title)}
                     header={{
-                        title: this.state.exercise_title,
+                        title: courseDetail.title,
                         breadcrumb: {},
                         extra: [
-                            <Button key="1" onClick={() => this.props.history.push(`/courseManager?topic_title=${this.state.topic_title}&id=${this.state.id}`)} type='primary'>EDIT</Button>,
+                            <Button key="1" onClick={() => this.props.history.push(`/courseAdmin/courseManager?topic_title=${topic_title}&id=${id}`)} type='primary'>EDIT</Button>,
                             <Popconfirm
                                 title="Are you sure to delete this course?"
                                 onConfirm={async () => {
-                                    const result = await deleteCourse(this.props.location.query.topic_title, [this.state.id,]);
+                                    const result = await deleteCourse(this.props.location.query.topic_title, [id,]);
                                     if (result['error_code'] == 200) {
                                         message.success('Delete success');
                                     } else {
                                         message.error('Delete error');
                                     }
-                                    this.props.history.push('/courseList?topic_title=' + this.state.topic_title)
+                                    this.props.history.push('/courseAdmin/courseList?topic_title=' + topic_title)
                                 }}
                                 okText="Yes"
                                 cancelText="No"
@@ -67,10 +68,10 @@ export default class App extends Component {
                     content={
                         <Descriptions column={3} style={{ marginBottom: -12, marginLeft: 15 }}>
                             <Descriptions.Item label="RELATED TOPIC">
-                                {this.state.topic_title}
+                                {topic_title}
                             </Descriptions.Item>
-                            <Descriptions.Item label="UPDATE DATE">{this.state.update_date}</Descriptions.Item>
-                            <Descriptions.Item label="VIEWS">{this.state.views}</Descriptions.Item>
+                            <Descriptions.Item label="UPDATE DATE">{courseDetail.update_date}</Descriptions.Item>
+                            <Descriptions.Item label="VIEWS">{courseDetail.views}</Descriptions.Item>
                         </Descriptions>
                     }
                 >
@@ -78,7 +79,7 @@ export default class App extends Component {
                         <CKEditor
                             editor={ClassicEditor}
                             disabled={true}
-                            data={this.state.exercise_content}
+                            data={courseDetail.content}
                             config={{
                                 toolbar: {
                                     items: [],

@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography, Carousel, Col, Row, Input, Button, Select } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
-import styles from './Welcome.less';
+import { Button, Select } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { RightOutlined } from '@ant-design/icons';
 import { getTopic, search } from '@/services/course/api';
 import { Footer } from 'antd/es/layout/layout';
-import { logout } from '@/services/user/api';
-import { Link } from '@umijs/preset-dumi/lib/theme';
 import Banner from '@/pages/utils/animBanner';
 
 const { Option } = Select;

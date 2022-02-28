@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { Typography, Button } from 'antd';
+import { Typography, Button, message, List, Descriptions  } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Descriptions } from 'antd';
 import { getExerciseList } from '@/services/course';
-import { List } from 'antd';
 import ProCard from '@ant-design/pro-card';
 
 export default class CourseOutline extends Component {
@@ -25,9 +23,16 @@ export default class CourseOutline extends Component {
   getCatalog = async () => {
     // 获取目录
     const { related_topic } = this.props.match.params;
-    const { course_list, topic_content, topic_img } = await getExerciseList(related_topic);
-    this.setState({ course_list, related_topic, topic_content, topic_img });
-    console.log(course_list);
+    const res = await getExerciseList(related_topic);
+    if(res.error_code==200){
+      let { course_list, topic_content, topic_img } = res
+      course_list = course_list.map(i=>i.fields)
+      this.setState({ course_list, related_topic, topic_content, topic_img });
+      console.log(course_list)
+    }else{
+      message.error(res.msg)
+    }
+    
   };
 
   render() {
@@ -84,14 +89,14 @@ export default class CourseOutline extends Component {
             renderItem={(item) => (
               <List.Item
                 onClick={() => {
-                  this.props.history.push(this.props.location.pathname + '/' + item.id);
+                  this.props.history.push(this.props.location.pathname + '/' + item.subtopic_id);
                 }}
               >
                 <a
-                  href={this.props.location.pathname + '/' + item.id}
+                  href={this.props.location.pathname + '/' + item.subtopic_id}
                   style={{ textDecoration: 'none', color: 'black' }}
                 >
-                  <Typography.Text mark>[EXERCISE]</Typography.Text> {item.topic_tite}
+                  <Typography.Text mark>[EXERCISE]</Typography.Text> {item.title}
                 </a>
               </List.Item>
             )}

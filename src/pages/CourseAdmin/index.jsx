@@ -5,13 +5,14 @@ import ProList from '@ant-design/pro-list';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { deleteTopic, editTopic, getTopicByTeacher, newTopic } from '@/services/course';
-import {ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
+import { ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
 import {
   ModalForm,
   ProFormText,
 } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
-import { Popconfirm, message } from 'antd';
+import { Popconfirm, message, Empty } from 'antd';
+import { Pass } from 'codemirror';
 
 export default class App extends Component {
   state = {
@@ -27,19 +28,16 @@ export default class App extends Component {
     const teacher_id = 1;
     const res = await getTopicByTeacher(teacher_id);
     if (res.error_code == 200) {
-      this.setState({ topics: res.data });
-      // this.dataSource = res.data.map(item=>item.topic_title);
-      console.log(res.data);
+      this.setState({
+        topics: res.data.map(i => {
+          let res = i.fields
+          res.topic_id = i.pk
+          return res
+        })
+      });
     }
   };
 
-  waitTime = (time = 100) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, time);
-    });
-  };
 
   addNewTopic = async (values) => {
     console.log(values);
@@ -65,16 +63,17 @@ export default class App extends Component {
       message.success('topic has been created successfully');
       return true;
     } else {
-      message.error('Something wrong happens. Please try again later');
+      message.error(res.msg);
       return false;
     }
   };
 
   confirm = async (topic_id) => {
+    console.log(topic_id, 222)
     const res = await deleteTopic(topic_id);
     if (res.error_code == 200) {
       message.success('Delete success.');
-      this.getTopics;
+      this.getTopics();
     } else {
       message.success('Fail to delete. Please try again later');
     }
@@ -147,7 +146,7 @@ export default class App extends Component {
                         listType: 'picture-card',
                       }}
                       action="/upload.do"
-                      // extra="long"
+                    // extra="long"
                     />
                   </ModalForm>,
                 ];
@@ -161,8 +160,8 @@ export default class App extends Component {
                   dataIndex: 'topic_title',
                   render: (i) => (
                     <a
-                      href={`/courseList?topic_title=${i}`}
-                      style={{ 'text-decoration': 'none', color: '#333' }}
+                      href={`/courseAdmin/courseList?topic_title=${i}`}
+                      style={{ 'textDecoration': 'none', color: '#333' }}
                     >
                       {i}
                     </a>
@@ -171,7 +170,7 @@ export default class App extends Component {
                 actions: {
                   render: (text, row) => {
                     return [
-                      <a href={`/courseList?topic_title=${row.topic_title}`}>
+                      <a href={`/courseAdmin/courseList?topic_title=${row.topic_title}`}>
                         <IconText icon={EyeOutlined} text="view" key="list-vertical-message" />
                       </a>,
                       <ModalForm
@@ -190,13 +189,14 @@ export default class App extends Component {
                             return true;
                           } else {
                             // 原topic内容发生变化
+                            console.log(values, 888)
                             const res = await editTopic(row.topic_id, values);
                             if (res.error_code == 200) {
                               this.getTopics();
                               message.success('topic infomation changed success');
                               return true;
                             } else {
-                              message.error('Something wrong happens. Please try again later');
+                              message.error(res.msg);
                               return false;
                             }
                           }
@@ -231,16 +231,16 @@ export default class App extends Component {
                             listType: 'picture-card',
                           }}
                           action="/upload.do"
-                          value={row.topic_img}
+                        // value={row.topic_img}
                         />
                       </ModalForm>,
                       <Popconfirm
                         title="Are you sure to delete this topic? This action will also delets all courses attached to this topic"
-                        onConfirm={(row) => this.confirm(row.topic_id)}
+                        onConfirm={() => this.confirm(row.topic_id)}
                         okText="Yes"
                         cancelText="No"
                       >
-                        <a href={`/courseList?topic_title=${row.topic_title}`}>
+                        <a>
                           <IconText
                             icon={DeleteOutlined}
                             text="delete"

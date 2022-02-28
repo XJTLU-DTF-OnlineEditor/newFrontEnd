@@ -11,16 +11,11 @@ import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 export default class App extends Component {
   constructor(props) {
     super(props);
-    if (this.props.location.query.id) {
-      this.getExercise();
-    }
   }
+
   state = {
     id: this.props.location.query.id,
-    exercise_title: '',
-    update_date: '',
-    views: '',
-    exercise_content: '',
+    courseDetail: {},
     isDisabled: this.props.location.query.id,
   };
 
@@ -28,54 +23,28 @@ export default class App extends Component {
     if (this.props.location.query.id) this.getExercise();
   }
 
-  onNameChange = (event) => {
-    this.setState({ name: event.target.value });
-  };
-
-  addItem = (e) => {
-    e.preventDefault();
-    const { name, items } = this.state;
-
-    if (name) {
-      if (items.includes(name)) {
-        message.error('repeated topic title');
-      } else {
-        this.setState({ items: [...items, name] });
-        this.setState({ name: '' });
-      }
-    } else {
-      message.error('please input a topic title');
-    }
-  };
-
-  handleTopic = async (value) => {
-    console.log(value);
-    const { topics } = this.state;
-    for (let i = 0; i < topics.length; i++) {
-      if (value == topics[i].topic_title) {
-        this.setState({ chosen_topic: topics[i] });
-      } else {
-        this.setState({ chosen_topic: value });
-      }
-    }
-  };
 
   getExercise = async () => {
     const { id } = this.state;
     const { topic_title } = this.props.location.query;
-    const exercise = await getCourseDetail(topic_title, id);
-    // exercise_title, exercise_content, update_date, views
-    this.setState(exercise);
+    const res = await getCourseDetail(topic_title, id);
+    if (res.error_code == 200) {
+      // related_topic, title, content, update_date, views, subtopic_id
+      this.setState({ courseDetail: res.data });
+    }else{
+      message.error(res.msg)
+    }
   };
 
   save = async (values) => {
-    if (!this.state.exercise_title) {
+    const { courseDetail } = this.state
+    console.log(courseDetail.content, 888)
+    if (!courseDetail.title) {
       message.warning('please input the course title');
-    } else if (!this.state.exercise_content) {
+    } else if (!courseDetail.content) {
       message.warning('please input the course content');
     } else {
       const { topic_title, id } = this.props.location.query;
-      const { exercise_title, exercise_content } = this.state;
       // 【【对接获取teacher_id】】
       const teacher_id = 1;
       let result;
@@ -83,30 +52,32 @@ export default class App extends Component {
         result = await editCourse(
           id,
           topic_title,
-          values.exercise_title,
-          exercise_content,
+          values.title,
+          courseDetail.content,
           teacher_id,
         );
       } else {
-        result = await newCourse(topic_title, exercise_title, exercise_content, teacher_id);
+        result = await newCourse(topic_title, values.title, courseDetail.content, teacher_id);
       }
       if (result['error_code'] == 200) {
         message.success('Save success');
-        const res_id = result.id;
-        this.props.history.push(`/courseDisplay?topic_title=${topic_title}&id=${res_id}`);
+        const res_id = result.data.id;
+        this.props.history.push(`/courseAdmin/courseDisplay?topic_title=${topic_title}&id=${res_id}`);
       } else {
-        message.error('Save error');
+        message.error('Save error! ' + result.msg);
       }
     }
   };
 
   render() {
+    const { courseDetail } = this.state
+    console.log(courseDetail)
     return (
       <PageContainer
         ghost
         onBack={() => this.props.history.go(-1)}
         header={{
-          title: this.state.id ? 'Edit Course' : 'Add Course',
+          title: courseDetail.id ? 'Edit Course' : 'Add Course',
         }}
       >
         <ProCard>
@@ -127,22 +98,23 @@ export default class App extends Component {
           >
             <ProFormText
               width="md"
-              name="exercise_title"
+              name="title"
               label="Course Title"
               placeholder="input course title here"
-              value={this.state.exercise_title}
+              value={courseDetail.title}
               onChange={(e) => {
-                this.setState({ exercise_title: e.target.value });
+                courseDetail.title = e.target.value
+                this.setState({ courseDetail });
               }}
             />
             <ProForm.Item
-              name="exercise_content"
+              name="content"
               label="Course Content"
-              value={this.state.exercise_content}
+              value={courseDetail.content}
             >
               <CKEditor
                 editor={ClassicEditor}
-                data={this.state.exercise_content}
+                data={courseDetail.content}
                 config={{
                   toolbar: {
                     items: [
@@ -191,12 +163,14 @@ export default class App extends Component {
                   },
                   // upload
                   ckfinder: {
-                    uploadUrl: '/图片上传服务器地址',
+                    uploadUrl: '【服务器文件上传地址】',
                   },
                 }}
                 onChange={(event, editor) => {
+                  let {courseDetail} = this.state
                   const data = editor.getData();
-                  this.setState({ exercise_content: data });
+                  courseDetail.content = data
+                  this.setState({ courseDetail });
                 }}
                 onError={({ willEditorRestart }) => {
                   if (willEditorRestart) {
