@@ -1,22 +1,21 @@
 import React, { Component } from 'react';
-import ProForm, { ProFormText} from '@ant-design/pro-form';
-import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
-import { Card, message } from 'antd';
+import ProForm, { ProFormText } from '@ant-design/pro-form';
+import { message } from 'antd';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import './courseManager.less'
-import { editCourse, getExercises } from '@/services/course';
+import { editCourse, getCourseDetail, newCourse } from '@/services/course';
+import ProCard from '@ant-design/pro-card';
+import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 
 export default class App extends Component {
     constructor(props) {
         super(props);
         if (this.props.location.query.id) {
             this.getExercise()
-            console.log('1111')
         };
     }
     state = {
-        topic_title: '',
         id: this.props.location.query.id,
         exercise_title: '',
         update_date: '',
@@ -29,71 +28,70 @@ export default class App extends Component {
         if (this.props.location.query.id) this.getExercise();
     }
 
+    onNameChange = event => {
+        this.setState({ name: event.target.value });
+    };
+
+    addItem = e => {
+        e.preventDefault();
+        const { name, items } = this.state
+
+        if (name) {
+            if (items.includes(name)) {
+                message.error("repeated topic title")
+            } else {
+                this.setState({ items: [...items, name] });
+                this.setState({ name: '' });
+            }
+        } else {
+            message.error("please input a topic title")
+        }
+    };
+
+    handleTopic = async (value) => {
+        console.log(value)
+        const { topics } = this.state
+        for (let i = 0; i < topics.length; i++) {
+            if (value == topics[i].topic_title) {
+                this.setState({ chosen_topic: topics[i] })
+            } else {
+                this.setState({ chosen_topic: value })
+            }
+        }
+    }
+
+
     getExercise = async () => {
         const { id } = this.state;
-        const exercise = await getExercises(id);
-        console.log(exercise)
+        const {topic_title} = this.props.location.query
+        const exercise = await getCourseDetail(topic_title, id);
         // exercise_title, exercise_content, update_date, views
         this.setState(exercise);
     };
 
-    jsDateFormatter = (dateInput) => {  // dateInput 是一个 js 的 Date 对象
-        var year = dateInput.getFullYear();
-        var month = dateInput.getMonth() + 1;
-        var theDate = dateInput.getDate();
-
-        var hour = dateInput.getHours();
-        var minute = dateInput.getMinutes();
-        var second = dateInput.getSeconds();
-
-        if (month < 10) {
-            month = '0' + month;
-        }
-
-        if (theDate < 10) {
-            theDate = '0' + theDate;
-        }
-
-        if (hour < 10) {
-            hour = '0' + hour;
-        }
-
-        if (minute < 10) {
-            minute = '0' + minute;
-        }
-
-        if (second < 10) {
-            second = '0' + second;
-        }
-
-        return year + "-" + month + "-" + theDate + " " + hour + ":" + minute + ":" + second;
-    }
 
     save = async (values) => {
-        console.log(values)
-        const now = this.jsDateFormatter(new Date())
-        this.setState({ update_date: now });
-        let id;
-        if (this.state.id) {
-            id = this.state.id;
-        } else {
-            id = nanoid();
-            this.setState({ id, views: 0 });
-        }
-        if(!this.state.topic_title){
-            message.warning('please input the related topic title');
-        }else if(!this.state.exercise_title){
+        if (!this.state.exercise_title) {
             message.warning('please input the course title');
-        }else if(!this.state.exercise_content){
+        } else if (!this.state.exercise_content) {
             message.warning('please input the course content');
-        }else{
-            const { topic_title, exercise_title, exercise_content } = this.state;
-            const result = await editCourse(id, topic_title, exercise_title, exercise_content, now);
-            console.log(result);
+        } else {
+            const { topic_title, id } = this.props.location.query
+            const { exercise_title, exercise_content } = this.state;
+            // 【【对接获取teacher_id】】
+            const teacher_id = 123
+            let result
+            if (id) {
+                result = await editCourse(id, topic_title, values.exercise_title, exercise_content, teacher_id);
+            }
+            else {
+                result = await newCourse(topic_title, exercise_title, exercise_content, teacher_id);
+            }
+            console.log(result)
             if (result['error_code'] == 200) {
                 message.success('Save success');
-                console.log('success')
-                this.props.history.push('/courseDisplay?id='+this.state.id)
+                const res_id = result.id
+                this.props.history.push(`/courseDisplay?topic_title=${topic_title}&id=${res_id}`)
             } else {
                 message.error('Save error');
             }
@@ -104,36 +102,33 @@ export default class App extends Component {
         return (
             <PageContainer
                 ghost
-                onBack={() => this.props.history.push('/courseList')}
+                onBack={() => this.props.history.go(-1)}
                 header={{
-                    title: 'Add Course',
+                    title: this.state.id? 'Edit Course':'Add Course',
                 }}
             >
-                <Card>
+                <ProCard>
                     <ProForm
                         submitter={{
                             render: (_, dom) => <FooterToolbar>{dom}</FooterToolbar>,
                             // 配置按钮文本
                             searchConfig: {
-                                resetText: 'Reset',
                                 submitText: 'Submit',
-                            }
+                            },
+                            resetButtonProps: {
+                                style: {
+                                  display: 'none',
+                                },
+                              },
                         }}
-                        onFinish={this.save}>
-                        <ProForm.Group >
-                            <ProFormText width="md" name="topic_title" label="Related Topic Title"
-                                placeholder='input topic title here' value={this.state.topic_title}
-                                onChange={e => {
-                                    this.setState({ topic_title: e.target.value })
-                                }}
-                                />
-                            <ProFormText width="md" name="exercise_title" label="Course Title"
-                                placeholder='input course title here' value={this.state.exercise_title}
-                                onChange={e => {
-                                    this.setState({ exercise_title: e.target.value })
-                                }}
-                                />
-                        </ProForm.Group>
+                        onFinish={this.save}
+                        >
+                        <ProFormText width="md" name="exercise_title" label="Course Title"
+                            placeholder='input course title here' value={this.state.exercise_title}
+                            onChange={e => {
+                                this.setState({ exercise_title: e.target.value })
+                            }}
+                        />
                         <ProForm.Item name="exercise_content" label="Course Content" value={this.state.exercise_content}>
                             <CKEditor
                                 editor={ClassicEditor}
@@ -191,7 +186,8 @@ export default class App extends Component {
                             />
                         </ProForm.Item>
                     </ProForm>
-                </Card>
+                </ProCard>
+
             </PageContainer>
         )
     };

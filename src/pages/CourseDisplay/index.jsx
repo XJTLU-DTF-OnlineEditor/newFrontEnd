@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import { deleteCourse, getExercises } from '@/services/course';
+import { deleteCourse, getCourseDetail } from '@/services/course';
 import './CourseDisplay.less'
 import { Descriptions, Button, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { editCourse } from '@/services/course';
 import { nanoid } from 'nanoid'
+import { Popconfirm } from 'antd';
 
 export default class App extends Component {
     state = {
@@ -21,62 +22,11 @@ export default class App extends Component {
 
 
     getExercise = async () => {
-        const { id } = this.state;
-        const exercise = await getExercises(id);
+        const { topic_title, id } = this.state;
+        const exercise = await getCourseDetail(topic_title, id);
         // exercise_title, exercise_content, update_date, views
         this.setState(exercise);
     };
-
-    jsDateFormatter = (dateInput) => {  // dateInput 是一个 js 的 Date 对象
-        var year = dateInput.getFullYear();
-        var month = dateInput.getMonth() + 1;
-        var theDate = dateInput.getDate();
-
-        var hour = dateInput.getHours();
-        var minute = dateInput.getMinutes();
-        var second = dateInput.getSeconds();
-
-        if (month < 10) {
-            month = '0' + month;
-        }
-
-        if (theDate < 10) {
-            theDate = '0' + theDate;
-        }
-
-        if (hour < 10) {
-            hour = '0' + hour;
-        }
-
-        if (minute < 10) {
-            minute = '0' + minute;
-        }
-
-        if (second < 10) {
-            second = '0' + second;
-        }
-
-        return year + "-" + month + "-" + theDate + " " + hour + ":" + minute + ":" + second;
-    }
-
-    save = async () => {
-        let now = this.jsDateFormatter(new Date())
-        this.setState({ update_date: now });
-        let id;
-        if (this.state.id) {
-            id = this.state.id;
-        } else {
-            id = nanoid();
-            this.setState({ id, views: 0 });
-        }
-        const { topic_title, exercise_title, exercise_content } = this.state;
-        const result = await editCourse(id, topic_title, exercise_title, exercise_content, now);
-        if (result['error_code'] == 200) {
-            message.success('Save success');
-        } else {
-            message.error('Save error');
-        }
-    }
 
     componentDidMount() {
         // 获取课程内容
@@ -92,21 +42,28 @@ export default class App extends Component {
             >
                 <PageContainer
                     ghost
-                    onBack={() => this.props.history.push('/courseList')}
+                    onBack={() => this.props.history.push('/courseList?topic_title=' + this.state.topic_title)}
                     header={{
                         title: this.state.exercise_title,
                         breadcrumb: {},
                         extra: [
-                            <Button key="1" onClick={() => this.props.history.push('/courseManager?id=' + this.state.id)} type='primary'>EDIT</Button>,
-                            <Button key="2" onClick={async () => {
-                                const result = await deleteCourse([this.state.id,]);
-                                if (result['error_code'] == 200) {
-                                    message.success('Delete success');
-                                } else {
-                                    message.error('Delete error');
-                                }
-                                this.props.history.push('/courseList')
-                            }} type='primary' danger>DELETE</Button>,
+                            <Button key="1" onClick={() => this.props.history.push(`/courseManager?topic_title=${this.state.topic_title}&id=${this.state.id}`)} type='primary'>EDIT</Button>,
+                            <Popconfirm
+                                title="Are you sure to delete this course?"
+                                onConfirm={async () => {
+                                    const result = await deleteCourse(this.props.location.query.topic_title, [this.state.id,]);
+                                    if (result['error_code'] == 200) {
+                                        message.success('Delete success');
+                                    } else {
+                                        message.error('Delete error');
+                                    }
+                                    this.props.history.push('/courseList?topic_title=' + this.state.topic_title)
+                                }}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button key="2" type='primary' danger>DELETE</Button>
+                            </Popconfirm>,
                         ]
                     }}
                     content={

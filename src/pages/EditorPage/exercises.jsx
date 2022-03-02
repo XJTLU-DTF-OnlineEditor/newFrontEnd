@@ -3,7 +3,7 @@ import { PageHeader, Button, Descriptions } from 'antd';
 import { BarsOutlined, ArrowRightOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { Dropdown, Menu } from 'antd';
 import ProCard from '@ant-design/pro-card';
-import { getExerciseList, getExercises } from '@/services/course';
+import { getExerciseList, getCourseDetail } from '@/services/course';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
@@ -17,7 +17,7 @@ const Content = ({ children, extra }) => (
 export default class Exercises extends Component {
   state = {
     topic_title: '',
-    exercise_list: [],
+    course_list: [],
     id: 1,
     update_date: '',
     views: '',
@@ -33,17 +33,17 @@ export default class Exercises extends Component {
   getCatalog = async () => {
     // 获取目录
     const { url_params } = this.props;
-    let { id, topic_title } = url_params;
-    const { exercise_list } = await getExerciseList(topic_title);
-    // console.log(exercise_list + "==============")
-    this.setState({ id, exercise_list, topic_title });
+    let { id, related_topic } = url_params;
+    const { course_list } = await getExerciseList(related_topic);
+    // console.log(course_list + "==============")
+    this.setState({ id, course_list, topic_title: related_topic });
     // 初始化课程
     this.getExercise(id);
   };
 
   getExercise = async (id) => {
     this.props.history.push(`${id}`);
-    const exercise = await getExercises(id);
+    const exercise = await getCourseDetail(this.state.topic_title, id);
     // console.log(exercise + "===========")
 
     // topic_title, exercise_title, exercise_content, update_date, views
@@ -51,7 +51,7 @@ export default class Exercises extends Component {
   };
 
   render() {
-    let { topic_title, update_date, views, exercise_list, id, exercise_title, exercise_content } = this.state;
+    let { topic_title, update_date, views, course_list, id, exercise_title } = this.state;
     // let exercise_content_html = exercise_content
     //   .replace(('\n', '<br />'))
     //   .replace(/#eeeeee/g, '#808080');
@@ -65,7 +65,7 @@ export default class Exercises extends Component {
         onClick={({ key }) => this.getExercise(+key)}
       // defaultSelectedKeys={[id - 1]}
       >
-        {exercise_list.map((item) => (
+        {course_list.map((item) => (
           <Menu.Item key={item.id}>
             <a target="_blank">{item.title}</a>
           </Menu.Item>
@@ -87,7 +87,9 @@ export default class Exercises extends Component {
       <div>
         <PageHeader
           className="site-page-header-responsive course"
-          onBack={() => this.props.history.push('/')} // 返回上级目录
+          onBack={() => 
+            this.props.history.go(-1)
+          } // 返回上级目录
           title={exercise_title}
           ghost
           extra={[
@@ -98,7 +100,7 @@ export default class Exercises extends Component {
             <Button
               key="2"
               onClick={() => this.getExercise(id + 1)}
-              disabled={id + 1 > exercise_list.length}
+              disabled={id + 1 > course_list.length}
             >
               next exercise
               <ArrowRightOutlined />

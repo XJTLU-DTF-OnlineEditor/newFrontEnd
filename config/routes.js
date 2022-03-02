@@ -1,20 +1,19 @@
-export default [
-  {
+export default [{
+  path: '/user',
+  layout: false,
+  routes: [{
     path: '/user',
-    layout: false,
     routes: [{
-      path: '/user',
-      routes: [{
-        name: 'login',
-        path: '/user/login',
-        component: './user/Login',
-      },],
-    },
-      {
-        component: './404',
-      },
-    ],
+      name: 'login',
+      path: '/user/login',
+      component: './user/Login',
+    },],
   },
+    {
+      component: './404',
+    },
+  ],
+},
   {
     path: '/welcome',
     name: 'welcome',
@@ -52,7 +51,7 @@ export default [
   },
   {
     name: 'code_editor',
-    path: '/course/exercise/:topic_title/:id',
+    path: '/course/exercise/:related_topic/:id',
     // path: '/course/exercise/python fundamental/1',
     component: './EditorPage',
     icon: 'BulbOutlined',
@@ -61,10 +60,14 @@ export default [
     // ]
   },
   {
-    name: 'courseList',
-    icon: 'UserOutlined',
     path: '/courseList',
     component: './CourseList',
+  },
+  {
+    name: 'courseAdmin',
+    icon: 'UserOutlined',
+    path: '/courseAdmin',
+    component: './CourseAdmin',
   },
   {
     path: '/courseManager',
@@ -75,14 +78,20 @@ export default [
     component: './CourseDisplay',
   },
   {
-    path: '/',
-    redirect: '/welcome',
+    name: 'courseOutline',
+    icon: 'UserOutlined',
+    path: '/course/exercise/:related_topic',
+    component: './CourseOutline',
   },
   {
-    name: 'courses',
+    name: "courses",
+    icon: 'table',
     path: '/courses',
     component: './CoursePage',
-    icon: 'table',
+  },
+  {
+    path: '/',
+    redirect: '/welcome',
   },
   {
     component: './404',

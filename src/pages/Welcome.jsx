@@ -50,14 +50,14 @@ function handleCardClick() {
 
 export default class welcome extends Component {
   state = {
-    topics: [], // Length = 5
+    topics: [], // Length = 6
     data: [], // data of search
     value: undefined,
   };
 
   componentDidMount() {
     // 初始化数据
-    console.log('Did Mount');
+    //console.log('Did Mount');
     this.getData();
   }
 
@@ -86,8 +86,8 @@ export default class welcome extends Component {
 
   render() {
     let { topics } = this.state;
-    const options = this.state.data.map((d) => <Option key={d.value}>{d.text}</Option>);
-    // console.log(topics[0]);
+    const options = this.state.data.map((d) => <Option key={d.value}>{d.text}</Option>);  // search options
+    console.log(topics[0]);
 
     const contentStyle = {
       height: '220px',

@@ -1,36 +1,101 @@
 import { request } from 'umi';
-export const editCourse = async(id, topic_title, exercise_title, exercise_content, update_date) => {
-    const url = `/server/V1/course/editCourse/${id}`;
+
+export const getTopicByTeacher = async(teacher_id) => {
+    const url = `/server/V1/course/topicsByTeacher?teacher_id=${teacher_id}`;
+    return request(url);
+};
+
+export const editTopic = async(topic_id, topic_info) => {
+    const url = `/server/V1/course/edit/`;
     return request(url, {
         method: 'post',
         data: {
-            id,
-            topic_title,
-            exercise_title,
-            exercise_content,
-            update_date
+            request_entity: 'Topic',
+            content: {
+                topic_id,
+                topic_info,
+            },
         },
     });
 };
-export const getExerciseList = async(topic_title) => {
-    const url = `/server/V1/course/exercises/${topic_title}`;
-    const data = await request(url);
-    console.log(data);
-    return request(url);
-};
 
-export const getExercises = async(id) => {
-    const url = `/server/V1/course/exercise/${id}`;
-    console.log(url);
-    return request(url);
-};
-
-export const deleteCourse = async(ids) => {
-    const url = `/server/V1/course/deleteCourse`;
+export const editCourse = async(id, related_topic, exercise_title, exercise_content, teacher_id) => {
+    const url = `/server/V1/course/edit/`;
     return request(url, {
         method: 'post',
         data: {
-            ids
+            request_entity: 'Course',
+            content: {
+                id,
+                related_topic,
+                exercise_title,
+                exercise_content,
+                teacher_id
+            },
+        },
+    });
+};
+
+export const newTopic = async(topic_title, topic_content, topic_img, teacher_id) => {
+    const url = `/server/V1/course/create/`;
+    return request(url, {
+        method: 'post',
+        data: {
+            request_entity: 'Topic',
+            content: {
+                topic_title,
+                topic_content,
+                topic_img,
+                teacher_id
+            },
+        }
+    });
+};
+
+export const newCourse = async(related_topic, exercise_title, exercise_content, teacher_id) => {
+    const url = `/server/V1/course/create/`;
+    return request(url, {
+        method: 'post',
+        data: {
+            request_entity: 'Course',
+            content: {
+                related_topic,
+                exercise_title,
+                exercise_content,
+                teacher_id
+            },
+        }
+    });
+};
+
+export const getExerciseList = async(related_topic) => {
+    const url = `/server/V1/course/courses/${related_topic}/`;
+    return request(url);
+};
+
+export const getCourseDetail = async(related_topic, id) => {
+    const url = `/server/V1/course/courseDetail/${related_topic}/${id}/`;
+    return request(url);
+};
+
+export const deleteCourse = async(related_topic, ids) => {
+    const url = `/server/V1/course/delete/`;
+    return request(url, {
+        method: 'post',
+        data: {
+            request_entity: 'Course',
+            related_topic,
+            content: ids
+        }
+    });
+};
+export const deleteTopic = async(id) => {
+    const url = `/server/V1/course/delete/`;
+    return request(url, {
+        method: 'post',
+        data: {
+            request_entity: 'Topic',
+            content: id
         }
     });
 };

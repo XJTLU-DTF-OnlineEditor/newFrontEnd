@@ -2,8 +2,8 @@ import React, {Component} from "react";
 import {PageContainer} from "@ant-design/pro-layout";
 import {Footer} from "antd/es/layout/layout";
 import ProCard from "@ant-design/pro-card";
-import {Card, Select} from "antd";
-import {search} from "@/services/course/api";
+import {Card, Select, Switch} from "antd";
+import {getTopic, search} from "@/services/course/api";
 
 let timeout;
 let currentValue;
@@ -42,9 +42,19 @@ export default class CoursePage extends Component {
   state = {
     data: [], // data of search
     value: undefined,
+    hot_topic_list: [],
   }
 
   componentDidMount() {
+    // Get all topic data
+    this.getData();
+  }
+
+  getData = async () => {
+    const hot_topic_list = await getTopic();
+    // console.log(topics)
+    this.setState({ hot_topic_list, loading: false });
+    console.log(this.state)
 
   }
 
@@ -64,6 +74,10 @@ export default class CoursePage extends Component {
   };
 
   render() {
+    let { hot_topic_list } = this.state;
+
+    console.log(hot_topic_list)
+
     return (
       <PageContainer header={{
         title: '所有课程',
@@ -82,30 +96,25 @@ export default class CoursePage extends Component {
           notFoundContent="No such course"
         />
       }>
-        <ProCard style={{ marginTop: 8 }} gutter={[8, 16]} wrap title="换行">
-          <ProCard colSpan="33%" layout="center" bordered hoverable>
-            <Card
-              bordered={false}
-              style={{width: 240}}
-              cover={<img alt="example" src="/public/images/code-01.jpg"/>}
-            >
-              <Meta title="Europe Street beat" description="www.instagram.com"/>
-            </Card>
-          </ProCard>
-          <ProCard colSpan="33%" layout="center" bordered>
-            Col
-          </ProCard>
-          <ProCard colSpan="33%" layout="center" bordered>
-            Col
-          </ProCard>
-          <ProCard colSpan="33%" layout="center" bordered>
-            Col
-          </ProCard>
+        <ProCard style={{ marginTop: 8 }} gutter={[8, 16]} wrap title="最热">
+          {hot_topic_list.map((item, index) => {
+            return (
+                <ProCard colSpan="33%" layout="default" bordered hoverable>
+                  <Card
+                    bordered={false}
+                    style={{width: 240}}
+                    cover={<img alt={item.topic_title} src={item.topic_img}/>}
+                  >
+                    <Meta title={item.topic_title} description={item.topic_content}/>
+                  </Card>
+                </ProCard>
+            )
+          })}
         </ProCard>
 
         <ProCard>
           <h3>
-            最热
+            最新
           </h3>
           <Card
             hoverable
