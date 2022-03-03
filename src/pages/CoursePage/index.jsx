@@ -3,7 +3,7 @@ import {PageContainer} from "@ant-design/pro-layout";
 import {Footer} from "antd/es/layout/layout";
 import ProCard from "@ant-design/pro-card";
 import {Card, Select, Switch} from "antd";
-import {getTopic, search} from "@/services/course/api";
+import {getAllTopic, getNewTopic, getTopic, search} from "@/services/course/api";
 
 let timeout;
 let currentValue;
@@ -43,6 +43,7 @@ export default class CoursePage extends Component {
     data: [], // data of search
     value: undefined,
     hot_topic_list: [],
+    new_topic_list: []
   }
 
   componentDidMount() {
@@ -51,9 +52,12 @@ export default class CoursePage extends Component {
   }
 
   getData = async () => {
-    const hot_topic_list = await getTopic();
-    // console.log(topics)
-    this.setState({ hot_topic_list, loading: false });
+    // sort all the courses according to the hot degree
+    const hot_topic_list = await getAllTopic();
+    // Sort all the courses according to the date
+    const new_topic_list = await getNewTopic();
+    console.log(new_topic_list)
+    this.setState({hot_topic_list, new_topic_list});
     console.log(this.state)
 
   }
@@ -74,7 +78,8 @@ export default class CoursePage extends Component {
   };
 
   render() {
-    let { hot_topic_list } = this.state;
+    let {hot_topic_list} = this.state;
+    let {new_topic_list} = this.state;
 
     console.log(hot_topic_list)
 
@@ -96,38 +101,55 @@ export default class CoursePage extends Component {
           notFoundContent="No such course"
         />
       }>
-        <ProCard style={{ marginTop: 8 }} gutter={[8, 16]} wrap title="最热">
-          {hot_topic_list.map((item, index) => {
-            return (
-                <ProCard colSpan="33%" layout="default" bordered hoverable>
-                  <Card
-                    bordered={false}
-                    style={{width: 240}}
-                    cover={<img alt={item.topic_title} src={item.topic_img}/>}
-                  >
-                    <Meta title={item.topic_title} description={item.topic_content}/>
-                  </Card>
-                </ProCard>
-            )
-          })}
+        <ProCard
+          tabs={{
+            type: 'card',
+          }}
+        >
+          <ProCard.TabPane key="tab1" tab="最热">
+            <ProCard style={{marginTop: 8}} gutter={[8, 16]} wrap>
+              {hot_topic_list.map((item, index) => {
+                return (
+                  <ProCard colSpan="33%" layout="default" bordered hoverable>
+                    <Card
+                      bordered={false}
+                      style={{width: 240}}
+                      cover={<img alt={item.topic_title} src={item.topic_img}/>}
+                    >
+                      <Meta title={item.topic_title} description={item.topic_content}/>
+                    </Card>
+                  </ProCard>
+                )
+              })}
+            </ProCard>
+          </ProCard.TabPane>
+          <ProCard.TabPane key="tab2" tab="最新" >
+            <ProCard style={{marginTop: 8}} gutter={[8, 16]} wrap>
+              {new_topic_list.map((item, index) => {
+                return (
+                  <ProCard colSpan="33%" layout="default" bordered hoverable>
+                    <Card
+                      colSpan="33%"
+                      bordered={false}
+                      style={{width: 240}}
+                      cover={<img alt={item.topic_title} src={item.topic_img}/>}
+                    >
+                      <Meta title={item.topic_title} description={item.topic_content}/>
+                    </Card>
+                  </ProCard>
+                )
+              })}
+            </ProCard>
+          </ProCard.TabPane>
         </ProCard>
 
+
         <ProCard>
-          <h3>
-            最新
-          </h3>
-          <Card
-            hoverable
-            style={{width: 240}}
-            cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"/>}
-          >
-            <Meta title="Europe Street beat" description="www.instagram.com"/>
-          </Card>
+
         </ProCard>
         <Footer style={{textAlign: 'center'}}>XJTLU ©2022 Online Editor</Footer>
       </PageContainer>
     )
-
   }
 
 }
