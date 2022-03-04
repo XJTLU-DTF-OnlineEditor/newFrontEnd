@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Select } from 'antd';
 import ProCard from '@ant-design/pro-card';
-import { RightOutlined } from '@ant-design/icons';
+import {RightOutlined, SearchOutlined} from '@ant-design/icons';
 import { getTopic, search } from '@/services/course/api';
 import { Footer } from 'antd/es/layout/layout';
 import Banner from '@/pages/utils/animBanner';
@@ -21,7 +21,7 @@ function fetcha(value, callback) {
 
   async function fake() {
     const topic_data = await search(value);
-    if (currentValue === value) {
+    if (currentValue === value && topic_data.length !== 0) {
       let topic_list = topic_data.topic_list;
       let data = [];
       if (topic_list === null) {
@@ -35,13 +35,11 @@ function fetcha(value, callback) {
         });
       }
       callback(data);
+    } else if (topic_data.length === 0) {
+
     }
   }
   timeout = setTimeout(fake, 300);
-}
-
-function handleCardClick() {
-  console.log('Card Click...');
 }
 
 export default class welcome extends Component {
@@ -76,22 +74,17 @@ export default class welcome extends Component {
   };
 
   handleChange = (value) => {
-    console.log(value); // value: place holder text
+    // console.log(value); // value: place holder text
     this.setState({ value });
+    this.props.history.push(`/course/exercise/${value}`)
   };
 
   render() {
     let { topics } = this.state;
-    const options = this.state.data.map((d) => <Option key={d.value}>{d.text}</Option>);  // search options
-    console.log(topics[0]);
-
-    const contentStyle = {
-      height: '220px',
-      color: '#fff',
-      lineHeight: '160px',
-      textAlign: 'center',
-      background: '#89a7f1',
-    };
+    const options = this.state.data.map(
+      (d) => <Option key={d.value}>{d.text}</Option>
+    );  // search options
+    // console.log(topics[0]);
 
     return (
       <PageContainer
@@ -115,7 +108,7 @@ export default class welcome extends Component {
           gutter={[0, 8]}
           extra={
             <div>
-              <span>Search course here: </span>
+              <span>Search course here: <SearchOutlined /></span>
               <Select
                 showSearch
                 showArrow={false}
@@ -140,7 +133,7 @@ export default class welcome extends Component {
                 bordered
                 hoverable
                 split="vertical"
-                onClick={handleCardClick}
+                onClick={() => {this.props.history.push(`/course/exercise/${item.topic_title}`)}}
               >
                 <ProCard colSpan="30%" ghost>
                   <center>
