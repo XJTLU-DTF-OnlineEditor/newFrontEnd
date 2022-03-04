@@ -58,15 +58,7 @@ export const delTag = async (data) => {
   });
 };
 
-export const addTag = async (params) => {
-  console.log(params);
-  return request('/api/V1/user/addTag', {
-    method: 'POST',
-    data: {
-      value: params,
-    },
-  });
-};
+
 
 export const updateTag = async (params) => {
   console.log(params);

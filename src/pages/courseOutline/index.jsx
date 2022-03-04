@@ -96,13 +96,24 @@ export default class CourseOutline extends Component {
                   href={this.props.location.pathname + '/' + item.subtopic_id}
                   style={{ textDecoration: 'none', color: 'black' }}
                 >
-                  <Typography.Text mark>[EXERCISE]</Typography.Text> {item.title}
-                </a>
-              </List.Item>
-            )}
-          />
-        </PageContainer>
-      </div>
-    );
-  }
+                    <List
+                        bordered
+                        dataSource={this.state.course_list}
+                        renderItem={item => (
+                            <List.Item onClick={() => {
+                                this.props.history.push(this.props.location.pathname + '/' + item.id)
+                            }}>
+                                <a
+                                    href={this.props.location.pathname + '/' + item.id}
+                                    style={{ textDecoration: 'none', color: 'black' }}
+                                >
+                                    <Typography.Text mark>[EXERCISE]</Typography.Text> {item.fields.title}
+                                </a>
+                            </List.Item>
+                        )}
+                    />
+                </PageContainer>
+            </div>
+        );
+    }
 }
