@@ -9,7 +9,6 @@
 export default {
   dev: {
     '/server/': {
-      // '/api/': {
       // target: 'https://preview.pro.ant.design',
       // target: 'http://120.26.46.74:4000/',
       target: 'http://127.0.0.1:8000/',
@@ -18,6 +17,14 @@ export default {
         '^/server': '',
       },
     },
+    '/media/': {
+      target: 'http://127.0.0.1:8000/',
+      // target: "http://120.26.46.74:4000/",
+      changeOrigin: true,
+      pathRewrite: {
+        '^/media': '/media',
+      },
+    }
   },
   test: {
     '/api/': {

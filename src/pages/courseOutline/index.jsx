@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Typography, Button, message, List, Descriptions  } from 'antd';
+import { Typography, Button, message, List, Descriptions, Image } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getExerciseList } from '@/services/course';
 import ProCard from '@ant-design/pro-card';
@@ -24,15 +24,15 @@ export default class CourseOutline extends Component {
     // 获取目录
     const { related_topic } = this.props.match.params;
     const res = await getExerciseList(related_topic);
-    if(res.error_code==200){
+    if (res.error_code == 200) {
       let { course_list, topic_content, topic_img } = res
-      course_list = course_list.map(i=>i.fields)
+      course_list = course_list.map(i => i.fields)
       this.setState({ course_list, related_topic, topic_content, topic_img });
       console.log(course_list)
-    }else{
+    } else {
       message.error(res.msg)
     }
-    
+
   };
 
   render() {
@@ -53,32 +53,29 @@ export default class CourseOutline extends Component {
             breadcrumb: {},
           }}
           content={
-            <ProCard split="vertical">
-              <ProCard title="【image】" colSpan="20%">
-                {/* <img href={this.state.topic_img.thumbUrl} alt={this.state.topic_img.name} /> */}
+            <ProCard split="vertical" layout='center'>
+              <ProCard colSpan="28%">
+                <Image src={"/media/" + this.state.topic_img} width={180} />
               </ProCard>
-              <ProCard>
-                <ProCard>
-                  {/* <div style={{ height: 160 }}> */}
-                  <Descriptions>
-                    <Descriptions.Item
-                      style={{ width: '50%' }}
-                      contentStyle={{
-                        color: 'rgba(0, 0, 0, 0.45)',
-                        fontSize: '14px',
-                        lineHeight: 1.5715,
-                      }}
-                    >
-                      {this.state.topic_content}
-                    </Descriptions.Item>
-                  </Descriptions>
-                </ProCard>
-                <ProCard>
+              <ProCard colSpan="60%">
+                {/* <div style={{ height: 160 }}> */}
+                <Descriptions>
+                  <Descriptions.Item
+                    // style={{ width: '50%' }}
+                    contentStyle={{
+                      color: 'rgba(0, 0, 0, 0.45)',
+                      fontSize: '16px',
+                      lineHeight: 1.5715,
+                    }}
+                  >
+                    {this.state.topic_content}
+                  </Descriptions.Item>
+                </Descriptions>
+                {/* <ProCard>
                   <Button key="1" type="primary">
                     BEGIN STUDY
                   </Button>
-                  {/* </div> */}
-                </ProCard>
+                </ProCard> */}
               </ProCard>
             </ProCard>
           }

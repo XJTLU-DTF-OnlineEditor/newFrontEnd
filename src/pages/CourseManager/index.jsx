@@ -71,6 +71,7 @@ export default class App extends Component {
 
   render() {
     const { courseDetail } = this.state
+    const { topic_title } = this.props.location.query
     console.log(courseDetail)
     return (
       <PageContainer
@@ -163,7 +164,7 @@ export default class App extends Component {
                   },
                   // upload
                   ckfinder: {
-                    uploadUrl: '【服务器文件上传地址】',
+                    uploadUrl: `/server/V1/course/upload_course_img/${topic_title}/`,
                   },
                 }}
                 onChange={(event, editor) => {

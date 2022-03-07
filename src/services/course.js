@@ -118,3 +118,14 @@ export const updateSubtopicId = async(related_topic, seq) => {
         },
     });
 };
+
+export const delete_img = async(fname, request_entity) => {
+    const url = `/server/V1/course/delete_img/`;
+    return request(url, {
+        method: 'post',
+        data: {
+            request_entity,
+            fname
+        },
+    });
+};
