@@ -3,7 +3,7 @@ import { GridContent, PageContainer } from '@ant-design/pro-layout';
 import { Button, Col, Descriptions, Row, Drawer, Card, Divider, Calendar } from 'antd';
 import { Avatar, Tag, Input, Select, Typography, Radio } from 'antd';
 import { AntDesignOutlined, PlusOutlined } from '@ant-design/icons';
-import { delTag, getTag, addTag, login, updateTag } from '@/services/user/api';
+import { delTag, getTag, login, updateTag } from '@/services/user/api';
 import progress from '@/pages/Personal/components/Progress';
 import Collected from '@/pages/Personal/components/Collected';
 

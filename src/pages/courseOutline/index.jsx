@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Typography, Button, message, List, Descriptions, Image } from 'antd';
+import { Typography, message, List, Descriptions, Image } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getExerciseList } from '@/services/course';
 import ProCard from '@ant-design/pro-card';
@@ -22,7 +22,7 @@ export default class CourseOutline extends Component {
 
   getCatalog = async () => {
     // 获取目录
-    const { related_topic } = this.props.match.params;
+    const {related_topic} = this.props.match.params;
     const res = await getExerciseList(related_topic);
     if (res.error_code == 200) {
       let { course_list, topic_content, topic_img } = res
@@ -86,11 +86,11 @@ export default class CourseOutline extends Component {
             renderItem={(item) => (
               <List.Item
                 onClick={() => {
-                  this.props.history.push(this.props.location.pathname + '/' + item.subtopic_id);
+                  this.props.history.push(this.props.location.pathname + '/' + item.id);
                 }}
               >
                 <a
-                  href={this.props.location.pathname + '/' + item.subtopic_id}
+                  href={this.props.location.pathname + '/' + item.id}
                   style={{ textDecoration: 'none', color: 'black' }}
                 >
                   <Typography.Text mark>[EXERCISE]</Typography.Text> {item.title}
@@ -103,3 +103,4 @@ export default class CourseOutline extends Component {
     );
   }
 }
+
