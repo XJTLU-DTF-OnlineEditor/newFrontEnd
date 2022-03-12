@@ -39,7 +39,7 @@ export default function ResultSection() {
         setRes_status('error');
       }
       setResult(res);
-      PubSub.publish('resCollapsed', false);
+      // PubSub.publish('resCollapsed', false);
     });
   });
 

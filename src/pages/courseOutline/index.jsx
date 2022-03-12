@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Typography, message, List, Descriptions, Image } from 'antd';
+import { Typography, message, List, Descriptions, Image, Button, Space, Tag } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getExerciseList } from '@/services/course';
 import ProCard from '@ant-design/pro-card';
+import ProList from '@ant-design/pro-list';
+import { CodeTwoTone } from '@ant-design/icons';
 
 export default class CourseOutline extends Component {
   state = {
@@ -22,17 +24,20 @@ export default class CourseOutline extends Component {
 
   getCatalog = async () => {
     // 获取目录
-    const {related_topic} = this.props.match.params;
+    const { related_topic } = this.props.match.params;
     const res = await getExerciseList(related_topic);
+    // console.log(res)
     if (res.error_code == 200) {
-      let { course_list, topic_content, topic_img } = res
-      course_list = course_list.map(i => i.fields)
+      let { course_list, topic_content, topic_img } = res;
+      course_list = course_list.map((i) => {
+        i.fields.id = i.pk;
+        return i.fields;
+      });
       this.setState({ course_list, related_topic, topic_content, topic_img });
-      console.log(course_list)
     } else {
-      message.error(res.msg)
+      message.error(res.msg);
     }
-
+    console.log(this.state.course_list);
   };
 
   render() {
@@ -53,15 +58,13 @@ export default class CourseOutline extends Component {
             breadcrumb: {},
           }}
           content={
-            <ProCard split="vertical" layout='center'>
+            <ProCard split="vertical" layout="center">
               <ProCard colSpan="28%">
-                <Image src={"/media/" + this.state.topic_img} width={180} />
+                <Image src={'/media/' + this.state.topic_img} width={180} />
               </ProCard>
               <ProCard colSpan="60%">
-                {/* <div style={{ height: 160 }}> */}
                 <Descriptions>
                   <Descriptions.Item
-                    // style={{ width: '50%' }}
                     contentStyle={{
                       color: 'rgba(0, 0, 0, 0.45)',
                       fontSize: '16px',
@@ -71,36 +74,85 @@ export default class CourseOutline extends Component {
                     {this.state.topic_content}
                   </Descriptions.Item>
                 </Descriptions>
-                {/* <ProCard>
-                  <Button key="1" type="primary">
-                    BEGIN STUDY
-                  </Button>
-                </ProCard> */}
               </ProCard>
             </ProCard>
           }
         >
-          <List
-            bordered
-            dataSource={this.state.course_list}
-            renderItem={(item) => (
-              <List.Item
-                onClick={() => {
+          <ProList
+            toolBarRender={() => {
+              return [
+                <Button key="add" type="primary">
+                  To Study
+                </Button>,
+              ];
+            }}
+            onRow={(item) => {
+              return {
+                onClick: () => {
                   this.props.history.push(this.props.location.pathname + '/' + item.id);
-                }}
-              >
-                <a
-                  href={this.props.location.pathname + '/' + item.id}
-                  style={{ textDecoration: 'none', color: 'black' }}
-                >
-                  <Typography.Text mark>[EXERCISE]</Typography.Text> {item.title}
-                </a>
-              </List.Item>
-            )}
+                },
+              };
+            }}
+            rowKey="id"
+            headerTitle="Course List"
+            dataSource={this.state.course_list}
+            showActions="hover"
+            showExtra="hover"
+            metas={{
+              title: {
+                dataIndex: 'title',
+                render: (title, item) => {
+                  return (
+                    // <a
+                    //   href={this.props.location.pathname + '/' + item.id}
+                    //   style={{ textDecoration: 'none', color: 'black' }}
+                    // >
+                    <>
+                      <Typography.Text mark>[{item.subtopic_id}]</Typography.Text>
+                      {item.title}
+                      {/* </a> */}
+                    </>
+                  );
+                },
+              },
+              avatar: {
+                render: () => <CodeTwoTone style={{ fontSize: 'inherit' }} />,
+              },
+              // actions: {
+              //   render: (text, row) => [
+              //     <a
+              //       href={this.props.location.pathname + '/' + row.id}
+              //       target="_blank"
+              //       // style={{ textDecoration: 'none', color: 'black' }}
+              //       key="study"
+              //     >
+              //       study
+              //     </a>,
+              //   ],
+              // },
+              subTitle: {
+                dataIndex: 'labels',
+                render: (_, row) => {
+                  return (
+                    <Space size={0}>
+                      <Tag color="blue" key={row.id}>
+                        in process
+                      </Tag>
+                      <Tag color="green" key={row.id}>
+                        done
+                      </Tag>
+                      <Tag color="red" key={row.id}>
+                        to do
+                      </Tag>
+                    </Space>
+                  );
+                },
+                search: false,
+              },
+            }}
           />
         </PageContainer>
       </div>
     );
   }
 }
-

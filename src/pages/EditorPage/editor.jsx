@@ -108,12 +108,7 @@ export default class Editor extends Component {
     const result = await run(inputType, source, input, lang, id, terminate);
     console.log(result);
     const { error_code, msg, run_data_backend } = result;
-    console.log('error_code: ' + error_code);
-    console.log('msg: ' + msg);
-    console.log('run_data_backend' + run_data_backend);
     const { id: resid, errors, Output, need_input } = run_data_backend;
-    console.log('resid: ' + resid);
-    console.log('output: ' + Output);
 
     if (!terminate) {
       if (resid === id) {

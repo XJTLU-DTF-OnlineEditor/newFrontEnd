@@ -6,18 +6,14 @@ import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { deleteTopic, delete_img, editTopic, getTopicByTeacher, newTopic } from '@/services/course';
 import { ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
-import {
-  ModalForm,
-  ProFormText,
-} from '@ant-design/pro-form';
+import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
 import { Popconfirm, message } from 'antd';
-
 
 export default class App extends Component {
   state = {
     topics: [],
-    file: ''
+    file: '',
   };
 
   componentDidMount() {
@@ -28,26 +24,25 @@ export default class App extends Component {
     // 【对接lmo 获取teacher_id】
     const teacher_id = 1;
     const res = await getTopicByTeacher(teacher_id);
-    console.log(res)
+    console.log(res);
     if (res.error_code == 200) {
       this.setState({
-        topics: res.data.map(i => {
-          let res = i.fields
-          res.topic_id = i.pk
-          if (res.topic_img) res.topic_img = { 
-            url: "media/" + res.topic_img,
-            name: res.topic_img
-        }
-          return res
-        })
+        topics: res.data.map((i) => {
+          let res = i.fields;
+          res.topic_id = i.pk;
+          if (res.topic_img)
+            res.topic_img = {
+              url: 'media/' + res.topic_img,
+              name: res.topic_img,
+            };
+          return res;
+        }),
       });
     }
-    // console.log(this.state.topics)
   };
 
-
   addNewTopic = async (values) => {
-    console.log(values)
+    console.log(values);
     // return true;
     const teacher_id = 1;
     if (!values.topic_content || !values.topic_title) {
@@ -61,7 +56,6 @@ export default class App extends Component {
       this.state.file,
       teacher_id,
     );
-    console.log(res, 999)
     if (res.error_code == 200) {
       const new_topic = {
         topic_id: res.id,
@@ -115,7 +109,7 @@ export default class App extends Component {
     const isPNG = file.type === 'image/png';
     if (!(isJPG || isJPEG || isGIF || isPNG)) {
       Modal.error({
-        title: 'Only JPG, JPEG, GIF, and PNG images can be uploaded'
+        title: 'Only JPG, JPEG, GIF, and PNG images can be uploaded',
       });
       return false;
     }
@@ -124,7 +118,7 @@ export default class App extends Component {
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
       Modal.error({
-        title: 'the value exceeds the 2 MB limit, upload is not allowed'
+        title: 'the value exceeds the 2 MB limit, upload is not allowed',
       });
       return false;
     }
@@ -146,23 +140,22 @@ export default class App extends Component {
     return (isJPG || isJPEG || isGIF || isPNG) && isLt2M;
   };
 
-  formRef = React.createRef()
-
+  formRef = React.createRef();
 
   handleChange = async (info) => {
-    console.log(info)
-    let file = info.file
+    console.log(info);
+    let file = info.file;
 
     // 【重要】将 图片的base64替换为图片的url
     if (file && file.status == 'done' && file['response']) {
       file.name = file.response.imgUrl;
-    } else if (file.status == "removed") {
-      const res = await delete_img(file.name, "Topic")
-      console.log(res)
-      file = undefined
-    };
-    this.setState({ file })
-  }
+    } else if (file.status == 'removed') {
+      const res = await delete_img(file.name, 'Topic');
+      console.log(res);
+      file = undefined;
+    }
+    this.setState({ file });
+  };
 
   render() {
     const IconText = ({ icon, text }) => (
@@ -236,7 +229,7 @@ export default class App extends Component {
                       name="topic_img"
                       label="Upload"
                       max={1}
-                      beforeUpload={file => this.handleBeforeUpload(file)}
+                      beforeUpload={(file) => this.handleBeforeUpload(file)}
                       fieldProps={{
                         name: 'topic_img',
                         listType: 'picture-card',
@@ -258,7 +251,7 @@ export default class App extends Component {
                   render: (i) => (
                     <a
                       href={`/courseAdmin/courseList?topic_title=${i}`}
-                      style={{ 'textDecoration': 'none', color: '#333' }}
+                      style={{ textDecoration: 'none', color: '#333' }}
                     >
                       {i}
                     </a>
@@ -279,7 +272,7 @@ export default class App extends Component {
                         }
                         autoFocusFirstInput
                         onFinish={async (values) => {
-                          console.log(values)
+                          console.log(values);
                           if (!values.topic_content && !values.topic_title && !values.topic_img) {
                             // 原topic内容未发生变化
                             message.info('Nothing changed');
@@ -287,7 +280,7 @@ export default class App extends Component {
                           } else {
                             // 原topic内容发生变化
                             if (values.topic_img) {
-                              values.topic_img = values.topic_img[0]
+                              values.topic_img = values.topic_img[0];
                             }
                             const res = await editTopic(row.topic_id, values);
                             if (res.error_code == 200) {
@@ -323,41 +316,41 @@ export default class App extends Component {
                         />
                         <ProFormUploadButton
                           name="topic_img"
-                          beforeUpload={file => this.handleBeforeUpload(file)}
+                          beforeUpload={(file) => this.handleBeforeUpload(file)}
                           fieldProps={{
                             name: 'topic_img',
                             listType: 'picture-card',
                           }}
                           action="/server/V1/course/upload_topic_img/"
                           // isImageUrl={true}
-                          onChange={async info => {
-                            console.log(info)
-                            let topics = this.state.topics
-                            let file = info.file
-                            if (file.status == "removed") {
-                              const res = await delete_img(file.name, "Topic")
-                              console.log(res)
+                          onChange={async (info) => {
+                            console.log(info);
+                            let topics = this.state.topics;
+                            let file = info.file;
+                            if (file.status == 'removed') {
+                              const res = await delete_img(file.name, 'Topic');
+                              console.log(res);
                             }
-                            topics.map(i => {
+                            topics.map((i) => {
                               if (i.topic_id == row.topic_id) {
-                                if (file.status == "removed") {
-                                  i.topic_img = ''
+                                if (file.status == 'removed') {
+                                  i.topic_img = '';
                                 } else if (file && file.status == 'done' && file['response']) {
                                   file.name = file.response.imgUrl;
-                                  i.topic_img = file
+                                  i.topic_img = file;
                                 } else {
-                                  i.topic_img = file
+                                  i.topic_img = file;
                                 }
                               }
-                              return i
-                            })
-                            this.setState({ topics })
+                              return i;
+                            });
+                            this.setState({ topics });
                           }}
                           label="Upload"
                           max={1}
                           value={row.topic_img ? [row.topic_img] : []}
-                        // value={row.topic_img.status=="uploading"|"done"?[{ url: "media/" + row.topic_img },]:[]}
-                        // isImageUrl={true}
+                          // value={row.topic_img.status=="uploading"|"done"?[{ url: "media/" + row.topic_img },]:[]}
+                          // isImageUrl={true}
                         />
                       </ModalForm>,
                       <Popconfirm
@@ -380,12 +373,12 @@ export default class App extends Component {
                 extra: {
                   dataIndex: 'topic_img',
                   render: (i) => {
-                    if (i) return <img width="180px" alt="logo" src={`${i.url}`} />
+                    if (i) return <img width="180px" alt="logo" src={`${i.url}`} />;
                   },
                 },
                 content: {
                   dataIndex: 'topic_content',
-                  render: (i) => <div>{i}</div>
+                  render: (i) => <div>{i}</div>,
                 },
               }}
             />
