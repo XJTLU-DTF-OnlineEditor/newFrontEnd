@@ -16,8 +16,11 @@ const { Option } = Select;
 
 export default class Input extends Component {
   state = {
-    input: '',
-    inputType: 'interactive',
+    id: '',
+    prev_input: '',  // 上一次docker input文件内容
+    old_input: '',  // 未输入前input区域的内容
+    input: '',  // input区域的内容
+    inputType: 'Interactive',
     need_input: false,
     showInputarea: 'none',
     noeditarea: 0,
@@ -26,7 +29,8 @@ export default class Input extends Component {
 
   componentDidMount() {
     PubSub.subscribe('input', (msg, data) => {
-      this.setState(data);
+      const { need_input, input, id } = data
+      this.setState({ input, prev_input: input, need_input, old_input: input, id })
     });
   }
 
@@ -49,11 +53,12 @@ export default class Input extends Component {
 
   handleKey = (editor, name) => {
     if (name === 'Enter') {
-      console.log(editor);
-      const input = editor.getLine(editor.lastLine() - 1);
+      // console.log(editor,888, value);
+      // const input = editor.getLine(editor.lastLine() - 1);
+      const input = this.state.input.replace(this.state.old_input, "")
       console.log(input, 999);
-      this.sendInput(input, editor);
-      this.setState({ noeditarea: editor.lastLine() });
+      this.sendInput(input);
+      // this.setState({ noeditarea: editor.lastLine() });
     }
   };
 
@@ -62,34 +67,32 @@ export default class Input extends Component {
     PubSub.publish('editor', { inputType: value });
   };
 
-  sendInput = async (input, editor) => {
-    const { inputType, lang, need_input } = this.state;
+  sendInput = async (input) => {
+    const { inputType, lang, need_input, id } = this.state;
     let terminate = false;
-    if (inputType === 'interactive' && need_input) {
-      const id = nanoid();
+    if (inputType === 'Interactive' && need_input) {
 
       const result = await run(inputType, '', input, lang, id, terminate);
       console.log(result);
-      const { error_code, data } = result;
-      const { id: resid, errors, output, need_input } = data;
-      if (resid === id) {
-        if (error_code === 200) {
-          editor.setValue(editor.getValue() + output);
-          this.setState({ need_input });
-          if (!need_input) {
-            PubSub.publish('showRes', { error_code, output });
-            PubSub.publish('editor', { isRuntime: false });
-          }
-        } else {
+      const { error_code, run_data_backend } = result;
+      const { id: resid, errors, Output, need_input } = run_data_backend;
+      if (error_code === 200) {
+        // editor.setValue(editor.getValue() + Output.replace(this.state.input,""));
+        const new_input = this.state.input + Output.replace(this.state.old_input, "")
+        this.setState({ need_input, input: new_input, prev_input: Output, old_input: new_input });
+        if (!need_input) {
+          PubSub.publish('showRes', { error_code, Output });
           PubSub.publish('editor', { isRuntime: false });
-          if (error_code === 410 || error_code === 408) {
-            PubSub.publish('showRes', { error_code, output: '[' + errors + ']' });
-          } else {
-            PubSub.publish('showRes', {
-              error_code,
-              output: '[something went wrong, please try again]',
-            });
-          }
+        }
+      } else {
+        PubSub.publish('editor', { isRuntime: false });
+        if (error_code === 410 || error_code === 408) {
+          PubSub.publish('showRes', { error_code, Output: '[' + errors + ']' });
+        } else {
+          PubSub.publish('showRes', {
+            error_code,
+            Output: '[something went wrong, please try again]',
+          });
         }
       }
     }
@@ -170,8 +173,8 @@ export default class Input extends Component {
         {this.state.inputType === 'split'
           ? splitInput
           : this.state.need_input || this.state.input
-          ? interactiveInput
-          : null}
+            ? interactiveInput
+            : null}
       </ProCard>
     );
   }

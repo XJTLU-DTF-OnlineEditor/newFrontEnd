@@ -25,8 +25,9 @@ export default function ResultSection() {
 
   useEffect(() => {
     PubSub.subscribe('showRes', (msg, data) => {
-      let res = data.Output.replace('\n', '<br />');
-      res = <div dangerouslySetInnerHTML={{ __html: res }} />;
+      let res = data.Output
+      // let res = data.Output.replace('\n', '<br />');
+      // res = <div dangerouslySetInnerHTML={{ __html: res }} />;
       // console.log(res);
       if (data.error_code == 200) {
         setIcon(<InfoCircleOutlined style={{ fontSize: '0', color: '#1890ff94' }} />);

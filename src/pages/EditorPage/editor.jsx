@@ -106,29 +106,27 @@ export default class Editor extends Component {
     const { inputType, source, input, lang } = this.state;
     const id = nanoid();
     const result = await run(inputType, source, input, lang, id, terminate);
-    console.log(result);
+    console.log(result)
     const { error_code, msg, run_data_backend } = result;
     const { id: resid, errors, Output, need_input } = run_data_backend;
 
     if (!terminate) {
-      if (resid === id) {
-        if (error_code === 200) {
-          if (need_input) {
-            PubSub.publish('input', { need_input, input: Output });
-          } else {
-            this.setState({ isRuntime: false });
-            PubSub.publish('showRes', { error_code, Output });
-          }
+      if (error_code === 200) {
+        if (need_input) {
+          PubSub.publish('input', { need_input, input: Output, id });
         } else {
           this.setState({ isRuntime: false });
-          if (error_code === 410 || error_code === 408) {
-            PubSub.publish('showRes', { error_code, Output: '[' + errors + ']' });
-          } else {
-            PubSub.publish('showRes', {
-              error_code,
-              Output: '[something went wrong, please try again]',
-            });
-          }
+          PubSub.publish('showRes', { error_code, Output });
+        }
+      } else {
+        this.setState({ isRuntime: false });
+        if (error_code === 410 || error_code === 408) {
+          PubSub.publish('showRes', { error_code, Output: '[' + errors + ']' });
+        } else {
+          PubSub.publish('showRes', {
+            error_code,
+            Output: '[something went wrong, please try again]',
+          });
         }
       }
     }
