@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Upload } from 'antd';
+import { Button, Modal,Popconfirm, message } from 'antd';
 import { EyeOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import ProList from '@ant-design/pro-list';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -8,13 +8,15 @@ import { deleteTopic, delete_img, editTopic, getTopicByTeacher, newTopic } from 
 import { ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
 import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
-import { Popconfirm, message } from 'antd';
+import './index.less';
 
 export default class App extends Component {
   state = {
     topics: [],
     file: '',
   };
+
+  formRef = React.createRef();
 
   componentDidMount() {
     this.getTopics();
@@ -32,7 +34,7 @@ export default class App extends Component {
           res.topic_id = i.pk;
           if (res.topic_img)
             res.topic_img = {
-              url: 'media/' + res.topic_img,
+              url: '/media/' + res.topic_img,
               name: res.topic_img,
             };
           return res;
@@ -43,7 +45,6 @@ export default class App extends Component {
 
   addNewTopic = async (values) => {
     console.log(values);
-    // return true;
     const teacher_id = 1;
     if (!values.topic_content || !values.topic_title) {
       message.error('please input the topic_title and the topic_content');
@@ -83,73 +84,13 @@ export default class App extends Component {
     }
   };
 
-  // 增加图片的长宽属性
-  // addImageSize = file => {
-  //   const filereader = new FileReader();
-  //   filereader.readAsDataURL(file);
-  //   filereader.onload = (e) => {
-  //     console.log(e, 111)
-  //     // const src = e.target.result;
-  //     const image = new Image();
-  //     image.src = filereader.result;
-  //     image.onload = () => {
-  //       file.width = image.width;
-  //       file.height = image.height;
-  //     };
-  //   };
-  //   return file
-  // };
-
-  // 限制图片的格式，size，分辨率
-  handleBeforeUpload = (file) => {
-    // 限制图片的格式
-    const isJPG = file.type === 'image/jpeg';
-    const isJPEG = file.type === 'image/jpeg';
-    const isGIF = file.type === 'image/gif';
-    const isPNG = file.type === 'image/png';
-    if (!(isJPG || isJPEG || isGIF || isPNG)) {
-      Modal.error({
-        title: 'Only JPG, JPEG, GIF, and PNG images can be uploaded',
-      });
-      return false;
-    }
-
-    // 限制图片的大小
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      Modal.error({
-        title: 'the value exceeds the 2 MB limit, upload is not allowed',
-      });
-      return false;
-    }
-
-    // const filereader = new FileReader();
-    // filereader.readAsDataURL(file);
-    // filereader.onload = (e) => {
-    //   console.log(e, 111)
-    //   // const src = e.target.result;
-    //   const image = new Image();
-    //   image.src = filereader.result;
-    //   image.onload = () => {
-    //     file.width = image.width;
-    //     file.height = image.height;
-    //   };
-    // };
-    // console.log(file)
-
-    return (isJPG || isJPEG || isGIF || isPNG) && isLt2M;
-  };
-
-  formRef = React.createRef();
-
   handleChange = async (info) => {
-    console.log(info);
     let file = info.file;
 
-    // 【重要】将 图片的base64替换为图片的url
+    // 将图片的base64替换为图片的url
     if (file && file.status == 'done' && file['response']) {
       file.name = file.response.imgUrl;
-    } else if (file.status == 'removed') {
+    }else if (file.status == 'removed') {
       const res = await delete_img(file.name, 'Topic');
       console.log(res);
       file = undefined;
@@ -198,19 +139,6 @@ export default class App extends Component {
                         submitText: 'submit',
                         resetText: 'cancel',
                       },
-                      // render: (props, defaultDoms) => {
-                      //   return [
-                      //     ...defaultDoms,
-                      //     <Button
-                      //       key="extra-reset"
-                      //       onClick={() => {
-                      //         props.reset();
-                      //       }}
-                      //     >
-                      //       重置
-                      //     </Button>,
-                      //   ];
-                      // },
                     }}
                   >
                     <ProFormText
@@ -229,10 +157,11 @@ export default class App extends Component {
                       name="topic_img"
                       label="Upload"
                       max={1}
-                      beforeUpload={(file) => this.handleBeforeUpload(file)}
+                      beforeUpload={this.handleBeforeUpload}
                       fieldProps={{
                         name: 'topic_img',
                         listType: 'picture-card',
+                        accept: '.jpg, .png, .jpeg, .gif'
                       }}
                       action="/server/V1/course/upload_topic_img/"
                       // isImageUrl={true}
@@ -242,7 +171,7 @@ export default class App extends Component {
                 ];
               }}
               itemLayout="vertical"
-              rowKey="id"
+              rowKey="topic_id"
               headerTitle="Topics"
               dataSource={this.state.topics}
               metas={{
@@ -265,6 +194,7 @@ export default class App extends Component {
                       </a>,
                       <ModalForm
                         title="EDIT"
+                        initialValues={row}
                         trigger={
                           <a>
                             <IconText icon={EditOutlined} text="edit" key="list-vertical-star-o" />
@@ -305,21 +235,22 @@ export default class App extends Component {
                           name="topic_title"
                           label="Topic Title"
                           placeholder="please input a topic title"
-                          value={row.topic_title}
+                          // value={row.topic_title}
                         />
 
                         <ProFormTextArea
                           name="topic_content"
                           label="topic description"
                           placeholder="please input topic description"
-                          value={row.topic_content}
+                          // value={row.topic_content}
                         />
                         <ProFormUploadButton
                           name="topic_img"
-                          beforeUpload={(file) => this.handleBeforeUpload(file)}
+                          beforeUpload={this.handleBeforeUpload}
                           fieldProps={{
                             name: 'topic_img',
                             listType: 'picture-card',
+                            accept: '.jpg, .png, .jpeg, .gif'
                           }}
                           action="/server/V1/course/upload_topic_img/"
                           // isImageUrl={true}

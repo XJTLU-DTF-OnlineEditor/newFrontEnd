@@ -5,7 +5,6 @@ import Input from './input.jsx';
 import ResultSection from './result.jsx';
 import './index.less';
 import ProCard from '@ant-design/pro-card';
-import PubSub from 'pubsub-js';
 import { Dropdown, Menu, Descriptions, Button, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getCourseDetail, getExerciseList } from '@/services/course.js';
@@ -17,13 +16,6 @@ export default function MainPage(props) {
   const [topic_title, setTopic_title] = useState('');
   const [courseDetail, setCourseDetail] = useState({});
 
-  // useEffect(() => {
-  //   PubSub.subscribe('resCollapsed', (_, data) => {
-  //     setResCollapsed(data);
-  //     setCollapsed(!data);
-  //   });
-
-  // });
 
   useEffect(() => {
     getCatalog();
@@ -77,7 +69,7 @@ export default function MainPage(props) {
         title: courseDetail.title,
         breadcrumb: {},
       }}
-      onBack={() => props.history.go(-1)}
+      // onBack={() => props.history.go(-1)}
       content={
         <Descriptions size="middle" column={3}>
           <Descriptions.Item label="related topic">{topic_title}</Descriptions.Item>
@@ -113,7 +105,8 @@ export default function MainPage(props) {
         </Dropdown>,
       ]}
     >
-      <ProCard ghost gutter={16} style={{ height: 500 }}>
+      {/* 课程展示 */}
+      <ProCard ghost gutter={15} style={{ height: 500 }}>
         <ProCard
           colSpan={8}
           style={{ minHeight: 600, paddingTop: '20px' }}
@@ -136,11 +129,12 @@ export default function MainPage(props) {
             }}
           />
         </ProCard>
-        <ProCard ghost colSpan={12}>
+        {/* 代码运行 */}
+        <ProCard ghost colSpan={11}>
           <Editor />
           <Input />
         </ProCard>
-        <ProCard ghost colSpan={4}>
+        <ProCard ghost colSpan={5}>
           <ResultSection />
         </ProCard>
       </ProCard>
