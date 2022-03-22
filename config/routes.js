@@ -80,8 +80,6 @@ export default [{
   ],
 },
 {
-  // name: 'courseOutline',
-  // icon: 'UserOutlined',
   path: '/course/exercise/:related_topic',
   component: './CourseOutline',
 },
