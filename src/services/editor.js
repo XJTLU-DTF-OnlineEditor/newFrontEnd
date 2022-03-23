@@ -1,21 +1,36 @@
 import { request } from 'umi';
 
-export const run = async(inputType, source, input, lang, id, terminate) => {
-    const url = '/server/V1/editor/run/';
-    console.log(
-        inputType + ' ' + source + ' ' + input + ' ' + ' ' + lang + ' ' + ' ' + id + ' ' + terminate,
-    );
-    return request(url, {
-        method: 'post',
-        data: {
-            id,
-            terminate,
-            lang,
-            inputType, //split interactive
-            source,
-            input,
-            memory_limit: 243232,
-            time_limit: 5,
-        },
-    });
-}
+export const run_interactive = async (id, lang, source) => {
+  const url = '/server/V1/editor/run/interactive/';
+  return request(url, {
+    method: 'post',
+    data: {
+      id,
+      lang,
+      source,
+    },
+  });
+};
+
+export const run_split = async (id, lang, source, input) => {
+  const url = '/server/V1/editor/run/split/';
+  return request(url, {
+    method: 'post',
+    data: {
+      id,
+      lang,
+      source,
+      input,
+    },
+  });
+};
+
+export const terminate = async (id) => {
+  const url = '/server/V1/editor/terminate/';
+  return request(url, {
+    method: 'post',
+    data: {
+      id,
+    },
+  });
+};

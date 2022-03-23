@@ -1,150 +1,172 @@
-import { Controlled as CodeMirror } from 'react-codemirror2'
+import { Controlled as CodeMirror } from 'react-codemirror2';
 import 'codemirror/lib/codemirror.js';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/gruvbox-dark.css';
-import 'codemirror/addon/display/placeholder'
-import 'codemirror/addon/scroll/simplescrollbars.css'
-import 'codemirror/addon/scroll/simplescrollbars.js'
-import React, { Component } from 'react';
-import { Select } from 'antd';
-import { run } from '@/services/editor'
+import 'codemirror/addon/display/placeholder';
+import 'codemirror/addon/scroll/simplescrollbars.css';
+import 'codemirror/addon/scroll/simplescrollbars.js';
+import React, { useState, useEffect, useRef } from 'react';
+import { message, Select, Alert } from 'antd';
 import ProCard from '@ant-design/pro-card';
-import PubSub from 'pubsub-js'
-import { nanoid } from 'nanoid'
+import PubSub from 'pubsub-js';
 
 const { Option } = Select;
 
-export default class Input extends Component {
+export default function Input(props) {
 
-    state = {
-        input: '',
-        inputType: 'interactive',
-        need_input: false,
-        showInputarea: 'none',
-        noeditarea: 0,
-        lang: 'python'
-    }
+  const [id, setId] = useState('');
+  const [input, setInput] = useState(''); // input区域的内容
+  const [inputType, setInputType] = useState('Interactive');
+  const [noeditarea, setNoeditarea] = useState(0);
+  const [lang, setLang] = useState('python');
 
-    componentDidMount() {
-        PubSub.subscribe('input', (msg, data) => {
-            this.setState(data)
-        })
-    }
+  const ws = useRef(null);
+  const editor = useRef(null);
+  const inputValue = useRef('')
+  const old_input = useRef('')  // 未输入前input区域的内容
 
-    handleChange = (editor, data, value) => {
-        if (this.state.inputType === 'split') {
-            PubSub.publish('editor', { input: value })
+  useEffect(() => {
+    PubSub.subscribe('id', (msg, data) => {
+      setId(data.id)
+    })
+  })
+
+  useEffect(() => {
+    if (id) {
+      if (inputType == "Interactive") setInput('')
+      PubSub.publish('showRes', { error_code: 0 });
+
+      ws.current = new WebSocket(`ws://127.0.0.1:8000/V1/editor/${id}/`);
+
+      ws.current.onopen = e => {
+        PubSub.publish('ws', { 'ws': 1 });
+      }
+
+      ws.current.onerror = e => {
+        ws.current = null;
+        PubSub.publish('ws', { 'ws': null });
+        PubSub.publish('id', { 'id': '' });
+        message.error("Something wrong happens. Please try again later")
+      }
+
+      ws.current.onclose = e => {
+        ws.current = null;
+        PubSub.publish('ws', { 'ws': null });
+        PubSub.publish('id', { 'id': '' });
+      }
+
+
+      ws.current.onmessage = e => {
+        const res = JSON.parse(e.data)
+        if (res.message == "output") {
+          const new_input = inputValue.current + res.data
+          inputValue.current = new_input
+          setInput(new_input)
+          old_input.current = new_input
+        } else if (res.message == "result") {
+          PubSub.publish('showRes', { error_code: 200, output: res.data });
+          PubSub.publish('editor', { id: '' });
+          setId('')
+        } else if (res.message == "error") {
+          
+          PubSub.publish('showRes', { error_code: 500, output: '【 ' + res.data + ' 】' });
+          PubSub.publish('editor', { id: '' });
+          setId('')
         }
-        if (data.origin === 'setValue' || typeof (data.origin) === "undefined") {
-            editor.focus()
-            editor.execCommand('goDocEnd')
-            this.setState({ noeditarea: editor.lastLine() })
-        }
+      }
+    } else {
+      ws.current?.close()
+      PubSub.publish('ws', { 'ws': null });
+      ws.current = null;
+      inputValue.current = ''
+      old_input.current = ''
+      setNoeditarea(0)
     }
+  }, [id])
 
-    handleCursorActivity = (editor) => {
-        if (editor.getCursor().line <= this.state.noeditarea) {
-            editor.execCommand('goDocEnd')
-        }
+  const handleChange = (editor, data, value) => {
+    if (inputType === 'Split') {
+      PubSub.publish('editor', { input: value });
     }
-
-    handleKey = (editor, name) => {
-        if (name === "Enter") {
-            const input = editor.getLine(editor.lastLine() - 1)
-            this.sendInput(input, editor);
-            this.setState({ noeditarea: editor.lastLine() })
-        }
+    if (data.origin === 'setValue' || typeof data.origin === 'undefined') {
+      editor.focus();
+      editor.execCommand('goDocEnd');
+      setNoeditarea(editor.lastLine())
     }
+  };
 
-    handleSelect = (value) => {
-        this.setState({ inputType: value })
-        PubSub.publish('editor', { inputType: value })
+  const handleCursorActivity = (editor) => {
+    if (editor.getCursor().line < noeditarea) {
+      editor.execCommand('goDocEnd');
     }
+  };
 
-    sendInput = async (input, editor) => {
-        const { inputType, lang, need_input } = this.state
-        let terminate = false
-        if (inputType === 'interactive' && need_input) {
-            const id = nanoid()
-
-            const result = await run(inputType, '', input, lang, id, terminate)
-            const { error_code, data } = result
-            const { id: resid, errors, output, need_input } = data
-            if (resid === id) {
-                if (error_code === 200) {
-                    editor.setValue(editor.getValue() + output)
-                    this.setState({ need_input })
-                    if (!need_input) {
-                        PubSub.publish('showRes', { error_code, output })
-                        PubSub.publish('editor', { isRuntime: false })
-                    }
-                } else {
-                    PubSub.publish('editor', { isRuntime: false })
-                    if (error_code === 410 || error_code === 408) {
-                        PubSub.publish('showRes', { error_code, output: '[' + errors + ']' })
-                    } else {
-                        PubSub.publish('showRes', { error_code, output: '[something went wrong, please try again]' })
-                    }
-                }
-            }
-        }
+  const handleKey = (editor, name) => {
+    if (name === 'Enter') {
+      const new_input = inputValue.current.replace(old_input.current, "")
+      old_input.current = inputValue.current
+      ws.current.send(new_input);
     }
+  };
 
-    render() {
-        const { need_input, inputType, input } = this.state
-        // 交互模式选择
-        const operations = <>
-            <Select className='selectMode' defaultValue="interactive" style={{ width: 180 }} onSelect={this.handleSelect} disabled={need_input}>
-                <Option value="split">Split input/output</Option>
-                <Option value="interactive">Interactive Terminal</Option>
-            </Select>
-        </>
+  const handleSelect = (value) => {
+    setInputType(value)
+    PubSub.publish('editor', { inputType: value });
+  };
 
-        // 编辑器样式
-        const options = {
-            readOnly: inputType === 'split' ? false : need_input ? false : 'nocursor',
-            theme: 'darcula',
-            cursorScrollMargin: 5,
-            smartIndent: false,
-            scrollbarStyle: 'simple',
-            placeholder: 'input goes here',
-            autofocus: input,//自动获取焦点
-            lineNumbers: true, //显示行号
-            gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'],//end
-        }
+  // 交互模式选择
+  const operations = (
+    <>
+      <Select
+        className="selectMode"
+        defaultValue="Interactive"
+        style={{ width: 180 }}
+        onSelect={handleSelect}
+      >
+        <Option value="Split">Split input/output</Option>
+        <Option value="Interactive">Interactive Terminal</Option>
+      </Select>
+    </>
+  );
 
-        // 交互模式
-        const interactiveInput = <CodeMirror
-            className='input'
-            value={input}
-            options={options}
-            onBeforeChange={(editor, data, value) => { this.setState({ input: value }) }}
-            onCursorActivity={(editor) => { this.handleCursorActivity(editor) }}
-            onChange={(editor, data, value) => { this.handleChange(editor, data, value) }}
-            onFocus={editor => { editor.scrollIntoView() }}
-            onKeyHandled={(editor, name) => { this.handleKey(editor, name) }}
-        />
-
-        // 分开模式
-        const splitInput = <CodeMirror
-            className='input'
-            value={input}
-            options={options}
-            onBeforeChange={(editor, data, value) => { this.setState({ input: value }) }}
-            onChange={(editor, data, value) => { this.handleChange(editor, data, value) }}
-        />
+  // 编辑器样式
+  const options = {
+    readOnly: inputType === 'Split' ? false : id ? false : 'nocursor',
+    theme: 'darcula',
+    cursorScrollMargin: 5,
+    smartIndent: false,
+    scrollbarStyle: 'simple',
+    placeholder: 'input goes here',
+    autofocus: input, //自动获取焦点
+    lineNumbers: true, //显示行号
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'], //end
+  };
 
 
-
-        return (
-            <ProCard title="Input / Output / Terminal" ghost extra={operations} >
-                {this.state.inputType === 'split' ? splitInput :
-                    (this.state.need_input || this.state.input) ? interactiveInput :
-                        null}
-            </ProCard>
-
-        )
-
-    }
-
+  return (
+    <ProCard title="Input / Output / Terminal" ghost extra={operations}>
+      <CodeMirror
+        ref={editor}
+        className="input"
+        value={input}
+        options={options}
+        onBeforeChange={(editor, data, value) => {
+          setInput(value);
+          inputValue.current = value
+        }}
+        onCursorActivity={(editor) => {
+          handleCursorActivity(editor);
+        }}
+        onChange={(editor, data, value) => {
+          handleChange(editor, data, value);
+        }}
+        onFocus={(editor) => {
+          editor.scrollIntoView();
+        }}
+        onKeyHandled={(editor, name) => {
+          if (inputType === "Interactive") handleKey(editor, name);
+        }}
+      />
+    </ProCard>
+  );
 }

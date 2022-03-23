@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Button, message } from 'antd';
-import ProTable from '@ant-design/pro-table';
 import { DragSortTable } from '@ant-design/pro-table';
 import { request } from 'umi';
 import { deleteCourse, updateSubtopicId } from '@/services/course';
 import { Popconfirm } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
+import './index.less';
 
 export default class App extends Component {
 

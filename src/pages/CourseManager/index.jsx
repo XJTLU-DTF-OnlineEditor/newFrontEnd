@@ -23,7 +23,6 @@ export default class App extends Component {
     if (this.props.location.query.id) this.getExercise();
   }
 
-
   getExercise = async () => {
     const { id } = this.state;
     const { topic_title } = this.props.location.query;
@@ -31,14 +30,13 @@ export default class App extends Component {
     if (res.error_code == 200) {
       // related_topic, title, content, update_date, views, subtopic_id
       this.setState({ courseDetail: res.data });
-    }else{
-      message.error(res.msg)
+    } else {
+      message.error(res.msg);
     }
   };
 
   save = async (values) => {
-    const { courseDetail } = this.state
-    console.log(courseDetail.content, 888)
+    const { courseDetail } = this.state;
     if (!courseDetail.title) {
       message.warning('please input the course title');
     } else if (!courseDetail.content) {
@@ -49,20 +47,16 @@ export default class App extends Component {
       const teacher_id = 1;
       let result;
       if (id) {
-        result = await editCourse(
-          id,
-          topic_title,
-          values.title,
-          courseDetail.content,
-          teacher_id,
-        );
+        result = await editCourse(id, topic_title, values.title, courseDetail.content, teacher_id);
       } else {
         result = await newCourse(topic_title, values.title, courseDetail.content, teacher_id);
       }
       if (result['error_code'] == 200) {
         message.success('Save success');
         const res_id = result.data.id;
-        this.props.history.push(`/courseAdmin/courseDisplay?topic_title=${topic_title}&id=${res_id}`);
+        this.props.history.push(
+          `/courseAdmin/courseDisplay?topic_title=${topic_title}&id=${res_id}`,
+        );
       } else {
         message.error('Save error! ' + result.msg);
       }
@@ -70,8 +64,8 @@ export default class App extends Component {
   };
 
   render() {
-    const { courseDetail } = this.state
-    console.log(courseDetail)
+    const { courseDetail } = this.state;
+    const { topic_title } = this.props.location.query;
     return (
       <PageContainer
         ghost
@@ -103,15 +97,11 @@ export default class App extends Component {
               placeholder="input course title here"
               value={courseDetail.title}
               onChange={(e) => {
-                courseDetail.title = e.target.value
+                courseDetail.title = e.target.value;
                 this.setState({ courseDetail });
               }}
             />
-            <ProForm.Item
-              name="content"
-              label="Course Content"
-              value={courseDetail.content}
-            >
+            <ProForm.Item name="content" label="Course Content" value={courseDetail.content}>
               <CKEditor
                 editor={ClassicEditor}
                 data={courseDetail.content}
@@ -163,13 +153,13 @@ export default class App extends Component {
                   },
                   // upload
                   ckfinder: {
-                    uploadUrl: '【服务器文件上传地址】',
+                    uploadUrl: `/server/V1/course/upload_course_img/${topic_title}/`,
                   },
                 }}
                 onChange={(event, editor) => {
-                  let {courseDetail} = this.state
+                  let { courseDetail } = this.state;
                   const data = editor.getData();
-                  courseDetail.content = data
+                  courseDetail.content = data;
                   this.setState({ courseDetail });
                 }}
                 onError={({ willEditorRestart }) => {

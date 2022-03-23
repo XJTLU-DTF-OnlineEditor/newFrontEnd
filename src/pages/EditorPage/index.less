@@ -1,10 +1,57 @@
 @import '~antd/dist/antd.dark.less'; // 引入官方提供的暗色 less 样式入口文件
 @import '~antd/dist/antd.compact.less'; // 引入官方提供的紧凑 less 样式入口文件
 
+body{
+  font-size: 13px;
+}
+
+.ant-descriptions-middle .ant-descriptions-row > th, .ant-descriptions-middle .ant-descriptions-row > td {
+  padding-bottom: 0px;
+}
 
 .ant-collapse {
     font-size: 13px;
 }
+
+.ant-page-header-heading-title {
+  font-weight: 600;
+  font-size: 35px;
+  line-height: 60px;
+}
+
+.ant-page-header {
+    margin: 10px;
+    margin-bottom: 0px;
+}
+
+.ant-page-header-heading-extra {
+  margin: 17px 24px;
+  white-space: nowrap;
+}
+
+.ant-btn {
+  line-height: 2;
+  height: 33px;
+  font-size: 13px;
+}
+
+.ant-btn-sm {
+  height: 24px;
+  padding: 0px 5px;
+  font-size: 6px;
+  border-radius: 0px;
+}
+
+.ant-input {
+  font-size: 13px;
+}
+
+.ant-descriptions-item-label, .ant-descriptions-item-content {
+  font-size: 14px;
+  line-height: 2;
+  color: rgba(255, 255, 255, 0.55);
+}
+
 .CodeMirror pre.CodeMirror-line, .CodeMirror pre.CodeMirror-line-like {
     font-size: 14px;
 }
@@ -35,43 +82,18 @@
   }
 
 
-  .reshint {
-    background-color: '#222222';
-    opacity: 0.8;
-    width: 100%
-  }
-
-  SmileOutlined {
-    font-size: 30px;
-  }
-
-// .course {
-//   // padding: 10px 12px 4px 28px;
-//   // padding-top: 0px;
-// }
-
-// .ant-page-header-ghost{
-//   padding-top: 20px;
-// }
-
-// .edi_inp {
-//   padding: 0 15px;
-// }
-
-// .ant-pro-sider {
-//   display: none;
-// }
-
-// #root > div > section > div:nth-child(1) {
-//   display: none;
-// }
+.reshint {
+  background-color: '#222222';
+  opacity: 0.8;
+  width: 100%
+}
 
 .ant-result {
   padding: 27px 0px;
 }
 
-.info > div.ant-collapse-header {
-  background-color: #1890ff94;
+.success > div.ant-collapse-header {
+  background-color: #52c41a94;
 }
 
 .warning > div.ant-collapse-header {
@@ -96,15 +118,10 @@ div.ant-result-subtitle > div {
 }
 
 .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
-  // border-color: var(--ck-color-base-border);
+  // border-color: black;
   background-color: transparent;
   border-color: transparent;
 }
-
-// .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
-//   border-color: transparent;
-// }
-
 
 .ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
   border-bottom-width: 0px;

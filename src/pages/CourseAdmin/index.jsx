@@ -1,23 +1,22 @@
 import React, { Component } from 'react';
-import { Button } from 'antd';
+import { Button, Modal,Popconfirm, message } from 'antd';
 import { EyeOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import ProList from '@ant-design/pro-list';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
-import { deleteTopic, editTopic, getTopicByTeacher, newTopic } from '@/services/course';
+import { deleteTopic, delete_img, editTopic, getTopicByTeacher, newTopic } from '@/services/course';
 import { ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
-import {
-  ModalForm,
-  ProFormText,
-} from '@ant-design/pro-form';
+import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
-import { Popconfirm, message, Empty } from 'antd';
-import { Pass } from 'codemirror';
+import './index.less';
 
 export default class App extends Component {
   state = {
     topics: [],
+    file: '',
   };
+
+  formRef = React.createRef();
 
   componentDidMount() {
     this.getTopics();
@@ -27,17 +26,22 @@ export default class App extends Component {
     // 【对接lmo 获取teacher_id】
     const teacher_id = 1;
     const res = await getTopicByTeacher(teacher_id);
+    console.log(res);
     if (res.error_code == 200) {
       this.setState({
-        topics: res.data.map(i => {
-          let res = i.fields
-          res.topic_id = i.pk
-          return res
-        })
+        topics: res.data.map((i) => {
+          let res = i.fields;
+          res.topic_id = i.pk;
+          if (res.topic_img)
+            res.topic_img = {
+              url: '/media/' + res.topic_img,
+              name: res.topic_img,
+            };
+          return res;
+        }),
       });
     }
   };
-
 
   addNewTopic = async (values) => {
     console.log(values);
@@ -46,10 +50,11 @@ export default class App extends Component {
       message.error('please input the topic_title and the topic_content');
       return false;
     }
+
     const res = await newTopic(
       values.topic_title,
       values.topic_content,
-      values.topic_img,
+      this.state.file,
       teacher_id,
     );
     if (res.error_code == 200) {
@@ -57,10 +62,11 @@ export default class App extends Component {
         topic_id: res.id,
         topic_title: values.topic_title,
         topic_content: values.topic_content,
-        topic_img: values.topic_img,
+        topic_img: this.state.file,
       };
       this.setState({ topics: [...this.state.topics, new_topic] });
       message.success('topic has been created successfully');
+      this.formRef.current?.resetFields();
       return true;
     } else {
       message.error(res.msg);
@@ -69,7 +75,6 @@ export default class App extends Component {
   };
 
   confirm = async (topic_id) => {
-    console.log(topic_id, 222)
     const res = await deleteTopic(topic_id);
     if (res.error_code == 200) {
       message.success('Delete success.');
@@ -79,13 +84,23 @@ export default class App extends Component {
     }
   };
 
+  handleChange = async (info) => {
+    let file = info.file;
+
+    // 将图片的base64替换为图片的url
+    if (file && file.status == 'done' && file['response']) {
+      file.name = file.response.imgUrl;
+    }else if (file.status == 'removed') {
+      const res = await delete_img(file.name, 'Topic');
+      console.log(res);
+      file = undefined;
+    }
+    this.setState({ file });
+  };
+
   render() {
     const IconText = ({ icon, text }) => (
-      <span
-        onClick={() => {
-          console.log(icon, text);
-        }}
-      >
+      <span>
         {React.createElement(icon, { style: { marginRight: 8 } })}
         {text}
       </span>
@@ -116,6 +131,7 @@ export default class App extends Component {
                         NEW
                       </Button>
                     }
+                    formRef={this.formRef}
                     autoFocusFirstInput
                     onFinish={(values) => this.addNewTopic(values)}
                     submitter={{
@@ -131,28 +147,31 @@ export default class App extends Component {
                       label="Topic Title"
                       placeholder="please input a topic title"
                     />
-
                     <ProFormTextArea
                       name="topic_content"
                       label="topic description"
                       placeholder="please input topic description"
+                      width="xl"
                     />
                     <ProFormUploadButton
                       name="topic_img"
                       label="Upload"
-                      max={2}
+                      max={1}
+                      beforeUpload={this.handleBeforeUpload}
                       fieldProps={{
-                        name: 'file',
+                        name: 'topic_img',
                         listType: 'picture-card',
+                        accept: '.jpg, .png, .jpeg, .gif'
                       }}
-                      action="/upload.do"
-                    // extra="long"
+                      action="/server/V1/course/upload_topic_img/"
+                      // isImageUrl={true}
+                      onChange={this.handleChange}
                     />
                   </ModalForm>,
                 ];
               }}
               itemLayout="vertical"
-              rowKey="id"
+              rowKey="topic_id"
               headerTitle="Topics"
               dataSource={this.state.topics}
               metas={{
@@ -161,7 +180,7 @@ export default class App extends Component {
                   render: (i) => (
                     <a
                       href={`/courseAdmin/courseList?topic_title=${i}`}
-                      style={{ 'textDecoration': 'none', color: '#333' }}
+                      style={{ textDecoration: 'none', color: '#333' }}
                     >
                       {i}
                     </a>
@@ -174,7 +193,8 @@ export default class App extends Component {
                         <IconText icon={EyeOutlined} text="view" key="list-vertical-message" />
                       </a>,
                       <ModalForm
-                        title="NEW"
+                        title="EDIT"
+                        initialValues={row}
                         trigger={
                           <a>
                             <IconText icon={EditOutlined} text="edit" key="list-vertical-star-o" />
@@ -182,14 +202,16 @@ export default class App extends Component {
                         }
                         autoFocusFirstInput
                         onFinish={async (values) => {
-                          if (!values.topic_content && !values.topic_title) {
-                            console.log(values.topic_content);
+                          console.log(values);
+                          if (!values.topic_content && !values.topic_title && !values.topic_img) {
                             // 原topic内容未发生变化
                             message.info('Nothing changed');
                             return true;
                           } else {
                             // 原topic内容发生变化
-                            console.log(values, 888)
+                            if (values.topic_img) {
+                              values.topic_img = values.topic_img[0];
+                            }
                             const res = await editTopic(row.topic_id, values);
                             if (res.error_code == 200) {
                               this.getTopics();
@@ -213,25 +235,53 @@ export default class App extends Component {
                           name="topic_title"
                           label="Topic Title"
                           placeholder="please input a topic title"
-                          value={row.topic_title}
+                          // value={row.topic_title}
                         />
 
                         <ProFormTextArea
                           name="topic_content"
                           label="topic description"
                           placeholder="please input topic description"
-                          value={row.topic_content}
+                          // value={row.topic_content}
                         />
                         <ProFormUploadButton
                           name="topic_img"
-                          label="Upload"
-                          max={2}
+                          beforeUpload={this.handleBeforeUpload}
                           fieldProps={{
-                            name: 'file',
+                            name: 'topic_img',
                             listType: 'picture-card',
+                            accept: '.jpg, .png, .jpeg, .gif'
                           }}
-                          action="/upload.do"
-                        // value={row.topic_img}
+                          action="/server/V1/course/upload_topic_img/"
+                          // isImageUrl={true}
+                          onChange={async (info) => {
+                            console.log(info);
+                            let topics = this.state.topics;
+                            let file = info.file;
+                            if (file.status == 'removed') {
+                              const res = await delete_img(file.name, 'Topic');
+                              console.log(res);
+                            }
+                            topics.map((i) => {
+                              if (i.topic_id == row.topic_id) {
+                                if (file.status == 'removed') {
+                                  i.topic_img = '';
+                                } else if (file && file.status == 'done' && file['response']) {
+                                  file.name = file.response.imgUrl;
+                                  i.topic_img = file;
+                                } else {
+                                  i.topic_img = file;
+                                }
+                              }
+                              return i;
+                            });
+                            this.setState({ topics });
+                          }}
+                          label="Upload"
+                          max={1}
+                          value={row.topic_img ? [row.topic_img] : []}
+                          // value={row.topic_img.status=="uploading"|"done"?[{ url: "media/" + row.topic_img },]:[]}
+                          // isImageUrl={true}
                         />
                       </ModalForm>,
                       <Popconfirm
@@ -253,13 +303,13 @@ export default class App extends Component {
                 },
                 extra: {
                   dataIndex: 'topic_img',
-                  render: (i) => <img width={272} alt="logo" src={i.thumbUrl} />,
+                  render: (i) => {
+                    if (i) return <img width="180px" alt="logo" src={`${i.url}`} />;
+                  },
                 },
                 content: {
                   dataIndex: 'topic_content',
-                  render: (i) => {
-                    return <div>{i}</div>;
-                  },
+                  render: (i) => <div>{i}</div>,
                 },
               }}
             />

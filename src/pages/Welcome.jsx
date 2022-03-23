@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button, Select } from 'antd';
 import ProCard from '@ant-design/pro-card';
-import {RightOutlined, SearchOutlined} from '@ant-design/icons';
+import { RightOutlined, SearchOutlined } from '@ant-design/icons';
 import { getTopic, search } from '@/services/course/api';
 import { Footer } from 'antd/es/layout/layout';
 import Banner from '@/pages/utils/animBanner';
@@ -36,7 +36,6 @@ function fetcha(value, callback) {
       }
       callback(data);
     } else if (topic_data.length === 0) {
-
     }
   }
   timeout = setTimeout(fake, 300);
@@ -59,7 +58,7 @@ export default class welcome extends Component {
     const topics = await getTopic();
     console.log(topics);
     // const topics = topic_data.topics;
-    // console.log(topics);
+    console.log(topics);
     this.setState({ topics });
     console.log(this.state);
   };
@@ -76,14 +75,12 @@ export default class welcome extends Component {
   handleChange = (value) => {
     // console.log(value); // value: place holder text
     this.setState({ value });
-    this.props.history.push(`/course/exercise/${value}`)
+    this.props.history.push(`/course/exercise/${value}`);
   };
 
   render() {
     let { topics } = this.state;
-    const options = this.state.data.map(
-      (d) => <Option key={d.value}>{d.text}</Option>
-    );  // search options
+    const options = this.state.data.map((d) => <Option key={d.value}>{d.text}</Option>); // search options
     // console.log(topics[0]);
 
     return (
@@ -108,7 +105,9 @@ export default class welcome extends Component {
           gutter={[0, 8]}
           extra={
             <div>
-              <span>Search course here: <SearchOutlined /></span>
+              <span>
+                Search course here: <SearchOutlined />
+              </span>
               <Select
                 showSearch
                 showArrow={false}
@@ -133,7 +132,9 @@ export default class welcome extends Component {
                 bordered
                 hoverable
                 split="vertical"
-                onClick={() => {this.props.history.push(`/course/exercise/${item.topic_title}`)}}
+                onClick={() => {
+                  this.props.history.push(`/course/exercise/${item.topic_title}`);
+                }}
               >
                 <ProCard colSpan="30%" ghost>
                   <center>

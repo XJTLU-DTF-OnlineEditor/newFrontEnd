@@ -35,30 +35,36 @@ import {
   CaretRightOutlined,
   PauseOutlined,
 } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import React, { Component } from 'react';
-import { run } from '@/services/editor';
+import { run_interactive, run_split, terminate } from '@/services/editor';
 import PubSub from 'pubsub-js';
 import ProCard from '@ant-design/pro-card';
 import { nanoid } from 'nanoid';
 
 export default class Editor extends Component {
   state = {
+    id: '',
     isFullScreen: false,
-    isCodeFull: false,
     source: '',
-    isRuntime: false,
-    loading: false,
     disable: false,
     input: '',
     inputType: 'Interactive',
     lang: 'python',
   };
   rootRef = React.createRef();
+  ws = React.createRef(null)
 
   componentDidMount() {
     PubSub.subscribe('editor', (msg, data) => {
       this.setState(data);
+    });
+
+    PubSub.subscribe('ws', (msg, data) => {
+      if (data.ws != this.ws.current) {
+        this.ws.current = data.ws
+        if (data.ws === 1) this.runcode()
+      }
     });
 
     window.onresize = () => {
@@ -83,77 +89,64 @@ export default class Editor extends Component {
 
   // start & stop run
   handeleRun = () => {
-    const { isRuntime } = this.state;
-    let terminate;
-    if (!isRuntime) {
-      terminate = false;
-      this.setState({ isRuntime: true });
-    } else {
-      terminate = true;
-      this.setState({ isRuntime: false });
-      PubSub.publish('input', { need_input: false });
-      this.setState({ disable: true });
-      setTimeout(() => {
-        this.setState({ disable: false });
-      }, 1500);
+    if (this.state.id) { //运行
+      this.terminate()
+    } else {  // 终止
+      const id = nanoid().replace(/-/g, "");
+      PubSub.publish('id', { id });
+      this.setState({ id })
     }
-    this.runcode(terminate);
   };
 
-  // run code
-  runcode = async (terminate) => {
-    this.setState({ loading: true });
-    const { inputType, source, input, lang } = this.state;
-    const id = nanoid();
-    const result = await run(inputType, source, input, lang, id, terminate);
-    console.log(result);
-    const { error_code, msg, run_data_backend } = result;
-    console.log('error_code: ' + error_code);
-    console.log('msg: ' + msg);
-    console.log('run_data_backend' + run_data_backend);
-    const { id: resid, errors, Output, need_input } = run_data_backend;
-    console.log('resid: ' + resid);
-    console.log('output: ' + Output);
 
-    if (!terminate) {
-      if (resid === id) {
-        if (error_code === 200) {
-          if (need_input) {
-            PubSub.publish('input', { need_input, input: Output });
-          } else {
-            this.setState({ isRuntime: false });
-            PubSub.publish('showRes', { error_code, Output });
-          }
-        } else {
-          this.setState({ isRuntime: false });
-          if (error_code === 410 || error_code === 408) {
-            PubSub.publish('showRes', { error_code, Output: '[' + errors + ']' });
-          } else {
-            PubSub.publish('showRes', {
-              error_code,
-              Output: '[something went wrong, please try again]',
-            });
-          }
-        }
-      }
+  runcode = async () => {
+    let result;
+    const { id, source, lang, inputType, input } = this.state;
+
+    if (inputType == "Interactive") {
+      console.log("Interactive")
+      result = await run_interactive(id, lang, source);
+    } else if (inputType == "Split") {
+      console.log("Split")
+      result = await run_split(id, lang, source, input);
     }
-    this.setState({ loading: false });
-  };
+
+    if (result.error_code != 200) {
+      message.error(result.msg)
+    }
+  }
+
+  terminate = async () => {
+    this.setState({ disable: true });
+    const result = await terminate(this.state.id);
+
+    if(result.error_code!==200){
+      console.log(result.error_code)
+      message.error("Something wrong happens. Please try again later")
+    }
+
+    PubSub.publish('id', { id: '' });
+    this.setState({ id: '' })
+    this.ws.current = 0
+
+    setTimeout(() => {
+      this.setState({ disable: false });
+    }, 1000);
+  }
 
   render() {
     // 功能按钮
-    const { isRuntime, loading, disable, isFullScreen, source } = this.state;
+    const { id, disable, isFullScreen, source } = this.state;
     const operations = (
       <>
         <Button
           ghost
           type="primary"
-          loading={loading}
           disabled={disable}
           onClick={this.handeleRun}
-          icon={isRuntime ? <PauseOutlined /> : <CaretRightOutlined />}
+          icon={id ? <PauseOutlined /> : <CaretRightOutlined />}
         >
-          {isRuntime ? 'Edit' : 'Run'}
+          {id ? 'Edit' : 'Run'}
         </Button>
         <Button icon={<SettingOutlined />} />
         {isFullScreen ? (
