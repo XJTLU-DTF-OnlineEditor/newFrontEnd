@@ -3,13 +3,17 @@ import Editor from './editor.jsx';
 import { BarsOutlined, ArrowRightOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import Input from './input.jsx';
 import ResultSection from './result.jsx';
-import './index.less';
 import ProCard from '@ant-design/pro-card';
 import { Dropdown, Menu, Descriptions, Button, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getCourseDetail, getExerciseList } from '@/services/course.js';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { Typography } from 'antd';
+import './custom-dark.css'
+import './index.less';
+
+const { Title } = Typography;
 
 export default function MainPage(props) {
   const [course_list, setCourse_list] = useState([]);
@@ -50,7 +54,6 @@ export default function MainPage(props) {
   const menu = (
     <Menu
       onClick={({ key }) => getExercise(topic_title, +key)}
-      // defaultSelectedKeys={[id - 1]}
     >
       {typeof course_list == 'object'
         ? course_list.map((item) => (
@@ -63,10 +66,11 @@ export default function MainPage(props) {
   );
 
   return (
-    <PageContainer
+    <PageContainer overlayClassName='editorpage'
       ghost
+      minHeight="800px"
       header={{
-        title: courseDetail.title,
+        title: <Title>{courseDetail.title}</Title>,
         breadcrumb: {},
       }}
       // onBack={() => props.history.go(-1)}
@@ -106,10 +110,10 @@ export default function MainPage(props) {
       ]}
     >
       {/* 课程展示 */}
-      <ProCard ghost gutter={15} style={{ height: 500 }}>
+      <ProCard ghost gutter={15} style={{ minHeight: 1000 }} className={`custom-dark`}>
         <ProCard
           colSpan={8}
-          style={{ minHeight: 600, paddingTop: '20px' }}
+          style={{ minHeight: 600}}
           className={'course'}
           ghost
         >

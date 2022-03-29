@@ -7,6 +7,9 @@ import { Descriptions, Button, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { Popconfirm } from 'antd';
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 export default class App extends Component {
     state = {
@@ -43,7 +46,7 @@ export default class App extends Component {
                     ghost
                     onBack={() => this.props.history.push('/courseAdmin/courseList?topic_title=' + topic_title)}
                     header={{
-                        title: courseDetail.title,
+                        title: <Title level={2}>{courseDetail.title}</Title>,
                         breadcrumb: {},
                         extra: [
                             <Button key="1" onClick={() => this.props.history.push(`/courseAdmin/courseManager?topic_title=${topic_title}&id=${id}`)} type='primary'>EDIT</Button>,

@@ -7,7 +7,10 @@ import { deleteCourse, updateSubtopicId } from '@/services/course';
 import { Popconfirm } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
-import './index.less';
+import './courseList.less';
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 export default class App extends Component {
 
@@ -105,7 +108,6 @@ export default class App extends Component {
             key: 'since',
             dataIndex: 'update_date',
             valueType: 'dateTime',
-            // sorter: (a, b) => a.update_date - b.update_date,
             hideInSearch: true,
         },
         {
@@ -113,7 +115,6 @@ export default class App extends Component {
             dataIndex: 'views',
             valueType: 'digit',
             width: 100,
-            // sorter: (a, b) => a.views - b.views,
             hideInSearch: true,
         },
         {
@@ -170,7 +171,7 @@ export default class App extends Component {
                 ghost
                 onBack={() => this.props.history.push('/courseAdmin')}
                 header={{
-                    title: 'Course List',
+                    title: <Title level={2}>{topic_title}</Title>,
                 }}
             >
                 <ProCard>
@@ -196,7 +197,7 @@ export default class App extends Component {
                             },
                         }} pagination={{
                             pageSize: 10,
-                        }} dateFormatter="string" headerTitle={"【TOPIC TITLE】" + topic_title} toolBarRender={() => [
+                        }} dateFormatter="string" headerTitle={"course list"} toolBarRender={() => [
                             <Popconfirm
                                 title="Are you sure to delete the chosen courses?"
                                 onConfirm={this.handleDelete}

@@ -7,7 +7,9 @@ import './courseManager.less';
 import { editCourse, getCourseDetail, newCourse } from '@/services/course';
 import ProCard from '@ant-design/pro-card';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
+import { Typography } from 'antd';
 
+const { Title } = Typography;
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -71,7 +73,7 @@ export default class App extends Component {
         ghost
         onBack={() => this.props.history.go(-1)}
         header={{
-          title: courseDetail.id ? 'Edit Course' : 'Add Course',
+          title: <Title level={2}>{courseDetail.id ? 'Edit Course' : 'Add Course'}</Title>,
         }}
       >
         <ProCard>

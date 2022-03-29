@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Modal,Popconfirm, message } from 'antd';
+import { Button,Popconfirm, message } from 'antd';
 import { EyeOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import ProList from '@ant-design/pro-list';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -8,7 +8,10 @@ import { deleteTopic, delete_img, editTopic, getTopicByTeacher, newTopic } from 
 import { ProFormTextArea, ProFormUploadButton } from '@ant-design/pro-form';
 import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
+import { Typography } from 'antd';
 import './index.less';
+
+const { Title } = Typography;
 
 export default class App extends Component {
   state = {
@@ -85,6 +88,7 @@ export default class App extends Component {
   };
 
   handleChange = async (info) => {
+    console.log(info)
     let file = info.file;
 
     // 将图片的base64替换为图片的url
@@ -114,7 +118,7 @@ export default class App extends Component {
       >
         <PageContainer
           header={{
-            title: 'Course Management',
+            title: <Title level={2}>Course Management</Title>,
             ghost: true,
             breadcrumb: {},
           }}

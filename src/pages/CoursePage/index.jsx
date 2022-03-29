@@ -2,9 +2,10 @@ import React, {Component} from "react";
 import {PageContainer} from "@ant-design/pro-layout";
 import {Footer} from "antd/es/layout/layout";
 import ProCard from "@ant-design/pro-card";
-import {Card, Select, Switch} from "antd";
-import {getAllTopic, getNewTopic, getTopic, search} from "@/services/course/api";
+import {Card, Select} from "antd";
+import {getAllTopic, getNewTopic, search} from "@/services/course/api";
 import {SearchOutlined} from "@ant-design/icons";
+import './coursePage.less';
 
 let timeout;
 let currentValue;
