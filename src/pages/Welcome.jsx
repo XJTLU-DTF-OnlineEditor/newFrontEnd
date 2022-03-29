@@ -81,7 +81,7 @@ export default class welcome extends Component {
   render() {
     let { topics } = this.state;
     const options = this.state.data.map((d) => <Option key={d.value}>{d.text}</Option>); // search options
-    // console.log(topics[0]);
+    console.log(topics[0]);
 
     return (
       <PageContainer
