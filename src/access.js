@@ -3,7 +3,14 @@
  * */
 export default function access(initialState) {
   const { currentUser } = initialState || {};
+  let canAdmin = false;
+  if (currentUser) {
+    if (currentUser.currentAuthority === "admin") {
+      canAdmin = true;
+    }
+  }
   return {
-    canAdmin: currentUser && currentUser.access === 'admin',
+    canAdmin
+    // canAdmin: currentUser && currentUser.currentAuthority === 'admin',
   };
 }

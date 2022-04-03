@@ -1,6 +1,8 @@
 export default [{
   path: '/user',
-  layout: false,
+  // name:'user',
+  // icon: 'smile',
+  // layout: false,
   routes: [{
     path: '/user',
     routes: [{
@@ -58,6 +60,7 @@ export default [{
 {
   name: 'courseAdmin',  // 教师课程管理系统
   icon: 'crown',
+  access: 'canAdmin',
   path: '/courseAdmin/',
   routes: [{
     path: '/CourseAdmin/',
