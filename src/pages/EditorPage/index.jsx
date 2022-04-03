@@ -20,6 +20,9 @@ export default function MainPage(props) {
   const [topic_title, setTopic_title] = useState('');
   const [courseDetail, setCourseDetail] = useState({});
 
+  useEffect(() => {
+    getCatalog();
+  }, []);
 
   const getCatalog = async () => {
     // 获取目录

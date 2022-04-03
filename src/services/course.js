@@ -62,7 +62,7 @@ export const newTopic = async (topic_title, topic_content, topic_img, teacher_id
     });
 };
 
-export const newCourse = async (related_topic, title, content, answer, hint, teacher_id) => {
+export const newCourse = async (related_topic, title, content, answer, hint) => {
     const url = `/server/V1/course/create/`;
     return request(url, {
         method: 'post',
@@ -74,7 +74,6 @@ export const newCourse = async (related_topic, title, content, answer, hint, tea
                 content,
                 answer,
                 hint,
-                teacher_id,
             },
         },
     });

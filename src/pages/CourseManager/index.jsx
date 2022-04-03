@@ -46,12 +46,11 @@ export default class App extends Component {
     } else {
       const { topic_title, id } = this.props.location.query;
       // 【【对接获取teacher_id】】
-      const teacher_id = 1;
       let result;
       if (id) {
-        result = await editCourse(id, topic_title, values.title, courseDetail.content, values.answer, values.hint, teacher_id);
+        result = await editCourse(id, topic_title, values.title, courseDetail.content, values.answer, values.hint);
       } else {
-        result = await newCourse(topic_title, courseDetail.title, courseDetail.content, courseDetail.answer, courseDetail.hint, teacher_id);
+        result = await newCourse(topic_title, courseDetail.title, courseDetail.content, courseDetail.answer, courseDetail.hint);
       }
       if (result['error_code'] == 200) {
         message.success('Save success');
