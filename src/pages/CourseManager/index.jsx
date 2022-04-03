@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ProForm, { ProFormText } from '@ant-design/pro-form';
+import ProForm, { ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import { message } from 'antd';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -49,9 +49,9 @@ export default class App extends Component {
       const teacher_id = 1;
       let result;
       if (id) {
-        result = await editCourse(id, topic_title, values.title, courseDetail.content, teacher_id);
+        result = await editCourse(id, topic_title, values.title, courseDetail.content, values.answer, values.hint, teacher_id);
       } else {
-        result = await newCourse(topic_title, values.title, courseDetail.content, teacher_id);
+        result = await newCourse(topic_title, courseDetail.title, courseDetail.content, courseDetail.answer, courseDetail.hint, teacher_id);
       }
       if (result['error_code'] == 200) {
         message.success('Save success');
@@ -97,13 +97,13 @@ export default class App extends Component {
               name="title"
               label="Course Title"
               placeholder="input course title here"
-              value={courseDetail.title}
+              value={courseDetail?.title}
               onChange={(e) => {
                 courseDetail.title = e.target.value;
                 this.setState({ courseDetail });
               }}
             />
-            <ProForm.Item name="content" label="Course Content" value={courseDetail.content}>
+            <ProForm.Item name="content" label="Course Content" value={courseDetail?.content}>
               <CKEditor
                 editor={ClassicEditor}
                 data={courseDetail.content}
@@ -171,6 +171,26 @@ export default class App extends Component {
                 }}
               />
             </ProForm.Item>
+            <ProFormTextArea
+              name="answer"
+              label="Answer"
+              value={courseDetail?.answer}
+              placeholder="Please input the answer for the code"
+              onChange={(e) => {
+                courseDetail.answer = e.target.value;
+                this.setState({ courseDetail });
+              }}
+            />
+            <ProFormTextArea
+              name="hint"
+              label="Hint"
+              value={courseDetail?.hint}
+              placeholder="Please input the hint for the code exercise"
+              onChange={(e) => {
+                courseDetail.hint = e.target.value;
+                this.setState({ courseDetail });
+              }}
+            />
           </ProForm>
         </ProCard>
       </PageContainer>

@@ -21,10 +21,6 @@ export default function MainPage(props) {
   const [courseDetail, setCourseDetail] = useState({});
 
 
-  useEffect(() => {
-    getCatalog();
-  }, []);
-
   const getCatalog = async () => {
     // 获取目录
     let { id, related_topic } = props.match.params;
@@ -112,7 +108,7 @@ export default function MainPage(props) {
       {/* 课程展示 */}
       <ProCard ghost gutter={15} style={{ minHeight: 1000 }} className={`custom-dark`}>
         <ProCard
-          colSpan={8}
+          colSpan={7}
           style={{ minHeight: 600}}
           className={'course'}
           ghost
@@ -138,8 +134,8 @@ export default function MainPage(props) {
           <Editor />
           <Input />
         </ProCard>
-        <ProCard ghost colSpan={5}>
-          <ResultSection />
+        <ProCard ghost colSpan={6}>
+          <ResultSection hint={courseDetail?.hint} />
         </ProCard>
       </ProCard>
     </PageContainer>

@@ -31,7 +31,7 @@ export default class App extends Component {
         } else {
             result = await request(`/server/V1/course/courses/${topic_title}/`);
         }
-        // console.log(result)
+        console.log(result)
 
         if (result.error_code == 200) {
             let course_list = result.course_list.map(i => {

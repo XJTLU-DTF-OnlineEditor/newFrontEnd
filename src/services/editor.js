@@ -1,13 +1,15 @@
 import { request } from 'umi';
 
-export const run_interactive = async (id, lang, filelist) => {
+export const run_interactive = async (id, lang, filelist, course_id, user_id) => {
   const url = '/server/V1/editor/run/interactive/';
   return request(url, {
     method: 'post',
     data: {
       id,
       lang,
-      filelist
+      filelist,
+      course_id,
+      user_id
     },
   });
 };

@@ -37,7 +37,7 @@ import {
 } from '@ant-design/icons';
 import { Button, message, Tabs } from 'antd';
 import React, { Component } from 'react';
-import { run_interactive, run_split, terminate } from '@/services/editor';
+import { run_interactive, terminate } from '@/services/editor';
 import PubSub from 'pubsub-js';
 import { nanoid } from 'nanoid';
 import {
@@ -45,7 +45,7 @@ import {
   ProFormText,
   ProFormSelect,
 } from '@ant-design/pro-form';
-
+import { currentUser } from '@/services/ant-design-pro/api';
 
 const { TabPane } = Tabs;
 
@@ -127,12 +127,12 @@ export default class Editor extends Component {
 
   runcode = async () => {
     let result;
-    const { id, panes, input } = this.state;
+    const { id, panes } = this.state;
 
     let filelist = panes.map(file => {
       return { title: file.title, content: file.content, id: file.key }
     })
-    result = await run_interactive(id, panes[0].lang, filelist);
+    result = await run_interactive(id, panes[0].lang, filelist, props.match.params.id, currentUser.userid);
 
 
     if (result.error_code != 200) {

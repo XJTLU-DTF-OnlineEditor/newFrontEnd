@@ -22,11 +22,11 @@ export default class App extends Component {
     getExercise = async () => {
         const { topic_title, id } = this.state;
         const res = await getCourseDetail(topic_title, id);
-        if(res.error_code==200){
+        if (res.error_code == 200) {
             // related_topic, title, content, update_date, views, subtopic_id
-            this.setState({courseDetail: res.data});
+            this.setState({ courseDetail: res.data });
         }
-        
+
     };
 
     componentDidMount() {
@@ -35,7 +35,7 @@ export default class App extends Component {
     }
 
     render() {
-        const {courseDetail, topic_title, id} = this.state
+        const { courseDetail, topic_title, id } = this.state
         return (
             <div
                 style={{
@@ -78,7 +78,7 @@ export default class App extends Component {
                         </Descriptions>
                     }
                 >
-                    <ProCard style={{ height: 600 }} ghost>
+                    <ProCard ghost>
                         <CKEditor
                             editor={ClassicEditor}
                             disabled={true}
@@ -96,7 +96,14 @@ export default class App extends Component {
                                     this.editor.ui.view.toolbar.element.remove();
                                 }
                             }}
-                        /></ProCard>
+                        />
+                    </ProCard>
+                    <ProCard title="answer" style={{ minHeight: 100 }}>
+                        {courseDetail?.answer}
+                    </ProCard>
+                    <ProCard title="hint" style={{ minHeight: 100 }}>
+                        {courseDetail?.hint}
+                    </ProCard>
                 </PageContainer>
             </div>
 

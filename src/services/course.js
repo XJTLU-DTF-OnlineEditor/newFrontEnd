@@ -1,11 +1,11 @@
 import { request } from 'umi';
 
-export const getTopicByTeacher = async(teacher_id) => {
+export const getTopicByTeacher = async (teacher_id) => {
     const url = `/server/V1/course/topicsByTeacher/?teacher_id=${teacher_id}`;
     return request(url);
 };
 
-export const editTopic = async(topic_id, topic_info) => {
+export const editTopic = async (topic_id, topic_info) => {
     const url = `/server/V1/course/edit/`;
     return request(url, {
         method: 'post',
@@ -19,11 +19,13 @@ export const editTopic = async(topic_id, topic_info) => {
     });
 };
 
-export const editCourse = async(
+export const editCourse = async (
     id,
     related_topic,
     title,
     content,
+    answer,
+    hint,
     teacher_id,
 ) => {
     const url = `/server/V1/course/edit/`;
@@ -36,13 +38,15 @@ export const editCourse = async(
                 related_topic,
                 title,
                 content,
+                answer,
+                hint,
                 teacher_id,
             },
         },
     });
 };
 
-export const newTopic = async(topic_title, topic_content, topic_img, teacher_id) => {
+export const newTopic = async (topic_title, topic_content, topic_img, teacher_id) => {
     const url = `/server/V1/course/create/`;
     return request(url, {
         method: 'post',
@@ -58,7 +62,7 @@ export const newTopic = async(topic_title, topic_content, topic_img, teacher_id)
     });
 };
 
-export const newCourse = async(related_topic, title, content, teacher_id) => {
+export const newCourse = async (related_topic, title, content, answer, hint, teacher_id) => {
     const url = `/server/V1/course/create/`;
     return request(url, {
         method: 'post',
@@ -68,23 +72,25 @@ export const newCourse = async(related_topic, title, content, teacher_id) => {
                 related_topic,
                 title,
                 content,
+                answer,
+                hint,
                 teacher_id,
             },
         },
     });
 };
 
-export const getExerciseList = async(related_topic) => {
+export const getExerciseList = async (related_topic) => {
     const url = `/server/V1/course/courses/${related_topic}/`;
     return request(url);
 };
 
-export const getCourseDetail = async(related_topic, id) => {
+export const getCourseDetail = async (related_topic, id) => {
     const url = `/server/V1/course/courseDetail/${related_topic}/${id}/`;
     return request(url);
 };
 
-export const deleteCourse = async(related_topic, ids) => {
+export const deleteCourse = async (related_topic, ids) => {
     const url = `/server/V1/course/delete/`;
     return request(url, {
         method: 'post',
@@ -96,7 +102,7 @@ export const deleteCourse = async(related_topic, ids) => {
     });
 };
 
-export const deleteTopic = async(id) => {
+export const deleteTopic = async (id) => {
     const url = `/server/V1/course/delete/`;
     return request(url, {
         method: 'post',
@@ -107,7 +113,7 @@ export const deleteTopic = async(id) => {
     });
 };
 
-export const updateSubtopicId = async(related_topic, seq) => {
+export const updateSubtopicId = async (related_topic, seq) => {
     const url = `/server/V1/course/sort/`;
     return request(url, {
         method: 'post',
@@ -119,7 +125,7 @@ export const updateSubtopicId = async(related_topic, seq) => {
     });
 };
 
-export const delete_img = async(fname, request_entity) => {
+export const delete_img = async (fname, request_entity) => {
     const url = `/server/V1/course/delete_img/`;
     return request(url, {
         method: 'post',
