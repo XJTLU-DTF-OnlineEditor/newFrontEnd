@@ -10,7 +10,7 @@ import { getCourseDetail, getExerciseList } from '@/services/course.js';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Typography } from 'antd';
-import './custom-dark.css'
+import './custom-dark.css';
 import './index.less';
 
 const { Title } = Typography;
@@ -51,9 +51,7 @@ export default function MainPage(props) {
   };
 
   const menu = (
-    <Menu
-      onClick={({ key }) => getExercise(topic_title, +key)}
-    >
+    <Menu onClick={({ key }) => getExercise(topic_title, +key)}>
       {typeof course_list == 'object'
         ? course_list.map((item) => (
             <Menu.Item key={item.id}>
@@ -65,7 +63,8 @@ export default function MainPage(props) {
   );
 
   return (
-    <PageContainer overlayClassName='editorpage'
+    <PageContainer
+      overlayClassName="editorpage"
       ghost
       minHeight="800px"
       header={{
@@ -110,12 +109,7 @@ export default function MainPage(props) {
     >
       {/* 课程展示 */}
       <ProCard ghost gutter={15} style={{ minHeight: 1000 }} className={`custom-dark`}>
-        <ProCard
-          colSpan={7}
-          style={{ minHeight: 600}}
-          className={'course'}
-          ghost
-        >
+        <ProCard colSpan={7} style={{ minHeight: 600 }} className={'course'} ghost>
           <CKEditor
             editor={ClassicEditor}
             disabled={true}

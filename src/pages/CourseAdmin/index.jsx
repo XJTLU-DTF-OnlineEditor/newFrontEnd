@@ -27,7 +27,7 @@ export default class App extends Component {
 
   getTopics = async () => {
     // 【对接lmo 获取teacher_id】
-    const teacher_id = 1;
+    const teacher_id = 3;
     const res = await getTopicByTeacher(teacher_id);
     console.log(res);
     if (res.error_code == 200) {

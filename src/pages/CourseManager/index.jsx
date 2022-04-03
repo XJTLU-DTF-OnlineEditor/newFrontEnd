@@ -48,9 +48,22 @@ export default class App extends Component {
       // 【【对接获取teacher_id】】
       let result;
       if (id) {
-        result = await editCourse(id, topic_title, values.title, courseDetail.content, values.answer, values.hint);
+        result = await editCourse(
+          id,
+          topic_title,
+          values.title,
+          courseDetail.content,
+          values.answer,
+          values.hint,
+        );
       } else {
-        result = await newCourse(topic_title, courseDetail.title, courseDetail.content, courseDetail.answer, courseDetail.hint);
+        result = await newCourse(
+          topic_title,
+          courseDetail.title,
+          courseDetail.content,
+          courseDetail.answer,
+          courseDetail.hint,
+        );
       }
       if (result['error_code'] == 200) {
         message.success('Save success');
