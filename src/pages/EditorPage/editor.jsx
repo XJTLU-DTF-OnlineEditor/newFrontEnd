@@ -72,7 +72,8 @@ export default class Editor extends Component {
   restFormRef = React.createRef()
 
   componentDidMount() {
-    console.log(this.state.panes)
+    
+    console.log(this.props, "===")
     PubSub.subscribe('editor', (msg, data) => {
       this.setState(data);
     });
@@ -132,7 +133,7 @@ export default class Editor extends Component {
     let filelist = panes.map(file => {
       return { title: file.title, content: file.content, id: file.key }
     })
-    result = await run_interactive(id, panes[0].lang, filelist, props.match.params.id, currentUser.userid);
+    result = await run_interactive(id, panes[0].lang, filelist, this.props.courseid, this.props.currentUser.userid);
 
 
     if (result.error_code != 200) {

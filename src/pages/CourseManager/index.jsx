@@ -45,7 +45,6 @@ export default class App extends Component {
       message.warning('please input the course content');
     } else {
       const { topic_title, id } = this.props.location.query;
-      // 【【对接获取teacher_id】】
       let result;
       if (id) {
         result = await editCourse(

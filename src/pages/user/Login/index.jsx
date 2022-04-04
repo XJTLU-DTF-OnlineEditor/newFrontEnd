@@ -1,20 +1,14 @@
-import {
-  AlipayCircleOutlined,
-  LockOutlined,
-  MobileOutlined,
-  TaobaoCircleOutlined,
-  UserOutlined,
-  WeiboCircleOutlined,
-} from '@ant-design/icons';
+import { LockOutlined, MailOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Space, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, Link, history, FormattedMessage, SelectLang, useModel } from 'umi';
 import Footer from '@/components/Footer';
 // import { login } from '@/services/ant-design-pro/api';
-import { login, logout } from '@/services/user/api';
+import { getCaptcha, login, logout, register } from '@/services/user/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import styles from './index.less';
+import { getInitialState } from '@/app';
 
 const LoginMessage = ({ content }) => (
   <Alert
@@ -30,7 +24,8 @@ const LoginMessage = ({ content }) => (
 const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const [userLoginState, setUserLoginState] = useState({});
-  const [type, setType] = useState('account');
+  const [type, setType] = useState('login');
+  const [userType, setUserType] = useState('student');
   const { initialState, setInitialState } = useModel('@@initialState');
   const intl = useIntl();
 
@@ -45,10 +40,18 @@ const Login = () => {
   const handleSubmit = async (values) => {
     setSubmitting(true);
     console.log(values);
+    if (userType === 'student') {
+      values.email = values.email + '@student.xjtlu.edu.cn';
+      console.log(values);
+    } else if (userType === 'teacher') {
+      values.email = values.email + '@xjtlu.edu.cn';
+      console.log(values);
+    }
+
     try {
       // 登录
-      // const msg = await login({ ...values, type });
-      const msg = await login({ user_name: 'DannyHao', password: 'zwh2000052' });
+      const msg = await login({ ...values, userType });
+
       console.log(msg);
 
       if (msg.error_code === 200) {
@@ -57,33 +60,33 @@ const Login = () => {
           defaultMessage: '登录成功！',
         }); // login successfully
         message.success(defaultLoginSuccessMessage);
-        // Jump to index
-        console.log(history);
+        // 存储登录Token
+        localStorage.setItem('token', msg.token);
+        localStorage.setItem('currentAuthority', msg.currentAuthority);
+        fetchUserInfo(); // fetch user information again and refresh token
+        // console.log("jump to welcome")
+        // Jump to welcome
+        // history.push(`/welcome`)
+        // console.log(history);
         if (!history) return;
         const { query } = history.location;
-        console.log(query);
+        // console.log(query);
         const { redirect } = query;
         history.push(redirect || '/');
         return;
       }
-      if (msg.status === 'ok') {
-        const defaultLoginSuccessMessage = intl.formatMessage({
-          id: 'pages.login.success',
-          defaultMessage: '登录成功！',
-        });
-        message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
-        /** 此方法会跳转到 redirect 参数所在的位置 */
-
-        if (!history) return;
-        const { query } = history.location;
-        const { redirect } = query;
-        history.push(redirect || '/');
-        return;
-      } // 如果失败去设置用户错误信息
-
-      setUserLoginState(msg);
+      if (msg.error_code === 422) {
+        const defaultWrongSuccessMessage = intl.formatMessage({
+          id: 'pages.login.wrong',
+          defaultMessage: '请检查用户名或密码！',
+        }); // login successfully
+        message.error(defaultWrongSuccessMessage);
+      }
     } catch (error) {
+      // 如果失败去设置用户错误信息
+      console.dir(error.data);
+      setUserLoginState(error.data);
+      console.log(userLoginState);
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
         defaultMessage: '登录失败，请重试！',
@@ -95,7 +98,66 @@ const Login = () => {
     setSubmitting(false);
   };
 
-  const { status, type: loginType } = userLoginState;
+  const handleRegisterSubmit = async (values) => {
+    setSubmitting(true);
+    console.log(values);
+
+    if (userType === 'student') {
+      values.email = values.email + '@student.xjtlu.edu.cn';
+      console.log(values);
+    } else if (userType === 'teacher') {
+      values.email = values.email + '@xjtlu.edu.cn';
+      console.log(values);
+    }
+
+    try {
+      // 注册
+      const msg = await register({ ...values, userType });
+      console.log(msg);
+      if (msg.status === 'ok') {
+        // 注册成功
+        const defaultRegisterSuccessMessage = intl.formatMessage({
+          id: 'pages.login.register.success',
+          defaultMessage: '注册成功！',
+        }); // login successfully
+        message.success(defaultRegisterSuccessMessage);
+        localStorage.setItem('token', msg.token);
+        localStorage.setItem('currentAuthority', msg.currentAuthority);
+        fetchUserInfo(); // fetch user information again and refresh token
+        if (!history) return;
+        const { query } = history.location;
+        const { redirect } = query;
+        history.push(redirect || '/');
+        return;
+      } else if (msg.status === 'error' && msg.error_code === 421) {
+        const RegisterExistFailureMessage = intl.formatMessage({
+          id: 'pages.login.register.failure.exist',
+          defaultMessage: '邮箱已被注册，请直接登录！',
+        });
+        message.error(RegisterExistFailureMessage);
+      } else if (msg.status === 'error' && msg.error_code === 420) {
+        const noCaptchaFailureMessage = intl.formatMessage({
+          id: 'pages.login.register.failure.noCaptcha',
+          defaultMessage: '请先获取验证码！',
+        });
+        message.error(noCaptchaFailureMessage);
+      }
+    } catch (error) {
+      // 如果失败去设置用户错误信息
+      console.dir(error.data);
+      setUserLoginState(error.data);
+      console.log(userLoginState);
+      const defaultRegisterFailureMessage = intl.formatMessage({
+        id: 'pages.login.register.failure',
+        defaultMessage: '注册失败，请重试！',
+      });
+      message.error(defaultRegisterFailureMessage);
+      history.push('/');
+    }
+    setSubmitting(false);
+  };
+
+  const { status, type: operationType } = userLoginState;
   return (
     <div className={styles.container}>
       <div className={styles.lang} data-lang>
@@ -106,7 +168,7 @@ const Login = () => {
           <div className={styles.header}>
             <Link to="/">
               <img alt="logo" className={styles.logo} src="/logo.svg" />
-              <span className={styles.title}>Ant Design</span>
+              <span className={styles.title}>XJTLU Online Editor</span>
             </Link>
           </div>
           <div className={styles.desc}>
@@ -117,212 +179,475 @@ const Login = () => {
         </div>
 
         <div className={styles.main}>
-          <ProForm
-            initialValues={{
-              autoLogin: true,
-            }}
-            submitter={{
-              searchConfig: {
-                submitText: intl.formatMessage({
-                  id: 'pages.login.submit',
-                  defaultMessage: '登录',
-                }),
-              },
-              render: (_, dom) => dom.pop(),
-              submitButtonProps: {
-                loading: submitting,
-                size: 'large',
-                style: {
-                  width: '100%',
-                },
-              },
-            }}
-            onFinish={async (values) => {
-              handleSubmit(values);
-            }}
-          >
-            <Tabs activeKey={type} onChange={setType}>
-              <Tabs.TabPane
-                key="account"
-                tab={intl.formatMessage({
-                  id: 'pages.login.accountLogin.tab',
-                  defaultMessage: '账户密码登录',
-                })}
-              />
-              <Tabs.TabPane
-                key="mobile"
-                tab={intl.formatMessage({
-                  id: 'pages.login.phoneLogin.tab',
-                  defaultMessage: '手机号登录',
-                })}
-              />
+          <Tabs activeKey={type} onChange={setType}>
+            <Tabs.TabPane
+              key="login"
+              tab={intl.formatMessage({
+                id: 'pages.login.accountLogin.tab',
+                defaultMessage: '登录',
+              })}
+            />
+            <Tabs.TabPane
+              key="register"
+              tab={intl.formatMessage({
+                id: 'pages.login.register.tab',
+                defaultMessage: '注册',
+              })}
+            />
+          </Tabs>
+
+          {status === 'error' && operationType === 'login' && (
+            <LoginMessage
+              content={intl.formatMessage({
+                id: 'pages.login.accountLogin.errorMessage',
+                defaultMessage: '账户或密码错误(admin/ant.design)',
+              })}
+            />
+          )}
+          {type === 'login' && (
+            <Tabs tabPosition="top" activeKey={userType} onChange={setUserType}>
+              <Tabs.TabPane tab="我是同学" key="student">
+                <>
+                  <ProForm
+                    initialValues={{
+                      autoLogin: true,
+                    }}
+                    submitter={{
+                      searchConfig: {
+                        submitText: intl.formatMessage({
+                          id: 'pages.login.submit',
+                          defaultMessage: '登录',
+                        }),
+                      },
+                      render: (_, dom) => dom.pop(),
+                      submitButtonProps: {
+                        loading: submitting,
+                        size: 'large',
+                        style: {
+                          width: '100%',
+                        },
+                      },
+                    }}
+                    onFinish={async (values) => {
+                      handleSubmit(values);
+                    }}
+                  >
+                    <ProFormText
+                      name="email"
+                      addonAfter="@student.xjtlu.edu.cn"
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <MailOutlined className={styles.prefixIcon} />,
+                      }}
+                      placeholder={intl.formatMessage({
+                        id: 'pages.login.email.placeholder',
+                        defaultMessage: 'XJTLU邮箱（必填）',
+                      })}
+                      rules={[
+                        {
+                          required: true,
+                          message: (
+                            <FormattedMessage
+                              id="pages.login.email.required"
+                              defaultMessage="请输入XJTLU邮箱!"
+                            />
+                          ),
+                        },
+                      ]}
+                    />
+                    <ProFormText.Password
+                      name="password"
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <LockOutlined className={styles.prefixIcon} />,
+                      }}
+                      placeholder={intl.formatMessage({
+                        id: 'pages.login.password.placeholder',
+                        defaultMessage: '密码',
+                      })}
+                      rules={[
+                        {
+                          required: true,
+                          message: (
+                            <FormattedMessage
+                              id="pages.login.password.required"
+                              defaultMessage="请输入密码！"
+                            />
+                          ),
+                        },
+                      ]}
+                    />
+                  </ProForm>
+                  <div
+                    style={{
+                      marginBottom: 24,
+                    }}
+                  >
+                    <a
+                      style={{
+                        float: 'right',
+                      }}
+                    >
+                      <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
+                    </a>
+                  </div>
+                </>
+              </Tabs.TabPane>
+              <Tabs.TabPane tab="我是老师" key="teacher">
+                <>
+                  <ProForm
+                    initialValues={{
+                      autoLogin: true,
+                    }}
+                    submitter={{
+                      searchConfig: {
+                        submitText: intl.formatMessage({
+                          id: 'pages.login.submit',
+                          defaultMessage: '登录',
+                        }),
+                      },
+                      render: (_, dom) => dom.pop(),
+                      submitButtonProps: {
+                        loading: submitting,
+                        size: 'large',
+                        style: {
+                          width: '100%',
+                        },
+                      },
+                    }}
+                    onFinish={async (values) => {
+                      handleSubmit(values);
+                    }}
+                  >
+                    <ProFormText
+                      name="email"
+                      addonAfter="@xjtlu.edu.cn"
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <MailOutlined className={styles.prefixIcon} />,
+                      }}
+                      placeholder={intl.formatMessage({
+                        id: 'pages.login.email.placeholder',
+                        defaultMessage: 'XJTLU邮箱(必填)',
+                      })}
+                      rules={[
+                        {
+                          required: true,
+                          message: (
+                            <FormattedMessage
+                              id="pages.login.email.required"
+                              defaultMessage="请输入XJTLU邮箱!"
+                            />
+                          ),
+                        },
+                      ]}
+                    />
+                    <ProFormText.Password
+                      name="password"
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <LockOutlined className={styles.prefixIcon} />,
+                      }}
+                      placeholder={intl.formatMessage({
+                        id: 'pages.login.password.placeholder',
+                        defaultMessage: '密码: ant.design',
+                      })}
+                      rules={[
+                        {
+                          required: true,
+                          message: (
+                            <FormattedMessage
+                              id="pages.login.password.required"
+                              defaultMessage="请输入密码！"
+                            />
+                          ),
+                        },
+                      ]}
+                    />
+                  </ProForm>
+                  <div
+                    style={{
+                      marginBottom: 24,
+                    }}
+                  >
+                    <a
+                      style={{
+                        float: 'right',
+                      }}
+                    >
+                      <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
+                    </a>
+                  </div>
+                </>
+              </Tabs.TabPane>
             </Tabs>
+          )}
 
-            {status === 'error' && loginType === 'account' && (
-              <LoginMessage
-                content={intl.formatMessage({
-                  id: 'pages.login.accountLogin.errorMessage',
-                  defaultMessage: '账户或密码错误(admin/ant.design)',
-                })}
-              />
-            )}
-            {type === 'account' && (
-              <>
-                <ProFormText
-                  name="username"
-                  fieldProps={{
-                    size: 'large',
-                    prefix: <UserOutlined className={styles.prefixIcon} />,
-                  }}
-                  placeholder={intl.formatMessage({
-                    id: 'pages.login.username.placeholder',
-                    defaultMessage: '用户名: admin or user',
-                  })}
-                  rules={[
-                    {
-                      required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.username.required"
-                          defaultMessage="请输入用户名!"
-                        />
-                      ),
-                    },
-                  ]}
-                />
-                <ProFormText.Password
-                  name="password"
-                  fieldProps={{
-                    size: 'large',
-                    prefix: <LockOutlined className={styles.prefixIcon} />,
-                  }}
-                  placeholder={intl.formatMessage({
-                    id: 'pages.login.password.placeholder',
-                    defaultMessage: '密码: ant.design',
-                  })}
-                  rules={[
-                    {
-                      required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.password.required"
-                          defaultMessage="请输入密码！"
-                        />
-                      ),
-                    },
-                  ]}
-                />
-              </>
-            )}
+          {status === 'error' && operationType === 'register' && (
+            <LoginMessage content="验证码错误" />
+          )}
+          {type === 'register' && (
+            <>
+              <Tabs tabPosition="top" onChange={setUserType}>
+                <Tabs.TabPane tab="我是同学" key="student">
+                  <>
+                    <ProForm
+                      initialValues={{
+                        autoLogin: true,
+                      }}
+                      submitter={{
+                        searchConfig: {
+                          submitText: intl.formatMessage({
+                            id: 'pages.login.register.submit',
+                            defaultMessage: ' 注册',
+                          }),
+                        },
+                        render: (_, dom) => dom.pop(),
+                        submitButtonProps: {
+                          loading: submitting,
+                          size: 'large',
+                          style: {
+                            width: '100%',
+                          },
+                        },
+                      }}
+                      onFinish={async (values) => {
+                        handleRegisterSubmit(values);
+                      }}
+                    >
+                      <ProFormText
+                        name="email"
+                        addonAfter="@student.xjtlu.edu.cn"
+                        fieldProps={{
+                          size: 'large',
+                          prefix: <MailOutlined className={styles.prefixIcon} />,
+                        }}
+                        placeholder={intl.formatMessage({
+                          id: 'pages.login.email.placeholder',
+                          defaultMessage: 'XJTLU邮箱（必填）',
+                        })}
+                        rules={[
+                          {
+                            required: true,
+                            message: (
+                              <FormattedMessage
+                                id="pages.login.email.required"
+                                defaultMessage="请输入XJTLU邮箱!"
+                              />
+                            ),
+                          },
+                        ]}
+                      />
+                      <ProFormText
+                        name="username"
+                        fieldProps={{
+                          size: 'large',
+                          prefix: <UserOutlined className={styles.prefixIcon} />,
+                        }}
+                        placeholder={intl.formatMessage({
+                          id: 'pages.login.username.placeholder',
+                          defaultMessage: '昵称',
+                        })}
+                      />
+                      <ProFormText.Password
+                        name="password"
+                        fieldProps={{
+                          size: 'large',
+                          prefix: <LockOutlined className={styles.prefixIcon} />,
+                        }}
+                        placeholder={intl.formatMessage({
+                          id: 'pages.login.password.placeholder',
+                          defaultMessage: '密码',
+                        })}
+                        rules={[
+                          {
+                            required: true,
+                            message: (
+                              <FormattedMessage
+                                id="pages.login.password.required"
+                                defaultMessage="请输入密码！"
+                              />
+                            ),
+                          },
+                        ]}
+                      />
+                      <ProFormCaptcha
+                        fieldProps={{
+                          size: 'large',
+                          prefix: <LockOutlined className={styles.prefixIcon} />,
+                        }}
+                        captchaProps={{
+                          size: 'large',
+                        }}
+                        placeholder={intl.formatMessage({
+                          id: 'pages.login.captcha.placeholder',
+                          defaultMessage: '请输入验证码',
+                        })}
+                        captchaTextRender={(timing, count) => {
+                          if (timing) {
+                            return `${count} ${intl.formatMessage({
+                              id: 'pages.getCaptchaSecondText',
+                              defaultMessage: '获取验证码',
+                            })}`;
+                          }
 
-            {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
-            {type === 'mobile' && (
-              <>
-                <ProFormText
-                  fieldProps={{
-                    size: 'large',
-                    prefix: <MobileOutlined className={styles.prefixIcon} />,
-                  }}
-                  name="mobile"
-                  placeholder={intl.formatMessage({
-                    id: 'pages.login.phoneNumber.placeholder',
-                    defaultMessage: '手机号',
-                  })}
-                  rules={[
-                    {
-                      required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.phoneNumber.required"
-                          defaultMessage="请输入手机号！"
-                        />
-                      ),
-                    },
-                    {
-                      pattern: /^1\d{10}$/,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.phoneNumber.invalid"
-                          defaultMessage="手机号格式错误！"
-                        />
-                      ),
-                    },
-                  ]}
-                />
-                <ProFormCaptcha
-                  fieldProps={{
-                    size: 'large',
-                    prefix: <LockOutlined className={styles.prefixIcon} />,
-                  }}
-                  captchaProps={{
-                    size: 'large',
-                  }}
-                  placeholder={intl.formatMessage({
-                    id: 'pages.login.captcha.placeholder',
-                    defaultMessage: '请输入验证码',
-                  })}
-                  captchaTextRender={(timing, count) => {
-                    if (timing) {
-                      return `${count} ${intl.formatMessage({
-                        id: 'pages.getCaptchaSecondText',
-                        defaultMessage: '获取验证码',
-                      })}`;
-                    }
+                          return intl.formatMessage({
+                            id: 'pages.login.phoneLogin.getVerificationCode',
+                            defaultMessage: '获取验证码',
+                          });
+                        }}
+                        name="captcha"
+                        rules={[
+                          {
+                            required: true,
+                            message: (
+                              <FormattedMessage
+                                id="pages.login.captcha.required"
+                                defaultMessage="请输入验证码！"
+                              />
+                            ),
+                          },
+                        ]}
+                        phoneName="email"
+                        onGetCaptcha={async (phone) => {
+                          const email = phone + '@student.xjtlu.edu.cn';
+                          // console.log(email)
+                          const result = await getCaptcha({ email: email });
+                          // console.log(result)
 
-                    return intl.formatMessage({
-                      id: 'pages.login.phoneLogin.getVerificationCode',
-                      defaultMessage: '获取验证码',
-                    });
-                  }}
-                  name="captcha"
-                  rules={[
-                    {
-                      required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.captcha.required"
-                          defaultMessage="请输入验证码！"
-                        />
-                      ),
-                    },
-                  ]}
-                  onGetCaptcha={async (phone) => {
-                    const result = await getFakeCaptcha({
-                      phone,
-                    });
+                          // console.log(captcha)
+                          message.success('获取验证码成功');
+                        }}
+                      />
+                    </ProForm>
+                  </>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab="我是老师" key="teacher">
+                  <>
+                    <ProForm
+                      initialValues={{
+                        autoLogin: true,
+                      }}
+                      submitter={{
+                        searchConfig: {
+                          submitText: intl.formatMessage({
+                            id: 'pages.login.register.submit',
+                            defaultMessage: ' 注册',
+                          }),
+                        },
+                        render: (_, dom) => dom.pop(),
+                        submitButtonProps: {
+                          loading: submitting,
+                          size: 'large',
+                          style: {
+                            width: '100%',
+                          },
+                        },
+                      }}
+                      onFinish={async (values) => {
+                        handleRegisterSubmit(values);
+                      }}
+                    >
+                      <ProFormText
+                        name="email"
+                        addonAfter="@xjtlu.edu.cn"
+                        fieldProps={{
+                          size: 'large',
+                          prefix: <MailOutlined className={styles.prefixIcon} />,
+                        }}
+                        placeholder={intl.formatMessage({
+                          id: 'pages.login.email.placeholder',
+                          defaultMessage: 'XJTLU邮箱(必填)',
+                        })}
+                        rules={[
+                          {
+                            required: true,
+                            message: (
+                              <FormattedMessage
+                                id="pages.login.email.required"
+                                defaultMessage="请输入XJTLU邮箱!"
+                              />
+                            ),
+                          },
+                        ]}
+                      />
+                      <ProFormText.Password
+                        name="password"
+                        fieldProps={{
+                          size: 'large',
+                          prefix: <LockOutlined className={styles.prefixIcon} />,
+                        }}
+                        placeholder={intl.formatMessage({
+                          id: 'pages.login.password.placeholder',
+                          defaultMessage: '密码(必填)',
+                        })}
+                        rules={[
+                          {
+                            required: true,
+                            message: (
+                              <FormattedMessage
+                                id="pages.login.password.required"
+                                defaultMessage="请输入密码！"
+                              />
+                            ),
+                          },
+                        ]}
+                      />
+                      <ProFormCaptcha
+                        fieldProps={{
+                          size: 'large',
+                          prefix: <LockOutlined className={styles.prefixIcon} />,
+                        }}
+                        captchaProps={{
+                          size: 'large',
+                        }}
+                        placeholder={intl.formatMessage({
+                          id: 'pages.login.captcha.placeholder',
+                          defaultMessage: '请输入验证码',
+                        })}
+                        captchaTextRender={(timing, count) => {
+                          if (timing) {
+                            return `${count} ${intl.formatMessage({
+                              id: 'pages.getCaptchaSecondText',
+                              defaultMessage: '获取验证码',
+                            })}`;
+                          }
 
-                    if (result === false) {
-                      return;
-                    }
+                          return intl.formatMessage({
+                            id: 'pages.login.phoneLogin.getVerificationCode',
+                            defaultMessage: '获取验证码',
+                          });
+                        }}
+                        name="captcha"
+                        phoneName="email"
+                        rules={[
+                          {
+                            required: true,
+                            message: (
+                              <FormattedMessage
+                                id="pages.login.captcha.required"
+                                defaultMessage="请输入验证码！"
+                              />
+                            ),
+                          },
+                        ]}
+                        onGetCaptcha={async (phone) => {
+                          const email = phone + '@xjtlu.edu.cn';
+                          // console.log(email)
+                          const result = await getCaptcha({ email: email });
+                          // console.log(result)
 
-                    message.success('获取验证码成功！验证码为：1234');
-                  }}
-                />
-              </>
-            )}
-            <div
-              style={{
-                marginBottom: 24,
-              }}
-            >
-              <ProFormCheckbox noStyle name="autoLogin">
-                <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
-              </ProFormCheckbox>
-              <a
-                style={{
-                  float: 'right',
-                }}
-              >
-                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
-              </a>
-            </div>
-          </ProForm>
-          <Space className={styles.other}>
-            <FormattedMessage id="pages.login.loginWith" defaultMessage="其他登录方式" />
-            <AlipayCircleOutlined className={styles.icon} />
-            <TaobaoCircleOutlined className={styles.icon} />
-            <WeiboCircleOutlined className={styles.icon} />
-          </Space>
+                          // console.log(captcha)
+                          message.success('获取验证码成功');
+                        }}
+                      />
+                    </ProForm>
+                  </>
+                </Tabs.TabPane>
+              </Tabs>
+            </>
+          )}
+          <Space className={styles.other}></Space>
         </div>
       </div>
       <Footer />

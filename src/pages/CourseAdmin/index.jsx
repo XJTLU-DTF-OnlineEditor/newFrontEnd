@@ -10,6 +10,7 @@ import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { PlusOutlined } from '@ant-design/icons';
 import { Typography } from 'antd';
 import './index.less';
+import { currentUser } from '@/services/user/api';
 
 const { Title } = Typography;
 
@@ -19,6 +20,7 @@ export default class App extends Component {
     file: '',
   };
 
+  teacher_info = React.createRef();
   formRef = React.createRef();
 
   componentDidMount() {
@@ -26,10 +28,10 @@ export default class App extends Component {
   }
 
   getTopics = async () => {
-    // 【对接lmo 获取teacher_id】
-    const teacher_id = 3;
-    const res = await getTopicByTeacher(teacher_id);
-    console.log(res);
+    const teacher = await currentUser();
+    this.teacher_info.current = teacher.data;
+
+    const res = await getTopicByTeacher(this.teacher_info.current.userid);
     if (res.error_code == 200) {
       this.setState({
         topics: res.data.map((i) => {
@@ -48,7 +50,7 @@ export default class App extends Component {
 
   addNewTopic = async (values) => {
     console.log(values);
-    const teacher_id = 1;
+    const teacher_id = this.teacher_info.current.userid;
     if (!values.topic_content || !values.topic_title) {
       message.error('please input the topic_title and the topic_content');
       return false;

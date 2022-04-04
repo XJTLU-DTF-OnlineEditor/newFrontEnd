@@ -15,14 +15,28 @@ export async function login(body) {
   });
 }
 
+export async function currentUser() {
+  return request('/server/V1/user/currentuser/', {
+    method: 'GET',
+    headers: {
+      Token: localStorage.getItem('token'),
+      currentAuthority: localStorage.getItem('currentAuthority'),
+    },
+  });
+}
+
 /**
  * Request  interface
  */
-export async function register(body, options) {
-  return request('api/V1/user/register', {
+export async function register(body) {
+  console.log(body);
+  return request('/server/V1/user/register/', {
     method: 'POST',
     data: body,
-    ...(options || {}),
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Credentials': true,
+    },
   });
 }
 
@@ -30,14 +44,20 @@ export async function register(body, options) {
  * Logout interface
  */
 export async function logout() {
-  const msg = await request('/server/V1/user/logout', {
-    method: 'GET',
-  });
-
-  console.log(msg);
-
   return request('/server/V1/user/logout', {
     method: 'GET',
+  });
+}
+
+export async function getCaptcha(body) {
+  console.log(body);
+  return request('/server/V1/user/send_verification_email/', {
+    method: 'POST',
+    data: body,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Credentials': true,
+    },
   });
 }
 
@@ -57,8 +77,6 @@ export const delTag = async (data) => {
     },
   });
 };
-
-
 
 export const updateTag = async (params) => {
   console.log(params);

@@ -9,6 +9,7 @@ import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
 import './courseList.less';
 import { Typography } from 'antd';
+import { currentUser } from '@/services/user/api';
 
 const { Title } = Typography;
 
@@ -18,15 +19,18 @@ export default class App extends Component {
         selectedRowKeys: [],
         dataSource: []
     }
+    teacher_info = React.createRef();
 
 
     getDataSource = async (params) => {
-        // console.log(params, '=====');
+        const teacher = await currentUser();
+        this.teacher_info.current = teacher.data;
+
         const topic_title = this.props.location.query.topic_title
         let result
         if (params.title) {
             result = await request(`/server/V1/course/search/?keyword=${params.title}`, {
-                teacher_id: this.props.location.query.teacher_id
+                teacher_id: this.teacher_info.current.userid
             });
         } else {
             result = await request(`/server/V1/course/courses/${topic_title}/`);

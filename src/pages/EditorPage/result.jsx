@@ -44,7 +44,7 @@ export default function ResultSection(props) {
 
   useEffect(()=>{
     if(id && pics.length>0){
-      handlePicCancel(ini_pics);
+      handlePicCancel(pics);
     }
   },[id])
 

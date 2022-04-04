@@ -12,6 +12,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { Typography } from 'antd';
 import './custom-dark.css';
 import './index.less';
+import { useModel } from 'umi';
 
 const { Title } = Typography;
 
@@ -19,6 +20,7 @@ export default function MainPage(props) {
   const [course_list, setCourse_list] = useState([]);
   const [topic_title, setTopic_title] = useState('');
   const [courseDetail, setCourseDetail] = useState({});
+  const { initialState, setInitialState } = useModel('@@initialState');
 
   useEffect(() => {
     getCatalog();
@@ -128,7 +130,7 @@ export default function MainPage(props) {
         </ProCard>
         {/* 代码运行 */}
         <ProCard ghost colSpan={11}>
-          <Editor />
+          <Editor currentUser={initialState.currentUser} courseid={props.match.params.id}/>
           <Input />
         </ProCard>
         <ProCard ghost colSpan={6}>
