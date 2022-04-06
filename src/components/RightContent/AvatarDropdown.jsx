@@ -29,14 +29,6 @@ const loginOut = async () => {
 const AvatarDropdown = ({menu}) => {
   const {initialState, setInitialState} = useModel('@@initialState');
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-
-    if (userInfo) {
-      await setInitialState((s) => ({...s, currentUser: userInfo}));
-    }
-  };
-
   const onMenuClick = useCallback(
     (event) => {
       const {key} = event;
@@ -62,7 +54,15 @@ const AvatarDropdown = ({menu}) => {
 
   const displayAvator = () => {
     // console.log(currentUser.avatar)
-    if (currentUser.currentAuthority === "guest" || !currentUser.currentAuthority) {
+    if (currentUser === null) {
+      return (
+        <span className={`${styles.action} ${styles.account}`}>
+          <Avatar size="small" className={styles.avatar} src='https://joeschmoe.io/api/v1/random' alt="avatar"/>
+          <span className={`${styles.name} anticon`}>请登录</span>
+        </span>
+      )
+    }
+    if (currentUser.currentAuthority === "guest" || null) {
       return (
         <span className={`${styles.action} ${styles.account}`}>
           <Avatar size="small" className={styles.avatar} src='https://joeschmoe.io/api/v1/random' alt="avatar"/>
@@ -76,7 +76,7 @@ const AvatarDropdown = ({menu}) => {
           <span className={`${styles.name} anticon`}>{currentUser.username}</span>
         </span>
       )
-    } else if (currentUser.currentAuthority === "admin"){
+    } else if (currentUser.currentAuthority === "admin") {
       console.log(currentUser.email.split("@")[0])
       const teacherName = currentUser.email.split("@")[0]
       return (
@@ -99,26 +99,21 @@ const AvatarDropdown = ({menu}) => {
         </Menu>
       );
     } else {
-      return (<Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-        {menu && (
-          <Menu.Item key="center">
-            <UserOutlined/>
-            个人中心
-          </Menu.Item>
-        )}
-        {menu && (
-          <Menu.Item key="settings">
-            <SettingOutlined/>
-            个人设置
-          </Menu.Item>
-        )}
-        {menu && <Menu.Divider/>}
+      return (
+        <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
+          {menu && (
+            <Menu.Item key="center">
+              <UserOutlined/>
+              个人中心
+            </Menu.Item>
+          )}
+          {menu && <Menu.Divider/>}
 
-        <Menu.Item key="logout">
-          <LogoutOutlined/>
-          退出登录
-        </Menu.Item>
-      </Menu>)
+          <Menu.Item key="logout">
+            <LogoutOutlined/>
+            退出登录
+          </Menu.Item>
+        </Menu>)
     }
 
   }

@@ -47,6 +47,7 @@ export default [{
 // },
 {
   name: 'personal',
+  access: 'noAdmin',
   icon: 'UserOutlined',
   path: '/personal',
   component: './Personal',
@@ -89,8 +90,17 @@ export default [{
 {
   name: "courses",
   icon: 'table',
-  path: '/courses',
-  component: './CoursePage',
+  path: '/courses/',
+  routes: [
+    {
+      path: '/courses/',
+      component: './CoursePage'
+    },
+    {
+      path: '/courses/allCourses',
+      component: './CoursePage/CourseDetail'
+    }
+  ]
 },
 {
   path: '/',

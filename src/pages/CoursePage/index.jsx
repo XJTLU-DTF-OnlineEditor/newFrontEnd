@@ -1,15 +1,16 @@
-import React, {Component} from "react";
-import {PageContainer} from "@ant-design/pro-layout";
-import {Footer} from "antd/es/layout/layout";
-import ProCard from "@ant-design/pro-card";
-import {Card, Select, Switch} from "antd";
-import {getAllTopic, getNewTopic, getTopic, search} from "@/services/course/api";
-import {SearchOutlined} from "@ant-design/icons";
+import React, { Component } from 'react';
+import { PageContainer } from '@ant-design/pro-layout';
+import { Button, Select } from 'antd';
+import ProCard from '@ant-design/pro-card';
+import { RightOutlined, SearchOutlined } from '@ant-design/icons';
+import { getTopic, search } from '@/services/course/api';
+import { Footer } from 'antd/es/layout/layout';
+import Banner from '@/pages/utils/coursePage/animBanner';
+
+const { Option } = Select;
 
 let timeout;
 let currentValue;
-const {Meta} = Card;
-const {Option} = Select;
 
 function fetcha(value, callback) {
   if (timeout) {
@@ -34,148 +35,122 @@ function fetcha(value, callback) {
         });
       }
       callback(data);
+    } else if (topic_data.length === 0) {
     }
   }
-
   timeout = setTimeout(fake, 300);
 }
 
-export default class CoursePage extends Component {
+export default class welcome extends Component {
   state = {
+    topics: [], // Length = 6
     data: [], // data of search
     value: undefined,
-    hot_topic_list: [],
-    new_topic_list: []
-  }
+  };
 
   componentDidMount() {
-    // Get all topic data
+    // 初始化数据
+    //console.log('Did Mount');
     this.getData();
   }
 
   getData = async () => {
-    // sort all the courses according to the hot degree
-    const hot_topic_list = await getAllTopic();
-    // Sort all the courses according to the date
-    const new_topic_list = await getNewTopic();
-    console.log(new_topic_list)
-    this.setState({hot_topic_list, new_topic_list});
-    console.log(this.state)
-
-  }
-
+    const topics = await getTopic();
+    console.log(topics);
+    // const topics = topic_data.topics;
+    console.log(topics);
+    this.setState({ topics });
+    console.log(this.state);
+  };
 
   handleSearch = (value) => {
     console.log(value); // value: Input text
     if (value) {
-      fetcha(value, (data) => this.setState({data}));
+      fetcha(value, (data) => this.setState({ data }));
     } else {
-      this.setState({data: []});
+      this.setState({ data: [] });
     }
   };
 
   handleChange = (value) => {
     // console.log(value); // value: place holder text
-    this.setState({value});
-    this.props.history.push(`/course/exercise/${value}`)
+    this.setState({ value });
+    this.props.history.push(`/course/exercise/${value}`);
   };
 
-  handleSearchClick = (value) => {
-    console.log(value)
-  }
-
   render() {
-    let {hot_topic_list} = this.state;
-    let {new_topic_list} = this.state;
-    const options = this.state.data.map(
-      (d) => <Option key={d.value}>{d.text}</Option>
-    );  // Search options
-
-    // console.log(hot_topic_list)
+    let { topics } = this.state;
+    const options = this.state.data.map((d) => <Option key={d.value}>{d.text}</Option>); // search options
+    // console.log(topics[0]);
 
     return (
-      <PageContainer header={{
-        title: '所有课程',
-        breadcrumb: {},
-      }} extra={
+      <PageContainer
+      header={{title: "课程"}}>
         <div>
-          <span>Search course here:  <SearchOutlined/></span>
-          <Select
-            showSearch
-            showArrow={false}
-            value={this.state.value}
-            style={{width: 150}}
-            placeholder="input search text"
-            defaultActiveFirstOption={false}
-            onSearch={this.handleSearch}
-            onChange={this.handleChange}
-            filterOption={false}
-            notFoundContent="No such course"
-          >
-            {options}
-          </Select>
+          <Banner />
         </div>
-      }
-      >
-        <ProCard
-          tabs={{
-            type: 'card',
-          }}
-        >
-          <ProCard.TabPane key="tab1" tab="最热">
-            <ProCard style={{marginTop: 8}} gutter={[8, 16]} wrap>
-              {hot_topic_list.map((item, index) => {
-                return (
-                  <ProCard colSpan="33%"
-                           layout="default"
-                           bordered
-                           hoverable
-                           onClick={
-                             () => (this.props.history.push(`/course/exercise/${item.topic_title}`))
-                           }>
-                    <Card
-                      bordered={false}
-                      style={{width: 240}}
-                      cover={<img alt={item.topic_title} src={item.topic_img}/>}
-                    >
-                      <Meta title={item.topic_title} description={item.topic_content}/>
-                    </Card>
-                  </ProCard>
-                )
-              })}
-            </ProCard>
-          </ProCard.TabPane>
-          <ProCard.TabPane key="tab2" tab="最新">
-            <ProCard style={{marginTop: 8}} gutter={[8, 16]} wrap>
-              {new_topic_list.map((item, index) => {
-                return (
-                  <ProCard
-                    colSpan="33%"
-                    layout="default"
-                    bordered
-                    hoverable
-                    onClick={
-                      () => (this.props.history.push(`/course/exercise/${item.topic_title}`))
-                    }>
-                    <Card
-                      colSpan="33%"
-                      bordered={false}
-                      style={{width: 240}}
-                      cover={<img alt={item.topic_title} src={item.topic_img}/>}
-                    >
-                      <Meta title={item.topic_title} description={item.topic_content}/>
-                    </Card>
-                  </ProCard>
-                )
-              })}
-            </ProCard>
-          </ProCard.TabPane>
-        </ProCard>
-        <ProCard>
-        </ProCard>
-        <Footer style={{textAlign: 'center'}}>XJTLU ©2022 Online Editor</Footer>
-      </PageContainer>
-    )
-  }
 
+        <ProCard
+          title={
+            <Button type="text" onClick={() => this.props.history.push('/courses/allCourses')}>
+              所有课程
+              <RightOutlined />
+            </Button>
+          }
+          direction="column"
+          gutter={[0, 8]}
+          extra={
+            <div>
+              <span>
+                Search course here: <SearchOutlined />
+              </span>
+              <Select
+                showSearch
+                showArrow={false}
+                value={this.state.value}
+                style={{ width: 150 }}
+                placeholder="input search text"
+                defaultActiveFirstOption={false}
+                onSearch={this.handleSearch}
+                onChange={this.handleChange}
+                filterOption={false}
+                notFoundContent="No such course"
+              >
+                {options}
+              </Select>
+            </div>
+          }
+        >
+          {topics.map((item, index) => {
+            return (
+              <ProCard
+                layout="center"
+                bordered
+                hoverable
+                split="vertical"
+                onClick={() => {
+                  this.props.history.push(`/course/exercise/${item.topic_title}`);
+                }}
+              >
+                <ProCard colSpan="30%" ghost>
+                  <center>
+                    <font face="verdana">
+                      {item.topic_title}
+                      <RightOutlined />
+                    </font>
+                  </center>
+                </ProCard>
+                <ProCard>
+                  <div>
+                    <center>{item.topic_content}</center>
+                  </div>
+                </ProCard>
+              </ProCard>
+            );
+          })}
+        </ProCard>
+        <Footer style={{ textAlign: 'center' }}>XJTLU ©2022 Online Editor</Footer>
+      </PageContainer>
+    );
+  }
 }
