@@ -16,12 +16,12 @@ export async function login(body) {
 }
 
 export async function currentUser() {
-  return request('server/V1/user/currentuser/', {
+  return request('/server/V1/user/currentuser/', {
     method: 'GET',
-    headers:{
+    headers: {
       Token: localStorage.getItem('token'),
-      currentAuthority: localStorage.getItem('currentAuthority')
-    }
+      currentAuthority: localStorage.getItem('currentAuthority'),
+    },
   });
 }
 
@@ -29,7 +29,7 @@ export async function currentUser() {
  * Request  interface
  */
 export async function register(body) {
-  console.log(body)
+  console.log(body);
   return request('/server/V1/user/register/', {
     method: 'POST',
     data: body,
@@ -49,8 +49,8 @@ export async function logout() {
   });
 }
 
-export async function getCaptcha(body){
-  console.log(body)
+export async function getCaptcha(body) {
+  console.log(body);
   return request('/server/V1/user/send_verification_email/', {
     method: 'POST',
     data: body,
@@ -59,9 +59,7 @@ export async function getCaptcha(body){
       'Access-Control-Allow-Credentials': true,
     },
   });
-
 }
-
 
 export const getTag = async () => {
   return request('/api/V1/user/tags', {
@@ -79,8 +77,6 @@ export const delTag = async (data) => {
     },
   });
 };
-
-
 
 export const updateTag = async (params) => {
   console.log(params);

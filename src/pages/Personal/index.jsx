@@ -10,7 +10,6 @@ import {currentUser as queryCurrentUser} from "@/services/user/api";
 import {Access} from "@/.umi/plugin-access/access";
 import HeaderDropdown from "@/components/HeaderDropdown";
 import GuestContent from "@/pages/Personal/components/GuestContent";
-import { enquireScreen } from 'enquire-js';
 import '../utils/static/style';
 
 const targetCalendar = () => {

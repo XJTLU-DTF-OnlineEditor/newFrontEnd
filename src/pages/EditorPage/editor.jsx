@@ -2,9 +2,6 @@ import { Controlled as CodeMirror } from 'react-codemirror2';
 import 'codemirror/lib/codemirror.js';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/darcula.css';
-// 代码模式，clike是包含java,c++等模式的
-import 'codemirror/mode/clike/clike';
-import 'codemirror/mode/css/css';
 // ctrl+空格代码提示补全
 import 'codemirror/addon/hint/show-hint.js';
 import 'codemirror/addon/hint/show-hint.css';
@@ -21,7 +18,10 @@ import 'codemirror/addon/fold/comment-fold.js';
 import 'codemirror/addon/edit/closebrackets.js';
 import 'codemirror/addon/edit/matchBrackets';
 // 代码模式，clike是包含java,c++等模式的
-import 'codemirror/mode/python/python.js';
+import 'codemirror/mode/clike/clike'; // java: text/x-java
+import 'codemirror/mode/css/css';
+import 'codemirror/mode/python/python.js';  // python
+import 'codemirror/mode/properties/properties.js';
 // 全屏显示
 import 'codemirror/addon/display/fullscreen.js';
 import 'codemirror/addon/display/fullscreen.css';
@@ -35,29 +35,56 @@ import {
   CaretRightOutlined,
   PauseOutlined,
 } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button, message, Tabs } from 'antd';
 import React, { Component } from 'react';
-import { run_interactive, run_split, terminate } from '@/services/editor';
+import { run_interactive, terminate } from '@/services/editor';
 import PubSub from 'pubsub-js';
-import ProCard from '@ant-design/pro-card';
 import { nanoid } from 'nanoid';
+import {
+  ModalForm,
+  ProFormText,
+  ProFormSelect,
+} from '@ant-design/pro-form';
+import { currentUser } from '@/services/ant-design-pro/api';
+
+const { TabPane } = Tabs;
+
+const initialPanes = [
+  { title: 'main.py', content: '', key: '0', closable: false, lang: 'python', placeholder: 'code goes here' },
+  {
+    title: 'requirements.txt', content: '', key: '1', closable: false, lang: 'properties',
+    placeholder: 'To add dependencies of the program as the following format:\n\'\'\'\nmatplotlib\npython-dateutil>=2.7\ncycler==0.10\nsix>=1.5\n\'\'\''
+  },
+];
 
 export default class Editor extends Component {
   state = {
     id: '',
     isFullScreen: false,
-    source: '',
     disable: false,
     input: '',
-    inputType: 'Interactive',
-    lang: 'python',
+    activeKey: initialPanes[0].key,
+    panes: initialPanes,
+    modalVisit: false
   };
   rootRef = React.createRef();
   ws = React.createRef(null)
+  restFormRef = React.createRef()
 
   componentDidMount() {
+    
+    console.log(this.props, "===")
     PubSub.subscribe('editor', (msg, data) => {
       this.setState(data);
+    });
+
+    PubSub.subscribe('newFile', (msg, data) => {
+      console.log(data)
+      this.setState({
+        panes: [...this.state.panes, {
+          title: data.filename, content: data.content, key: String(this.state.panes.length - 1), closable: true, lang: 'python'
+        }]
+      })
     });
 
     PubSub.subscribe('ws', (msg, data) => {
@@ -101,15 +128,13 @@ export default class Editor extends Component {
 
   runcode = async () => {
     let result;
-    const { id, source, lang, inputType, input } = this.state;
+    const { id, panes } = this.state;
 
-    if (inputType == "Interactive") {
-      console.log("Interactive")
-      result = await run_interactive(id, lang, source);
-    } else if (inputType == "Split") {
-      console.log("Split")
-      result = await run_split(id, lang, source, input);
-    }
+    let filelist = panes.map(file => {
+      return { title: file.title, content: file.content, id: file.key }
+    })
+    result = await run_interactive(id, panes[0].lang, filelist, this.props.courseid, this.props.currentUser.userid);
+
 
     if (result.error_code != 200) {
       message.error(result.msg)
@@ -120,8 +145,7 @@ export default class Editor extends Component {
     this.setState({ disable: true });
     const result = await terminate(this.state.id);
 
-    if(result.error_code!==200){
-      console.log(result.error_code)
+    if (result.error_code !== 200) {
       message.error("Something wrong happens. Please try again later")
     }
 
@@ -134,9 +158,45 @@ export default class Editor extends Component {
     }, 1000);
   }
 
+  onChange = activeKey => {
+    this.setState({ activeKey });
+  };
+
+  onEdit = (targetKey, action) => {
+    console.log(action, targetKey)
+    this[action](targetKey);
+  };
+
+  add = () => {
+    this.setState({ modalVisit: true })
+  };
+
+  remove = targetKey => {
+    const { panes, activeKey } = this.state;
+    let newActiveKey = activeKey;
+    let lastIndex;
+    panes.forEach((pane, i) => {
+      if (pane.key === targetKey) {
+        lastIndex = i - 1;
+      }
+    });
+    const newPanes = panes.filter(pane => pane.key !== targetKey);
+    if (newPanes.length && newActiveKey === targetKey) {
+      if (lastIndex >= 0) {
+        newActiveKey = newPanes[lastIndex].key;
+      } else {
+        newActiveKey = newPanes[0].key;
+      }
+    }
+    this.setState({
+      panes: newPanes,
+      activeKey: newActiveKey,
+    });
+  };
+
   render() {
     // 功能按钮
-    const { id, disable, isFullScreen, source } = this.state;
+    const { id, disable, isFullScreen, modalVisit } = this.state;
     const operations = (
       <>
         <Button
@@ -157,51 +217,118 @@ export default class Editor extends Component {
       </>
     );
 
-    // 编辑器样式
-    const options = {
-      mode: 'python',
-      theme: 'darcula',
-      autofocus: true, // 自动获取焦点
-      styleActiveLine: true, // 光标代码高亮
-      lineNumbers: true, // 显示行号
-      smartIndent: true, // 自动缩进
-      // start-设置支持代码折叠
-      lineWrapping: true,
-      foldGutter: true,
-      placeholder: 'code goes here',
-      gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], //end
-      matchBrackets: true, // 括号匹配，光标旁边的括号都高亮显示
-      autoCloseBrackets: true, // 键入时将自动关闭()[]{}''""
-      fullScreen: isFullScreen, // 全屏显示
-      scrollbarStyle: 'simple',
-      cursorScrollMargin: 5,
-      extraKeys: {
-        Ctrl: 'autocomplete',
-        'Ctrl-S': function (editor) {
-          editor.codeSave(editor);
-        },
-        'Ctrl-Z': function (editor) {
-          editor.undo();
-        },
-        F8: function (editor) {
-          editor.redo();
-        },
-      },
-    };
+    const { panes, activeKey } = this.state;
 
     return (
-      <ProCard title="Source" ghost extra={operations}>
-        <div ref={this.rootRef}>
-          <CodeMirror
-            className="editor"
-            value={source}
-            options={options}
-            onBeforeChange={(editor, data, value) => {
-              this.setState({ source: value });
-            }}
+      <>
+        <ModalForm
+          title="new file"
+          visible={modalVisit}
+          formRef={this.restFormRef}
+          width="500px"
+          onVisibleChange={value => this.setState({ modalVisit: value })}
+          submitter={{
+            searchConfig: {
+              submitText: 'confirm',
+              resetText: 'cancel',
+            },
+            resetButtonProps: {
+              onClick: () => {
+                this.restFormRef.current?.resetFields();
+                this.setState({ modalVisit: false })
+              },
+            },
+          }}
+          onFinish={async (values) => {
+            const activeKey = `${panes.length}`;
+            const newPanes = [...panes];
+            newPanes.push({ title: values.filename, content: '', key: activeKey, lang: values.lang, closable: true, placeholder: 'code goes here' });
+            this.setState({
+              panes: newPanes,
+              activeKey,
+              modalVisit: false
+            });
+            this.restFormRef.current?.resetFields();
+          }}
+        >
+          <ProFormText
+            width="md"
+            name="filename"
+            label="filename"
+            placeholder="please input the filename"
           />
-        </div>
-      </ProCard>
+          <ProFormSelect
+            name="lang"
+            label="lang"
+            valueEnum={{
+              python: 'python',
+              java: 'java',
+              c: 'c',
+              "c++": 'c++',
+              shell: 'shell',
+              properties: 'properties',
+              css: 'css',
+            }}
+            initialValue={this.state.panes[0].lang}
+            width="sm"
+            placeholder="Please select a programme language"
+            rules={[{ required: true, message: 'Please select a programme language!' }]}
+          />
+        </ModalForm>
+        <Tabs
+          type="editable-card"
+          onChange={this.onChange}
+          activeKey={activeKey}
+          onEdit={this.onEdit}
+          tabBarExtraContent={operations}
+        >
+          {panes.map(pane => (
+            <TabPane tab={pane.title} key={pane.key} closable={pane.closable}>
+              <div ref={this.rootRef} >
+                <CodeMirror
+                  className="editor"
+                  value={pane.content}
+                  options={{
+                    mode: pane.lang,
+                    theme: 'darcula',
+                    autofocus: true, // 自动获取焦点
+                    styleActiveLine: true, // 光标代码高亮
+                    lineNumbers: true, // 显示行号
+                    smartIndent: true, // 自动缩进
+                    // start-设置支持代码折叠
+                    lineWrapping: true,
+                    foldGutter: true,
+                    placeholder: pane.placeholder,
+                    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], //end
+                    matchBrackets: true, // 括号匹配，光标旁边的括号都高亮显示
+                    autoCloseBrackets: true, // 键入时将自动关闭()[]{}''""
+                    fullScreen: isFullScreen, // 全屏显示
+                    scrollbarStyle: 'simple',
+                    cursorScrollMargin: 5,
+                    extraKeys: {
+                      Ctrl: 'autocomplete',
+                      'Ctrl-S': function (editor) {
+                        editor.codeSave(editor);
+                      },
+                      'Ctrl-Z': function (editor) {
+                        editor.undo();
+                      },
+                      F8: function (editor) {
+                        editor.redo();
+                      },
+                    },
+                  }}
+                  onBeforeChange={(editor, data, value) => {
+                    let prevPanes = panes
+                    prevPanes[parseInt(pane.key)].content = value;
+                    this.setState({ panes: [...prevPanes] })
+                  }}
+                />
+              </div>
+            </TabPane>
+          ))}
+        </Tabs>
+      </>
     );
   }
 }

@@ -1,20 +1,16 @@
-import {
-  LockOutlined, MailOutlined,
-  MobileOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import {Alert, Space, message, Tabs} from 'antd';
-import React, {useState} from 'react';
-import ProForm, {ProFormCaptcha, ProFormCheckbox, ProFormText} from '@ant-design/pro-form';
-import {useIntl, Link, history, FormattedMessage, SelectLang, useModel} from 'umi';
+import { LockOutlined, MailOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
+import { Alert, Space, message, Tabs } from 'antd';
+import React, { useState } from 'react';
+import ProForm, { ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
+import { useIntl, Link, history, FormattedMessage, SelectLang, useModel } from 'umi';
 import Footer from '@/components/Footer';
 // import { login } from '@/services/ant-design-pro/api';
-import {getCaptcha, login, logout, register} from '@/services/user/api';
-import {getFakeCaptcha} from '@/services/ant-design-pro/login';
+import { getCaptcha, login, logout, register } from '@/services/user/api';
+import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import styles from './index.less';
-import {getInitialState} from "@/app";
+import { getInitialState } from '@/app';
 
-const LoginMessage = ({content}) => (
+const LoginMessage = ({ content }) => (
   <Alert
     style={{
       marginBottom: 24,
@@ -29,32 +25,32 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const [userLoginState, setUserLoginState] = useState({});
   const [type, setType] = useState('login');
-  const [userType, setUserType] = useState("student");
-  const {initialState, setInitialState} = useModel('@@initialState');
+  const [userType, setUserType] = useState('student');
+  const { initialState, setInitialState } = useModel('@@initialState');
   const intl = useIntl();
 
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
 
     if (userInfo) {
-      await setInitialState((s) => ({...s, currentUser: userInfo}));
+      await setInitialState((s) => ({ ...s, currentUser: userInfo }));
     }
   };
 
   const handleSubmit = async (values) => {
     setSubmitting(true);
     console.log(values);
-    if (userType === "student") {
-      values.email = values.email + "@student.xjtlu.edu.cn"
-      console.log(values)
-    } else if (userType === "teacher") {
-      values.email = values.email + "@xjtlu.edu.cn"
-      console.log(values)
+    if (userType === 'student') {
+      values.email = values.email + '@student.xjtlu.edu.cn';
+      console.log(values);
+    } else if (userType === 'teacher') {
+      values.email = values.email + '@xjtlu.edu.cn';
+      console.log(values);
     }
 
     try {
       // 登录
-      const msg = await login({...values, userType});
+      const msg = await login({ ...values, userType });
 
       console.log(msg);
 
@@ -65,17 +61,17 @@ const Login = () => {
         }); // login successfully
         message.success(defaultLoginSuccessMessage);
         // 存储登录Token
-        localStorage.setItem('token', msg.token)
-        localStorage.setItem('currentAuthority', msg.currentAuthority)
-        fetchUserInfo()  // fetch user information again and refresh token
+        localStorage.setItem('token', msg.token);
+        localStorage.setItem('currentAuthority', msg.currentAuthority);
+        fetchUserInfo(); // fetch user information again and refresh token
         // console.log("jump to welcome")
         // Jump to welcome
         // history.push(`/welcome`)
         // console.log(history);
         if (!history) return;
-        const {query} = history.location;
+        const { query } = history.location;
         // console.log(query);
-        const {redirect} = query;
+        const { redirect } = query;
         history.push(redirect || '/');
         return;
       }
@@ -88,9 +84,9 @@ const Login = () => {
       }
     } catch (error) {
       // 如果失败去设置用户错误信息
-      console.dir(error.data)
+      console.dir(error.data);
       setUserLoginState(error.data);
-      console.log(userLoginState)
+      console.log(userLoginState);
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
         defaultMessage: '登录失败，请重试！',
@@ -106,39 +102,40 @@ const Login = () => {
     setSubmitting(true);
     console.log(values);
 
-    if (userType === "student") {
-      values.email = values.email + "@student.xjtlu.edu.cn"
-      console.log(values)
-    } else if (userType === "teacher") {
-      values.email = values.email + "@xjtlu.edu.cn"
-      console.log(values)
+    if (userType === 'student') {
+      values.email = values.email + '@student.xjtlu.edu.cn';
+      console.log(values);
+    } else if (userType === 'teacher') {
+      values.email = values.email + '@xjtlu.edu.cn';
+      console.log(values);
     }
 
     try {
       // 注册
-      const msg = await register({...values, userType});
-      console.log(msg)
-      if (msg.status === "ok") {  // 注册成功
+      const msg = await register({ ...values, userType });
+      console.log(msg);
+      if (msg.status === 'ok') {
+        // 注册成功
         const defaultRegisterSuccessMessage = intl.formatMessage({
           id: 'pages.login.register.success',
           defaultMessage: '注册成功！',
         }); // login successfully
         message.success(defaultRegisterSuccessMessage);
-        localStorage.setItem('token', msg.token)
-        localStorage.setItem('currentAuthority', msg.currentAuthority)
-        fetchUserInfo()  // fetch user information again and refresh token
+        localStorage.setItem('token', msg.token);
+        localStorage.setItem('currentAuthority', msg.currentAuthority);
+        fetchUserInfo(); // fetch user information again and refresh token
         if (!history) return;
-        const {query} = history.location;
-        const {redirect} = query;
+        const { query } = history.location;
+        const { redirect } = query;
         history.push(redirect || '/');
         return;
-      } else if (msg.status === "error" && msg.error_code === 421){
+      } else if (msg.status === 'error' && msg.error_code === 421) {
         const RegisterExistFailureMessage = intl.formatMessage({
           id: 'pages.login.register.failure.exist',
           defaultMessage: '邮箱已被注册，请直接登录！',
         });
         message.error(RegisterExistFailureMessage);
-      } else if (msg.status === "error" && msg.error_code === 420) {
+      } else if (msg.status === 'error' && msg.error_code === 420) {
         const noCaptchaFailureMessage = intl.formatMessage({
           id: 'pages.login.register.failure.noCaptcha',
           defaultMessage: '请先获取验证码！',
@@ -147,9 +144,9 @@ const Login = () => {
       }
     } catch (error) {
       // 如果失败去设置用户错误信息
-      console.dir(error.data)
+      console.dir(error.data);
       setUserLoginState(error.data);
-      console.log(userLoginState)
+      console.log(userLoginState);
       const defaultRegisterFailureMessage = intl.formatMessage({
         id: 'pages.login.register.failure',
         defaultMessage: '注册失败，请重试！',
@@ -158,19 +155,19 @@ const Login = () => {
       history.push('/');
     }
     setSubmitting(false);
-  }
+  };
 
-  const {status, type: operationType} = userLoginState;
+  const { status, type: operationType } = userLoginState;
   return (
     <div className={styles.container}>
       <div className={styles.lang} data-lang>
-        {SelectLang && <SelectLang/>}
+        {SelectLang && <SelectLang />}
       </div>
       <div className={styles.content}>
         <div className={styles.top}>
           <div className={styles.header}>
             <Link to="/">
-              <img alt="logo" className={styles.logo} src="/logo.svg"/>
+              <img alt="logo" className={styles.logo} src="/logo.svg" />
               <span className={styles.title}>XJTLU Online Editor</span>
             </Link>
           </div>
@@ -182,7 +179,6 @@ const Login = () => {
         </div>
 
         <div className={styles.main}>
-
           <Tabs activeKey={type} onChange={setType}>
             <Tabs.TabPane
               key="login"
@@ -241,7 +237,7 @@ const Login = () => {
                       addonAfter="@student.xjtlu.edu.cn"
                       fieldProps={{
                         size: 'large',
-                        prefix: <MailOutlined className={styles.prefixIcon}/>,
+                        prefix: <MailOutlined className={styles.prefixIcon} />,
                       }}
                       placeholder={intl.formatMessage({
                         id: 'pages.login.email.placeholder',
@@ -263,7 +259,7 @@ const Login = () => {
                       name="password"
                       fieldProps={{
                         size: 'large',
-                        prefix: <LockOutlined className={styles.prefixIcon}/>,
+                        prefix: <LockOutlined className={styles.prefixIcon} />,
                       }}
                       placeholder={intl.formatMessage({
                         id: 'pages.login.password.placeholder',
@@ -292,7 +288,7 @@ const Login = () => {
                         float: 'right',
                       }}
                     >
-                      <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码"/>
+                      <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
                     </a>
                   </div>
                 </>
@@ -328,7 +324,7 @@ const Login = () => {
                       addonAfter="@xjtlu.edu.cn"
                       fieldProps={{
                         size: 'large',
-                        prefix: <MailOutlined className={styles.prefixIcon}/>,
+                        prefix: <MailOutlined className={styles.prefixIcon} />,
                       }}
                       placeholder={intl.formatMessage({
                         id: 'pages.login.email.placeholder',
@@ -350,7 +346,7 @@ const Login = () => {
                       name="password"
                       fieldProps={{
                         size: 'large',
-                        prefix: <LockOutlined className={styles.prefixIcon}/>,
+                        prefix: <LockOutlined className={styles.prefixIcon} />,
                       }}
                       placeholder={intl.formatMessage({
                         id: 'pages.login.password.placeholder',
@@ -379,7 +375,7 @@ const Login = () => {
                         float: 'right',
                       }}
                     >
-                      <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码"/>
+                      <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
                     </a>
                   </div>
                 </>
@@ -387,7 +383,9 @@ const Login = () => {
             </Tabs>
           )}
 
-          {status === 'error' && operationType === 'register' && <LoginMessage content="验证码错误"/>}
+          {status === 'error' && operationType === 'register' && (
+            <LoginMessage content="验证码错误" />
+          )}
           {type === 'register' && (
             <>
               <Tabs tabPosition="top" onChange={setUserType}>
@@ -422,7 +420,7 @@ const Login = () => {
                         addonAfter="@student.xjtlu.edu.cn"
                         fieldProps={{
                           size: 'large',
-                          prefix: <MailOutlined className={styles.prefixIcon}/>,
+                          prefix: <MailOutlined className={styles.prefixIcon} />,
                         }}
                         placeholder={intl.formatMessage({
                           id: 'pages.login.email.placeholder',
@@ -444,7 +442,7 @@ const Login = () => {
                         name="username"
                         fieldProps={{
                           size: 'large',
-                          prefix: <UserOutlined className={styles.prefixIcon}/>,
+                          prefix: <UserOutlined className={styles.prefixIcon} />,
                         }}
                         placeholder={intl.formatMessage({
                           id: 'pages.login.username.placeholder',
@@ -455,7 +453,7 @@ const Login = () => {
                         name="password"
                         fieldProps={{
                           size: 'large',
-                          prefix: <LockOutlined className={styles.prefixIcon}/>,
+                          prefix: <LockOutlined className={styles.prefixIcon} />,
                         }}
                         placeholder={intl.formatMessage({
                           id: 'pages.login.password.placeholder',
@@ -476,7 +474,7 @@ const Login = () => {
                       <ProFormCaptcha
                         fieldProps={{
                           size: 'large',
-                          prefix: <LockOutlined className={styles.prefixIcon}/>,
+                          prefix: <LockOutlined className={styles.prefixIcon} />,
                         }}
                         captchaProps={{
                           size: 'large',
@@ -512,9 +510,9 @@ const Login = () => {
                         ]}
                         phoneName="email"
                         onGetCaptcha={async (phone) => {
-                          const email = phone + "@student.xjtlu.edu.cn"
+                          const email = phone + '@student.xjtlu.edu.cn';
                           // console.log(email)
-                          const result = await getCaptcha({email: email});
+                          const result = await getCaptcha({ email: email });
                           // console.log(result)
 
                           // console.log(captcha)
@@ -555,7 +553,7 @@ const Login = () => {
                         addonAfter="@xjtlu.edu.cn"
                         fieldProps={{
                           size: 'large',
-                          prefix: <MailOutlined className={styles.prefixIcon}/>,
+                          prefix: <MailOutlined className={styles.prefixIcon} />,
                         }}
                         placeholder={intl.formatMessage({
                           id: 'pages.login.email.placeholder',
@@ -577,7 +575,7 @@ const Login = () => {
                         name="password"
                         fieldProps={{
                           size: 'large',
-                          prefix: <LockOutlined className={styles.prefixIcon}/>,
+                          prefix: <LockOutlined className={styles.prefixIcon} />,
                         }}
                         placeholder={intl.formatMessage({
                           id: 'pages.login.password.placeholder',
@@ -598,7 +596,7 @@ const Login = () => {
                       <ProFormCaptcha
                         fieldProps={{
                           size: 'large',
-                          prefix: <LockOutlined className={styles.prefixIcon}/>,
+                          prefix: <LockOutlined className={styles.prefixIcon} />,
                         }}
                         captchaProps={{
                           size: 'large',
@@ -634,9 +632,9 @@ const Login = () => {
                           },
                         ]}
                         onGetCaptcha={async (phone) => {
-                          const email = phone + "@xjtlu.edu.cn"
+                          const email = phone + '@xjtlu.edu.cn';
                           // console.log(email)
-                          const result = await getCaptcha({email: email});
+                          const result = await getCaptcha({ email: email });
                           // console.log(result)
 
                           // console.log(captcha)
@@ -649,13 +647,12 @@ const Login = () => {
               </Tabs>
             </>
           )}
-          <Space className={styles.other}>
-          </Space>
+          <Space className={styles.other}></Space>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
-}
+};
 
-export default Login
+export default Login;
