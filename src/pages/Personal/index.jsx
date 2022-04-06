@@ -1,19 +1,23 @@
-import React, { Component } from 'react';
-import { GridContent, PageContainer } from '@ant-design/pro-layout';
-import { Col, Descriptions, Row, Card, Divider, Calendar } from 'antd';
-import { Avatar, Tag, Select, Typography, Radio } from 'antd';
-import { AntDesignOutlined } from '@ant-design/icons';
-import { getTag, updateTag } from '@/services/user/api';
+import React, {Component} from 'react';
+import {GridContent, PageContainer} from '@ant-design/pro-layout';
+import {Button, Col, Descriptions, Row, Card, Divider, Calendar, Menu} from 'antd';
+import {Avatar, Tag, Input, Select, Typography, Radio} from 'antd';
+import {CheckCircleOutlined,AntDesignOutlined, LogoutOutlined, RightOutlined} from '@ant-design/icons';
+import {delTag, getTag, login, updateTag} from '@/services/user/api';
 import progress from '@/pages/Personal/components/Progress';
 import Collected from '@/pages/Personal/components/Collected';
-import "./index.less"
+import {currentUser as queryCurrentUser} from "@/services/user/api";
+import {Access} from "@/.umi/plugin-access/access";
+import HeaderDropdown from "@/components/HeaderDropdown";
+import GuestContent from "@/pages/Personal/components/GuestContent";
+import '../utils/static/style';
 
 const targetCalendar = () => {
   return (
     <div className="site-calendar-customize-header-wrapper">
       <Calendar
         fullscreen={false}
-        headerRender={({ value, type, onChange, onTypeChange }) => {
+        headerRender={({value, type, onChange, onTypeChange}) => {
           const start = 0;
           const end = 12;
           const monthOptions = [];
@@ -45,7 +49,7 @@ const targetCalendar = () => {
             );
           }
           return (
-            <div style={{ padding: 8 }}>
+            <div style={{padding: 8}}>
               <Typography.Title level={4}>目标</Typography.Title>
               <Row gutter={8}>
                 <Col>
@@ -94,6 +98,7 @@ const targetCalendar = () => {
     </div>
   );
 };
+
 const target = () => {
   return (
     <Row gutter={24}>
@@ -112,29 +117,30 @@ const target = () => {
     </Row>
   );
 };
+
 const recommendedCourses = () => {
   return (
     <div>
       <Descriptions column={1} title="推荐课程" bordered>
         <Descriptions.Item>
           This is the first Column
-          <br />
+          <br/>
         </Descriptions.Item>
         <Descriptions.Item>
           This is the first Column
-          <br />
+          <br/>
         </Descriptions.Item>
         <Descriptions.Item>
           This is the first Column
-          <br />
+          <br/>
         </Descriptions.Item>
         <Descriptions.Item>
           This is the first Column
-          <br />
+          <br/>
         </Descriptions.Item>
         <Descriptions.Item>
           This is the first Column
-          <br />
+          <br/>
         </Descriptions.Item>
       </Descriptions>
     </div>
@@ -142,18 +148,18 @@ const recommendedCourses = () => {
 };
 
 const options = [
-  { label: 'java', value: '1' },
-  { label: 'python', value: '2' },
-  { label: 'C++', value: '3' },
-  { label: 'Machine Learning', value: '4' },
-  { label: 'Java Web', value: '5' },
-  { label: 'distributed system', value: '6' },
-  { label: 'matlab', value: '7' },
-  { label: 'react', value: '8' },
+  {label: 'java', value: '1'},
+  {label: 'python', value: '2'},
+  {label: 'C++', value: '3'},
+  {label: 'Machine Learning', value: '4'},
+  {label: 'Java Web', value: '5'},
+  {label: 'distributed system', value: '6'},
+  {label: 'matlab', value: '7'},
+  {label: 'react', value: '8'},
 ];
 
 function tagRender(props) {
-  const { label, value, closable, onClose } = props;
+  const {label, value, closable, onClose} = props;
 
   const onPreventMouseDown = (event) => {
     event.preventDefault();
@@ -166,7 +172,7 @@ function tagRender(props) {
       onMouseDown={onPreventMouseDown}
       closable={closable}
       onClose={onClose}
-      style={{ marginRight: 2 }}
+      style={{marginRight: 2}}
     >
       {label}
     </Tag>
@@ -180,9 +186,10 @@ const onTagSearch = async (label) => {
 };
 
 export default class personal extends Component {
+
   state = {
-    data: [],
-    tag: [],
+    currentUser: {},
+    access: false,
   };
 
   constructor() {
@@ -193,23 +200,33 @@ export default class personal extends Component {
 
   componentDidMount() {
     // 初始化数据
-    console.log('Did Mount');
+    // console.log('Did Mount');
     this.getData();
+
   }
 
   getData = async () => {
-    const data_list = await getTag();
-    this.setState({ data: data_list });
-    const tag = [];
-    for (const dataListKey in data_list) {
-      tag.push(data_list[dataListKey].id);
+    const currentUser = await queryCurrentUser()
+    console.log(currentUser)
+    this.setState({currentUser: currentUser.data})
+    if (currentUser.data.currentAuthority === "user") {
+      this.setState({access: true})
     }
-    this.setState({ tag: tag });
-    console.log(this.state.data);
-    console.log(this.state.tag);
-  };
+    console.log(this.state)
+  }
 
   render() {
+    const menuHeaderDropdown = (
+      <Menu onClick={() => {
+        this.props.history.push('/user/login')
+      }}>
+        <Menu.Item key="logout">
+          <LogoutOutlined/>
+          登录
+        </Menu.Item>
+      </Menu>
+    )
+
     return (
       <PageContainer
         header={{
@@ -217,65 +234,89 @@ export default class personal extends Component {
           breadcrumb: {},
         }}
         content={
-          <Descriptions column={3} style={{ marginBottom: -16 }}>
-            <Descriptions.Item style={{ width: '20%' }}>
-              <Avatar
-                size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
-                icon={<AntDesignOutlined />}
-              />
-            </Descriptions.Item>
-            <Descriptions.Item label="tags" style={{ width: '100%', border: '5px solid green' }}>
-              <Select
-                mode="multiple"
-                showArrow
-                tagRender={tagRender}
-                placeholder={'Choose your interests'}
-                defaultValue={this.state.tag}
-                style={{ width: '90%' }}
-                options={options}
-                onChange={onTagSearch}
-              />
-            </Descriptions.Item>
-            <Descriptions.Item label="In Progress" style={{ width: '30%' }}>
-              <div> 10000</div>
-            </Descriptions.Item>
-            <Descriptions.Item>这是一个名字</Descriptions.Item>
-            <Descriptions.Item></Descriptions.Item>
-            <Descriptions.Item label="Completed" style={{ width: '30%' }}>
-              <div> 10000</div>
-            </Descriptions.Item>
-          </Descriptions>
+          <Access
+            accessible={this.state.access}
+            fallback={
+              <HeaderDropdown overlay={menuHeaderDropdown}>
+                <Avatar
+                  size={{xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100}}
+                  src='https://joeschmoe.io/api/v1/random' alt="avatar"/>
+              </HeaderDropdown>
+            }
+          >
+            <Descriptions column={3} style={{marginBottom: -16}}>
+              <Descriptions.Item style={{width: '20%'}}>
+                <Avatar
+                  size={{xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100}}
+                  icon={<AntDesignOutlined/>}
+                />
+              </Descriptions.Item>
+              <Descriptions.Item label="tags" style={{width: '100%'}}>
+                <Select
+                  mode="multiple"
+                  showArrow
+                  tagRender={tagRender}
+                  placeholder={'Choose your interests'}
+                  defaultValue={this.state.tag}
+                  style={{width: '90%'}}
+                  options={options}
+                  onChange={onTagSearch}
+                />
+              </Descriptions.Item>
+              <Descriptions.Item label="In Progress" style={{width: '30%'}}>
+                <div>
+                  10000
+                </div>
+              </Descriptions.Item>
+              <Descriptions.Item>
+                这是一个名字
+              </Descriptions.Item>
+              <Descriptions.Item>
+              </Descriptions.Item>
+              <Descriptions.Item label="Completed" style={{width: '30%'}}>
+                <div>
+                  10000
+                </div>
+              </Descriptions.Item>
+            </Descriptions>
+          </Access>
+
         }
       >
-        <GridContent>
-          <Row gutter={24}>
-            <Col lg={17} md={24}>
-              <Card
-                bordered={true}
-                style={{
-                  marginBottom: 24,
-                }}
-              >
-                {progress()}
-              </Card>
-              <Card>{Collected()}</Card>
-            </Col>
-            <Col lg={7} md={24}>
-              <Card
-                bordered={true}
-                style={{
-                  marginBottom: 24,
-                }}
-              >
-                {targetCalendar()}
-                <Divider dashed />
-                {target()}
-              </Card>
-              <Card>{recommendedCourses()}</Card>
-            </Col>
-          </Row>
-        </GridContent>
+        <Access accessible={this.state.access}>
+          <GridContent>
+            <Row gutter={24}>
+              <Col lg={17} md={24}>
+                <Card
+                  bordered={true}
+                  style={{
+                    marginBottom: 24,
+                  }}
+                >
+                  {progress()}
+                </Card>
+                <Card>{Collected()}</Card>
+              </Col>
+              <Col lg={7} md={24}>
+                <Card
+                  bordered={true}
+                  style={{
+                    marginBottom: 24,
+                  }}
+                >
+                  {targetCalendar()}
+                  <Divider dashed/>
+                  {target()}
+                </Card>
+                <Card>{recommendedCourses()}</Card>
+              </Col>
+            </Row>
+          </GridContent>
+        </Access>
+        <Access accessible={!this.state.access}>
+          <GuestContent />
+        </Access>
       </PageContainer>
-    );
+    )
   }
 }
