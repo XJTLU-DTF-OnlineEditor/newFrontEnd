@@ -54,7 +54,7 @@ const AvatarDropdown = ({menu}) => {
 
   const displayAvator = () => {
     // console.log(currentUser.avatar)
-    if (currentUser === null) {
+    if (!currentUser) {
       return (
         <span className={`${styles.action} ${styles.account}`}>
           <Avatar size="small" className={styles.avatar} src='https://joeschmoe.io/api/v1/random' alt="avatar"/>
@@ -89,6 +89,16 @@ const AvatarDropdown = ({menu}) => {
   }
 
   const menuHeaderDropdown = () => {
+    if (!currentUser) {
+      return (
+        <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
+          <Menu.Item key="login">
+            <LoginOutlined/>
+            登录
+          </Menu.Item>
+        </Menu>
+      )
+    }
     if (currentUser.currentAuthority === "guest") {
       return (
         <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
@@ -115,7 +125,6 @@ const AvatarDropdown = ({menu}) => {
           </Menu.Item>
         </Menu>)
     }
-
   }
 
   return (

@@ -1,16 +1,15 @@
 import React, {Component} from 'react';
 import {GridContent, PageContainer} from '@ant-design/pro-layout';
-import {Button, Col, Descriptions, Row, Card, Divider, Calendar, Menu} from 'antd';
-import {Avatar, Tag, Input, Select, Typography, Radio} from 'antd';
-import {CheckCircleOutlined,AntDesignOutlined, LogoutOutlined, RightOutlined} from '@ant-design/icons';
-import {delTag, getTag, login, updateTag} from '@/services/user/api';
+import {Col, Descriptions, Row, Card, Divider, Calendar, Menu} from 'antd';
+import {Avatar, Tag, Select, Typography, Radio} from 'antd';
+import {AntDesignOutlined, LogoutOutlined, RightOutlined} from '@ant-design/icons';
+import { updateTag } from '@/services/user/api';
 import progress from '@/pages/Personal/components/Progress';
 import Collected from '@/pages/Personal/components/Collected';
 import {currentUser as queryCurrentUser} from "@/services/user/api";
 import {Access} from "@/.umi/plugin-access/access";
 import HeaderDropdown from "@/components/HeaderDropdown";
 import GuestContent from "@/pages/Personal/components/GuestContent";
-import { enquireScreen } from 'enquire-js';
 import '../utils/static/style';
 
 const targetCalendar = () => {
