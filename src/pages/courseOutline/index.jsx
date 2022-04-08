@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import { Typography, message, List, Descriptions, Image, Button, Space, Tag } from 'antd';
+import { Typography, message, Descriptions, Image, Button, Space, Tag } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getExerciseList } from '@/services/course';
 import ProCard from '@ant-design/pro-card';
 import ProList from '@ant-design/pro-list';
 import { CodeTwoTone } from '@ant-design/icons';
+import './CourseOutline.less'
+
+const { Title } = Typography;
 
 export default class CourseOutline extends Component {
   state = {
@@ -51,10 +54,9 @@ export default class CourseOutline extends Component {
     ];
 
     return (
-      <div>
         <PageContainer
           header={{
-            title: this.props.match.params.related_topic,
+            title: <Title level={2}>{this.props.match.params.related_topic}</Title>,
             breadcrumb: {},
           }}
           content={
@@ -86,13 +88,6 @@ export default class CourseOutline extends Component {
                 </Button>,
               ];
             }}
-            onRow={(item) => {
-              return {
-                onClick: () => {
-                  this.props.history.push(this.props.location.pathname + '/' + item.id);
-                },
-              };
-            }}
             rowKey="id"
             headerTitle="Course List"
             dataSource={this.state.course_list}
@@ -103,13 +98,13 @@ export default class CourseOutline extends Component {
                 dataIndex: 'title',
                 render: (title, item) => {
                   return (
-                    // <a
-                    //   href={this.props.location.pathname + '/' + item.id}
-                    //   style={{ textDecoration: 'none', color: 'black' }}
-                    // >
+                    
                     <>
                       <Typography.Text mark>[{item.subtopic_id}]</Typography.Text>
-                      {item.title}
+                      <a
+                      href={this.props.location.pathname + '/' + item.id}
+                      style={{ textDecoration: 'none', color: 'black' }}
+                    >{item.title}</a>
                       {/* </a> */}
                     </>
                   );
@@ -152,7 +147,6 @@ export default class CourseOutline extends Component {
             }}
           />
         </PageContainer>
-      </div>
     );
   }
 }

@@ -7,6 +7,9 @@ import { Descriptions, Button, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { Popconfirm } from 'antd';
+import { Typography } from 'antd';
+
+const { Title } = Typography;
 
 export default class App extends Component {
     state = {
@@ -19,11 +22,11 @@ export default class App extends Component {
     getExercise = async () => {
         const { topic_title, id } = this.state;
         const res = await getCourseDetail(topic_title, id);
-        if(res.error_code==200){
+        if (res.error_code == 200) {
             // related_topic, title, content, update_date, views, subtopic_id
-            this.setState({courseDetail: res.data});
+            this.setState({ courseDetail: res.data });
         }
-        
+
     };
 
     componentDidMount() {
@@ -32,7 +35,7 @@ export default class App extends Component {
     }
 
     render() {
-        const {courseDetail, topic_title, id} = this.state
+        const { courseDetail, topic_title, id } = this.state
         return (
             <div
                 style={{
@@ -43,7 +46,7 @@ export default class App extends Component {
                     ghost
                     onBack={() => this.props.history.push('/courseAdmin/courseList?topic_title=' + topic_title)}
                     header={{
-                        title: courseDetail.title,
+                        title: <Title level={2}>{courseDetail.title}</Title>,
                         breadcrumb: {},
                         extra: [
                             <Button key="1" onClick={() => this.props.history.push(`/courseAdmin/courseManager?topic_title=${topic_title}&id=${id}`)} type='primary'>EDIT</Button>,
@@ -75,7 +78,7 @@ export default class App extends Component {
                         </Descriptions>
                     }
                 >
-                    <ProCard style={{ height: 600 }} ghost>
+                    <ProCard ghost>
                         <CKEditor
                             editor={ClassicEditor}
                             disabled={true}
@@ -93,7 +96,14 @@ export default class App extends Component {
                                     this.editor.ui.view.toolbar.element.remove();
                                 }
                             }}
-                        /></ProCard>
+                        />
+                    </ProCard>
+                    <ProCard title="answer" style={{ minHeight: 100 }}>
+                        {courseDetail?.answer}
+                    </ProCard>
+                    <ProCard title="hint" style={{ minHeight: 100 }}>
+                        {courseDetail?.hint}
+                    </ProCard>
                 </PageContainer>
             </div>
 

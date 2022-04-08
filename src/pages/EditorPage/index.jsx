@@ -3,19 +3,24 @@ import Editor from './editor.jsx';
 import { BarsOutlined, ArrowRightOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import Input from './input.jsx';
 import ResultSection from './result.jsx';
-import './index.less';
 import ProCard from '@ant-design/pro-card';
 import { Dropdown, Menu, Descriptions, Button, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getCourseDetail, getExerciseList } from '@/services/course.js';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { Typography } from 'antd';
+import './custom-dark.css';
+import './index.less';
+import { useModel } from 'umi';
+
+const { Title } = Typography;
 
 export default function MainPage(props) {
   const [course_list, setCourse_list] = useState([]);
   const [topic_title, setTopic_title] = useState('');
   const [courseDetail, setCourseDetail] = useState({});
-
+  const { initialState, setInitialState } = useModel('@@initialState');
 
   useEffect(() => {
     getCatalog();
@@ -48,10 +53,7 @@ export default function MainPage(props) {
   };
 
   const menu = (
-    <Menu
-      onClick={({ key }) => getExercise(topic_title, +key)}
-      // defaultSelectedKeys={[id - 1]}
-    >
+    <Menu onClick={({ key }) => getExercise(topic_title, +key)}>
       {typeof course_list == 'object'
         ? course_list.map((item) => (
             <Menu.Item key={item.id}>
@@ -64,9 +66,11 @@ export default function MainPage(props) {
 
   return (
     <PageContainer
+      overlayClassName="editorpage"
       ghost
+      minHeight="800px"
       header={{
-        title: courseDetail.title,
+        title: <Title>{courseDetail.title}</Title>,
         breadcrumb: {},
       }}
       // onBack={() => props.history.go(-1)}
@@ -106,13 +110,8 @@ export default function MainPage(props) {
       ]}
     >
       {/* 课程展示 */}
-      <ProCard ghost gutter={15} style={{ height: 500 }}>
-        <ProCard
-          colSpan={8}
-          style={{ minHeight: 600, paddingTop: '20px' }}
-          className={'course'}
-          ghost
-        >
+      <ProCard ghost gutter={15} style={{ minHeight: 1000 }} className={`custom-dark`}>
+        <ProCard colSpan={7} style={{ minHeight: 600 }} className={'course'} ghost>
           <CKEditor
             editor={ClassicEditor}
             disabled={true}
@@ -131,11 +130,11 @@ export default function MainPage(props) {
         </ProCard>
         {/* 代码运行 */}
         <ProCard ghost colSpan={11}>
-          <Editor />
+          <Editor currentUser={initialState.currentUser} courseid={props.match.params.id}/>
           <Input />
         </ProCard>
-        <ProCard ghost colSpan={5}>
-          <ResultSection />
+        <ProCard ghost colSpan={6}>
+          <ResultSection hint={courseDetail?.hint} />
         </ProCard>
       </ProCard>
     </PageContainer>

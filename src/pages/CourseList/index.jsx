@@ -7,7 +7,11 @@ import { deleteCourse, updateSubtopicId } from '@/services/course';
 import { Popconfirm } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
-import './index.less';
+import './courseList.less';
+import { Typography } from 'antd';
+import { currentUser } from '@/services/user/api';
+
+const { Title } = Typography;
 
 export default class App extends Component {
 
@@ -15,20 +19,23 @@ export default class App extends Component {
         selectedRowKeys: [],
         dataSource: []
     }
+    teacher_info = React.createRef();
 
 
     getDataSource = async (params) => {
-        // console.log(params, '=====');
+        const teacher = await currentUser();
+        this.teacher_info.current = teacher.data;
+
         const topic_title = this.props.location.query.topic_title
         let result
         if (params.title) {
             result = await request(`/server/V1/course/search/?keyword=${params.title}`, {
-                teacher_id: this.props.location.query.teacher_id
+                teacher_id: this.teacher_info.current.userid
             });
         } else {
             result = await request(`/server/V1/course/courses/${topic_title}/`);
         }
-        // console.log(result)
+        console.log(result)
 
         if (result.error_code == 200) {
             let course_list = result.course_list.map(i => {
@@ -105,7 +112,6 @@ export default class App extends Component {
             key: 'since',
             dataIndex: 'update_date',
             valueType: 'dateTime',
-            // sorter: (a, b) => a.update_date - b.update_date,
             hideInSearch: true,
         },
         {
@@ -113,7 +119,6 @@ export default class App extends Component {
             dataIndex: 'views',
             valueType: 'digit',
             width: 100,
-            // sorter: (a, b) => a.views - b.views,
             hideInSearch: true,
         },
         {
@@ -170,7 +175,7 @@ export default class App extends Component {
                 ghost
                 onBack={() => this.props.history.push('/courseAdmin')}
                 header={{
-                    title: 'Course List',
+                    title: <Title level={2}>{topic_title}</Title>,
                 }}
             >
                 <ProCard>
@@ -196,7 +201,7 @@ export default class App extends Component {
                             },
                         }} pagination={{
                             pageSize: 10,
-                        }} dateFormatter="string" headerTitle={"【TOPIC TITLE】" + topic_title} toolBarRender={() => [
+                        }} dateFormatter="string" headerTitle={"course list"} toolBarRender={() => [
                             <Popconfirm
                                 title="Are you sure to delete the chosen courses?"
                                 onConfirm={this.handleDelete}

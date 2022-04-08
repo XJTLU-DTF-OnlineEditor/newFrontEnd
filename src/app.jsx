@@ -4,7 +4,7 @@ import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 // import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import { BookOutlined, LinkOutlined } from '@ant-design/icons';
-import { currentUser as queryCurrentUser} from "@/services/user/api";
+import { currentUser as queryCurrentUser } from '@/services/user/api';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -21,12 +21,11 @@ export async function getInitialState() {
   const fetchUserInfo = async () => {
     try {
       const msg = await queryCurrentUser();
-      console.log(msg)
+      console.log(msg);
       return msg.data;
     } catch (error) {
       history.push(loginPath);
     }
-
 
     return undefined;
   }; // 如果是登录页面，不执行
@@ -64,15 +63,15 @@ export const layout = ({ initialState }) => {
     },
     links: isDev
       ? [
-        <Link to="/umi/plugin/openapi" target="_blank">
-          <LinkOutlined />
-          <span>OpenAPI 文档</span>
-        </Link>,
-        <Link to="/~docs">
-          <BookOutlined />
-          <span>业务组件文档</span>
-        </Link>,
-      ]
+          <Link to="/umi/plugin/openapi" target="_blank">
+            <LinkOutlined />
+            <span>OpenAPI 文档</span>
+          </Link>,
+          <Link to="/~docs">
+            <BookOutlined />
+            <span>业务组件文档</span>
+          </Link>,
+        ]
       : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面

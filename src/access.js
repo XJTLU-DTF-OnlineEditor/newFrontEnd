@@ -6,7 +6,7 @@ export default function access(initialState) {
   let canAdmin = false;
   let noAdmin = false;
   if (currentUser) {
-    if (currentUser.currentAuthority === "admin") {
+    if (currentUser.currentAuthority === 'admin') {
       canAdmin = true;
     }else if (currentUser.currentAuthority === "user" || "guest") {
       noAdmin = true;

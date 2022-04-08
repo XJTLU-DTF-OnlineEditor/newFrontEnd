@@ -1,20 +1,20 @@
-import React, {useCallback, useState} from 'react';
-import {LoginOutlined, SettingOutlined, UserOutlined, LogoutOutlined} from '@ant-design/icons';
-import {Avatar, Image, Menu, Spin} from 'antd';
-import {history, useModel} from 'umi';
-import {stringify} from 'querystring';
+import React, { useCallback, useState } from 'react';
+import { LoginOutlined, SettingOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { Avatar, Image, Menu, Spin } from 'antd';
+import { history, useModel } from 'umi';
+import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
-import {outLogin} from '@/services/ant-design-pro/api';
-import {logout} from "@/services/user/api";
+import { outLogin } from '@/services/ant-design-pro/api';
+import { logout } from '@/services/user/api';
 
 /**
  * 退出登录，并且将当前的 url 保存
  */
 const loginOut = async () => {
   await logout();
-  const {query = {}, pathname} = history.location;
-  const {redirect} = query; // Note: There may be security issues, please note
+  const { query = {}, pathname } = history.location;
+  const { redirect } = query; // Note: There may be security issues, please note
 
   if (window.location.pathname !== '/user/login' && !redirect) {
     history.replace({
@@ -26,21 +26,21 @@ const loginOut = async () => {
   }
 };
 
-const AvatarDropdown = ({menu}) => {
-  const {initialState, setInitialState} = useModel('@@initialState');
+const AvatarDropdown = ({ menu }) => {
+  const { initialState, setInitialState } = useModel('@@initialState');
 
   const onMenuClick = useCallback(
     (event) => {
-      const {key} = event;
+      const { key } = event;
       if (key === 'logout') {
-        setInitialState((s) => ({...s, currentUser: {currentAuthority: "guest"}}));
-        localStorage.removeItem('token')
-        localStorage.removeItem('currentAuthority')
+        setInitialState((s) => ({ ...s, currentUser: { currentAuthority: 'guest' } }));
+        localStorage.removeItem('token');
+        localStorage.removeItem('currentAuthority');
         loginOut();
-        history.push("/welcome")
+        history.push('/welcome');
         return;
       } else if (key === 'login') {
-        history.push('/user/login')
+        history.push('/user/login');
       }
 
       // history.push(`/account/${key}`);
@@ -48,7 +48,7 @@ const AvatarDropdown = ({menu}) => {
     [setInitialState],
   );
 
-  const {currentUser} = initialState;
+  const { currentUser } = initialState;
 
   // console.log(currentUser.currentAuthority)
 
@@ -65,14 +65,19 @@ const AvatarDropdown = ({menu}) => {
     if (currentUser.currentAuthority === "guest" || null) {
       return (
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src='https://joeschmoe.io/api/v1/random' alt="avatar"/>
+          <Avatar
+            size="small"
+            className={styles.avatar}
+            src="https://joeschmoe.io/api/v1/random"
+            alt="avatar"
+          />
           <span className={`${styles.name} anticon`}>请登录</span>
         </span>
-      )
-    } else if (currentUser.currentAuthority === "user") {
+      );
+    } else if (currentUser.currentAuthority === 'user') {
       return (
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src={currentUser.avator} alt="avatar"/>
+          <Avatar size="small" className={styles.avatar} src={currentUser.avator} alt="avatar" />
           <span className={`${styles.name} anticon`}>{currentUser.username}</span>
         </span>
       )
@@ -81,12 +86,12 @@ const AvatarDropdown = ({menu}) => {
       const teacherName = currentUser.email.split("@")[0]
       return (
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src={currentUser.avator} alt="avatar"/>
+          <Avatar size="small" className={styles.avatar} src={currentUser.avator} alt="avatar" />
           <span className={`${styles.name} anticon`}>{teacherName}</span>
         </span>
-      )
+      );
     }
-  }
+  };
 
   const menuHeaderDropdown = () => {
     if (!currentUser) {
@@ -103,7 +108,7 @@ const AvatarDropdown = ({menu}) => {
       return (
         <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
           <Menu.Item key="login">
-            <LoginOutlined/>
+            <LoginOutlined />
             登录
           </Menu.Item>
         </Menu>
