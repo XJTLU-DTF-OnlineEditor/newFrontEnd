@@ -22,6 +22,12 @@ export default [{
   icon: 'smile',
   component: './Welcome',
 },
+{
+  path: '/helper',
+  name: 'helper',
+  icon: 'compass',
+  component: './Helper',
+},
 // {
 //   path: '/admin',
 //   name: 'admin',

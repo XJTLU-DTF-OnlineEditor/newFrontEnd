@@ -98,7 +98,6 @@ export default class CourseOutline extends Component {
                 dataIndex: 'title',
                 render: (title, item) => {
                   return (
-                    
                     <>
                       <Typography.Text mark>[{item.subtopic_id}]</Typography.Text>
                       <a
