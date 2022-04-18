@@ -54,4 +54,5 @@ export default {
     'menu.courseAdmin': '课程管理后台',
     'menu.courseOutline': '课程大纲',
     'menu.courses': '所有课程',
+    'menu.helper': '使用教程'
 };
