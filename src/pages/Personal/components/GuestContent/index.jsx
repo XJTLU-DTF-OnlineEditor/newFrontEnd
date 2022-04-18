@@ -2,8 +2,10 @@ import ProCard from "@ant-design/pro-card";
 import React from "react";
 import {CheckCircleOutlined, RightOutlined} from "@ant-design/icons";
 import {Tag} from "antd";
+import {useHistory} from "react-router-dom";
 
 function GuestContent(props) {
+  const history = useHistory()
     return(
       <div>
         <ProCard gutter={[0,8]} ghost direction='column'>
@@ -13,7 +15,7 @@ function GuestContent(props) {
             hoverable
             split="vertical"
             onClick={() => {
-              props.history.push('/user/login')
+              history.push('/user/login')
             }}>
             <ProCard colSpan="50%" ghost>
               <center>
