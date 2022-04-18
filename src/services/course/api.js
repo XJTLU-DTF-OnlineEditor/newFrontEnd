@@ -1,4 +1,4 @@
-import { request } from 'umi';
+import {request} from 'umi';
 
 export const getTopic = async () => {
   return request('/server/V1/course/topic/6', {
@@ -20,9 +20,60 @@ export const search = async (value) => {
 };
 
 export const getNewTopic = async () => {
-
-
   return request('/server/V1/course/newtopic/', {
     method: 'GET',
   });
 };
+
+export const changeUserIcon = async () => {
+
+}
+
+export const changeCourseProgress = async (value) => {
+  console.log(value)
+  return request('/server/V1/course/change_user_progress/', {
+    method: 'POST',
+    data: value,
+    headers: {
+      Token: localStorage.getItem('token'),
+      currentAuthority: localStorage.getItem('currentAuthority'),
+    }
+  })
+}
+
+export const removeUserProgress = async (value) => {
+  console.log(value)
+  return request('/server/V1/course/remove_user_progress/', {
+    method: 'POST',
+    data: value,
+    headers: {
+      Token: localStorage.getItem('token'),
+      currentAuthority: localStorage.getItem('currentAuthority'),
+    }
+  })
+
+}
+
+export const addUserCollection = async (value) => {
+  console.log(value)
+  return request('/server/V1/course/add_user_collection/', {
+    method: "POST",
+    data: value,
+    headers: {
+      Token: localStorage.getItem('token'),
+      currentAuthority: localStorage.getItem('currentAuthority'),
+    }
+  })
+}
+
+export const deleteCollection = async (value) => {
+  console.log(value)
+  return request('/server/V1/course/delete_user_collection/', {
+    method: "POST",
+    data: value,
+    headers: {
+      Token: localStorage.getItem('token'),
+      currentAuthority: localStorage.getItem('currentAuthority'),
+    }
+  })
+}

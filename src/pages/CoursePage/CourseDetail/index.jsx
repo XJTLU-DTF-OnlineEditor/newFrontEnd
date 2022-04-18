@@ -98,7 +98,7 @@ export default class CoursePage extends Component {
         header={{
         title: '所有课程',
         breadcrumb: {},
-      }}
+        }}
         extra={
         <div>
           <span>Search course here:  <SearchOutlined/></span>
@@ -143,7 +143,6 @@ export default class CoursePage extends Component {
                            }>
                     <Card
                       bordered={false}
-                      style={{width: 240}}
                       cover={<img alt={item.topic_title} src={item.topic_img}/>}
                     >
                       <Meta title={item.topic_title} description={item.topic_content}/>
