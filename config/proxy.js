@@ -18,7 +18,8 @@ export default {
     '/server/': {
       // target: 'https://preview.pro.ant.design',
       // target: 'http://47.102.132.205:30142/',
-      target: 'http://127.0.0.1:8000/',
+      // target: 'http://127.0.0.1:8000/',
+      target: 'http://47.111.13.213:8001/',
       changeOrigin: true,
       pathRewrite: {
         '^/server': '',
