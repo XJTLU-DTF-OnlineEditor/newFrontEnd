@@ -123,7 +123,7 @@ export default class CourseOutline extends Component {
                 return (
                   <>
                     <Typography.Text mark>[{item.subtopic_id}]</Typography.Text>
-                    <a // href={this.props.location.pathname + '/' + item.id}
+                    <a  href={this.props.location.pathname + '/' + item.id}
                        style={{textDecoration: 'none', color: 'black'}}
                     >{item.title}</a>
                     {/* </a> */}
