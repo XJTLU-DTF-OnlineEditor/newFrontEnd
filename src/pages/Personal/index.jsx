@@ -2,15 +2,17 @@ import React, {Component} from 'react';
 import {GridContent, PageContainer} from '@ant-design/pro-layout';
 import {Col, Descriptions, Row, Card, Divider, Calendar, Menu} from 'antd';
 import {Avatar, Tag, Select, Typography, Radio} from 'antd';
-import {AntDesignOutlined, LogoutOutlined, RightOutlined} from '@ant-design/icons';
+import { LogoutOutlined} from '@ant-design/icons';
 import { updateTag } from '@/services/user/api';
-import progress from '@/pages/Personal/components/Progress';
 import Collected from '@/pages/Personal/components/Collected';
 import {currentUser as queryCurrentUser} from "@/services/user/api";
 import {Access} from "@/.umi/plugin-access/access";
 import HeaderDropdown from "@/components/HeaderDropdown";
 import GuestContent from "@/pages/Personal/components/GuestContent";
 import '../utils/static/style';
+import CourseProgress from "@/pages/Personal/components/Progress";
+import ProCard from "@ant-design/pro-card";
+import './index.less'
 
 const targetCalendar = () => {
   return (
@@ -194,7 +196,7 @@ export default class personal extends Component {
 
   constructor() {
     super();
-    console.log('constructor');
+    // console.log('constructor');
     this.getData();
   }
 
@@ -248,7 +250,7 @@ export default class personal extends Component {
               <Descriptions.Item style={{width: '20%'}}>
                 <Avatar
                   size={{xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100}}
-                  icon={<AntDesignOutlined/>}
+                  src={this.state.currentUser.avator} alt='https://joeschmoe.io/api/v1/random'
                 />
               </Descriptions.Item>
               <Descriptions.Item label="tags" style={{width: '100%'}}>
@@ -269,7 +271,7 @@ export default class personal extends Component {
                 </div>
               </Descriptions.Item>
               <Descriptions.Item>
-                这是一个名字
+                {this.state.currentUser.username}
               </Descriptions.Item>
               <Descriptions.Item>
               </Descriptions.Item>
@@ -287,15 +289,27 @@ export default class personal extends Component {
           <GridContent>
             <Row gutter={24}>
               <Col lg={17} md={24}>
-                <Card
+                <ProCard
+                  title={<b>课程进度</b>}
+                  direction="column"
+                  gutter={[0, 8]}
                   bordered={true}
                   style={{
                     marginBottom: 24,
                   }}
                 >
-                  {progress()}
-                </Card>
-                <Card>{Collected()}</Card>
+                  <CourseProgress history={this.state.currentUser.history} />
+                </ProCard>
+                <ProCard
+                  title={<b>收藏课程</b>}
+                  direction="column"
+                  gutter={[0, 8]}
+                  bordered={true}
+                  style={{
+                    marginBottom: 24,
+                  }}>
+                  <Collected collection={this.state.currentUser.collections} />
+                </ProCard>
               </Col>
               <Col lg={7} md={24}>
                 <Card
