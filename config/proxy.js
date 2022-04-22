@@ -26,8 +26,8 @@ export default {
       },
     },
     '/media/': {
-      target: 'http://127.0.0.1:8000/',
-      // target: "http://120.26.46.74:4000/",
+      target: 'http://47.111.13.213:8001/',
+      // target: "http://127.0.0.1:8000/",
       changeOrigin: true,
       pathRewrite: {
         '^/media': '/media',
