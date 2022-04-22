@@ -5,6 +5,7 @@ import Page1 from "@/pages/utils/welcomePage/Page1";
 import './utils/static/style';
 import ProCard from "@ant-design/pro-card";
 import {PageContainer} from "@ant-design/pro-layout";
+import './Welcome.less'
 
 let isMobile;
 

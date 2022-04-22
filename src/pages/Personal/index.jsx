@@ -12,6 +12,7 @@ import GuestContent from "@/pages/Personal/components/GuestContent";
 import '../utils/static/style';
 import CourseProgress from "@/pages/Personal/components/Progress";
 import ProCard from "@ant-design/pro-card";
+import './index.less'
 
 const targetCalendar = () => {
   return (

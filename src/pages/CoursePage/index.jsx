@@ -6,6 +6,7 @@ import { RightOutlined, SearchOutlined } from '@ant-design/icons';
 import { getTopic, search } from '@/services/course/api';
 import { Footer } from 'antd/es/layout/layout';
 import Banner from '@/pages/utils/coursePage/animBanner';
+import './coursePage.less'
 
 const { Option } = Select;
 
