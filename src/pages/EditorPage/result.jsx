@@ -2,6 +2,9 @@ import { Collapse, Space, Alert, Button, Modal, Input, Image, Drawer } from 'ant
 import { useState, useEffect } from 'react';
 import { deletePic } from '@/services/editor';
 import './result.less'
+import { setLocale, getLocale, FormattedMessage } from 'umi';
+import moment from "moment";
+import { addCourseProgress, changeCourseProgress } from '@/services/course/api';
 
 const { TextArea } = Input;
 const { Panel } = Collapse;
@@ -15,10 +18,12 @@ export default function ResultSection(props) {
   const [pic_visible, setPic_visible] = useState(false);
 
   useEffect(() => {
+    console.log(props, 8888)
     PubSub.subscribe('showRes', (msg, data) => {
       let res = data.output
       if (data.error_code == 200) {
         setRes_status('success');
+        handleCourseProgress();
       } else if (data.error_code == 410 || data.error_code == 408) {
         setRes_status('warning');
       } else if (data.error_code == 500) {
@@ -63,16 +68,26 @@ export default function ResultSection(props) {
     setPics([])
   };
 
+  const handleCourseProgress = async () => {
+    let { id, related_topic } = props;
+    const msg = await addCourseProgress({
+      topic: related_topic,
+      course_id: id,
+      last_practice_time: moment().format('YYYY-MM-DD HH:mm:ss')
+    })
+    console.log(msg, 4444)
+  }
+
 
   return (
     <>
       <Collapse bordered={false} ghost className="reshint" defaultActiveKey={['2']}>
-        <Panel header="Show hints" key="1">
+        <Panel header=/*"Show hints"*/{<FormattedMessage id="pages.editor.showHints" />} key="1">
           <div>{props.hint}</div>
         </Panel>
-        <Panel header="Result" key="2" className={res_status} extra={<Space>
+        <Panel header=/*"Result"*/{<FormattedMessage id="pages.editor.result" />} key="2" className={res_status} extra={<Space>
           <Button size="small" type="ghost" onClick={showModal}>
-            Detail
+            {/*Detail*/} <FormattedMessage id="pages.editor.detail" />
           </Button>
           <Modal
             visible={visible}
@@ -81,12 +96,12 @@ export default function ResultSection(props) {
             width={800}
             footer=''
           >
-            <TextArea value={res_status=='info' ? 'Results will be shown here' : result ? result : ''} autoSize bordered={false} status="error" />
+            <TextArea value={res_status=='info' ? getLocale()=='zh-CN'?"--- 结果将会显示在这里 ---":'--- Results will be shown here ---' : result ? <TextArea value={result} autoSize bordered={false} status="error" /> : ''} autoSize bordered={false} status="error" />
           </Modal>
         </Space>}>
           <Alert
             message={res_status}
-            description={res_status=='info' ? 'Results will be shown here' : result ? <TextArea value={result} autoSize bordered={false} status="error" /> : ''}
+            description={res_status=='info' ? getLocale()=='zh-CN'?"--- 结果将会显示在这里 ---":'--- Results will be shown here ---' : result ? <TextArea value={result} autoSize bordered={false} status="error" /> : ''}
             type={res_status}
             showIcon
           />

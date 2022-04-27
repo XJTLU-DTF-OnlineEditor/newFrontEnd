@@ -13,6 +13,7 @@ import '../utils/static/style';
 import CourseProgress from "@/pages/Personal/components/Progress";
 import ProCard from "@ant-design/pro-card";
 import './index.less'
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 const targetCalendar = () => {
   return (
@@ -52,7 +53,7 @@ const targetCalendar = () => {
           }
           return (
             <div style={{padding: 8}}>
-              <Typography.Title level={4}>目标</Typography.Title>
+              <Typography.Title level={4}>{/*目标*/}{<FormattedMessage id="pages.personal.goals" />}</Typography.Title>
               <Row gutter={8}>
                 <Col>
                   <Radio.Group
@@ -106,13 +107,13 @@ const target = () => {
     <Row gutter={24}>
       <Col lg={14} md={24}>
         <div>
-          打卡数目：
+          {/*打卡数目：*/}{<FormattedMessage id="pages.personal.punchingNumber" />}
           <span>10000</span>
         </div>
       </Col>
       <Col>
         <div>
-          目标数目：
+          {/*目标数目：*/}{<FormattedMessage id="pages.personal.targetNumber" />}
           <span>10000</span>
         </div>
       </Col>
@@ -123,7 +124,7 @@ const target = () => {
 const recommendedCourses = () => {
   return (
     <div>
-      <Descriptions column={1} title="推荐课程" bordered>
+      <Descriptions column={1} title=/*"推荐课程"*/{<FormattedMessage id="pages.personal.recommended" />} bordered>
         <Descriptions.Item>
           This is the first Column
           <br/>
@@ -224,7 +225,7 @@ export default class personal extends Component {
       }}>
         <Menu.Item key="logout">
           <LogoutOutlined/>
-          登录
+          {/*登录*/}{<FormattedMessage id="pages.login.submit" />}
         </Menu.Item>
       </Menu>
     )
@@ -232,7 +233,7 @@ export default class personal extends Component {
     return (
       <PageContainer
         header={{
-          title: '个人中心',
+          title: /*'个人中心'*/<FormattedMessage id="pages.personal.title" />,
           breadcrumb: {},
         }}
         content={
@@ -258,14 +259,14 @@ export default class personal extends Component {
                   mode="multiple"
                   showArrow
                   tagRender={tagRender}
-                  placeholder={'Choose your interests'}
+                  placeholder= /*'Choose your interests'*/{getLocale()=='zh-CN'?"选择你感兴趣的":"Choose your interests"}
                   defaultValue={this.state.tag}
                   style={{width: '90%'}}
                   options={options}
                   onChange={onTagSearch}
                 />
               </Descriptions.Item>
-              <Descriptions.Item label="In Progress" style={{width: '30%'}}>
+              <Descriptions.Item label=/*'In Progress'*/{<FormattedMessage id="pages.personal.inProgress" />} style={{width: '30%'}}>
                 <div>
                   10000
                 </div>
@@ -275,7 +276,7 @@ export default class personal extends Component {
               </Descriptions.Item>
               <Descriptions.Item>
               </Descriptions.Item>
-              <Descriptions.Item label="Completed" style={{width: '30%'}}>
+              <Descriptions.Item label=/*'Completed'*/{<FormattedMessage id="pages.personal.completed" />} style={{width: '30%'}}>
                 <div>
                   10000
                 </div>
@@ -290,7 +291,7 @@ export default class personal extends Component {
             <Row gutter={24}>
               <Col lg={17} md={24}>
                 <ProCard
-                  title={<b>课程进度</b>}
+                  title={<b>{/*课程进度*/}{<FormattedMessage id="pages.personal.progress" />}</b>}
                   direction="column"
                   gutter={[0, 8]}
                   bordered={true}
@@ -301,7 +302,7 @@ export default class personal extends Component {
                   <CourseProgress history={this.state.currentUser.history} />
                 </ProCard>
                 <ProCard
-                  title={<b>收藏课程</b>}
+                  title={<b>{/*收藏课程*/}{<FormattedMessage id="pages.personal.collection" />}</b>}
                   direction="column"
                   gutter={[0, 8]}
                   bordered={true}

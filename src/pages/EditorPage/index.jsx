@@ -4,15 +4,17 @@ import { BarsOutlined, ArrowRightOutlined, ArrowLeftOutlined } from '@ant-design
 import Input from './input.jsx';
 import ResultSection from './result.jsx';
 import ProCard from '@ant-design/pro-card';
-import { Dropdown, Menu, Descriptions, Button, message } from 'antd';
+import { Dropdown, Menu, Descriptions, Button, message, Typography } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getCourseDetail, getExerciseList } from '@/services/course.js';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { Typography } from 'antd';
 import './custom-dark.css';
 import './index.less';
+import moment from "moment";
 import { useModel } from 'umi';
+import { setLocale, getLocale, FormattedMessage } from 'umi';
+import { changeCourseProgress } from '@/services/course/api.js';
 
 const { Title } = Typography;
 
@@ -24,6 +26,7 @@ export default function MainPage(props) {
 
   useEffect(() => {
     getCatalog();
+    handleCourseProgress();
   }, []);
 
   const getCatalog = async () => {
@@ -42,6 +45,15 @@ export default function MainPage(props) {
     getExercise(related_topic, id);
   };
 
+  const handleCourseProgress = async () => {
+    let { id, related_topic } = props.match.params;
+    const msg = await changeCourseProgress({
+      topic: related_topic,
+      course_id: id,
+      last_practice_time: moment().format('YYYY-MM-DD HH:mm:ss')
+    })
+  }
+
   const getExercise = async (topic_title, id) => {
     props.history.push(`${id}`);
     const res = await getCourseDetail(topic_title, id);
@@ -56,10 +68,10 @@ export default function MainPage(props) {
     <Menu onClick={({ key }) => getExercise(topic_title, +key)}>
       {typeof course_list == 'object'
         ? course_list.map((item) => (
-            <Menu.Item key={item.id}>
-              <a target="_blank">{item.title}</a>
-            </Menu.Item>
-          ))
+          <Menu.Item key={item.id}>
+            <a target="_blank">{item.title}</a>
+          </Menu.Item>
+        ))
         : []}
     </Menu>
   );
@@ -76,9 +88,9 @@ export default function MainPage(props) {
       // onBack={() => props.history.go(-1)}
       content={
         <Descriptions size="middle" column={3}>
-          <Descriptions.Item label="related topic">{topic_title}</Descriptions.Item>
-          <Descriptions.Item label="update date">{courseDetail.update_date}</Descriptions.Item>
-          <Descriptions.Item label="views">
+          <Descriptions.Item label=/*"RELATED TOPIC"*/{<FormattedMessage id="pages.common.relatedTopic" />}>{topic_title}</Descriptions.Item>
+          <Descriptions.Item label=/*"UPDATE DATE"*/{<FormattedMessage id="pages.common.updateDate" />}>{courseDetail.update_date}</Descriptions.Item>
+          <Descriptions.Item label=/*"VIEWS"*/{<FormattedMessage id="pages.common.views" />} >
             <a>{courseDetail.views}</a>
           </Descriptions.Item>
         </Descriptions>
@@ -90,14 +102,15 @@ export default function MainPage(props) {
           disabled={courseDetail.id - 1 < 1}
         >
           <ArrowLeftOutlined />
-          last exercise
+          {/* last exercise */} <FormattedMessage id="pages.editor.last" />
+
         </Button>,
         <Button
           key="2"
           onClick={() => getExercise(topic_title, courseDetail.id + 1)}
           disabled={courseDetail.id + 1 > course_list.length}
         >
-          next exercise
+          {/* next exercise */} <FormattedMessage id="pages.editor.next" />
           <ArrowRightOutlined />
         </Button>,
         <Dropdown key="1" overlay={menu}>
@@ -130,11 +143,11 @@ export default function MainPage(props) {
         </ProCard>
         {/* 代码运行 */}
         <ProCard ghost colSpan={11}>
-          <Editor currentUser={initialState.currentUser} courseid={props.match.params.id}/>
+          <Editor currentUser={initialState.currentUser} courseid={props.match.params.id} />
           <Input />
         </ProCard>
         <ProCard ghost colSpan={6}>
-          <ResultSection hint={courseDetail?.hint} />
+          <ResultSection hint={courseDetail?.hint} related_topic={props.match.params.related_topic} id={props.match.params.id} />
         </ProCard>
       </ProCard>
     </PageContainer>

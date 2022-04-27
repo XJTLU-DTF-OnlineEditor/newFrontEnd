@@ -6,6 +6,9 @@ import './utils/static/style';
 import ProCard from "@ant-design/pro-card";
 import {PageContainer} from "@ant-design/pro-layout";
 import './Welcome.less'
+import zhCN from 'antd/lib/locale/zh_CN';
+import {ConfigProvider} from 'antd';
+
 
 let isMobile;
 
@@ -26,9 +29,11 @@ class Welcome extends React.PureComponent {
   }
   render() {
     return (
+      <ConfigProvider locale={zhCN}>
       <PageContainer
         header={{
-          title: '欢迎',
+          // title: '欢迎',
+          id: 'pages.welcome.welcome'
         }}
       >
         <ProCard>
@@ -38,6 +43,8 @@ class Welcome extends React.PureComponent {
           </div>
         </ProCard>
       </PageContainer>
+      </ConfigProvider>
+      
     );
   }
 }

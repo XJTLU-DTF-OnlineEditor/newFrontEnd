@@ -30,7 +30,7 @@ const Marked = () => {
             let anchor = 0
 
             rendererMD.heading = function (text, level, raw) {
-                if (anchor >= 13) {
+                if (anchor >= 20) {
                     anchor = 0;
                 }
                 anchor += 1
@@ -93,16 +93,24 @@ const Marked = () => {
                             <Link href="#toc-nav2" title="使用指南" >
                                 <Link href="#toc-nav3" title="用户认证" />
                                 <Link href="#toc-nav4" title="欢迎页" />
-                                <Link href="#toc-nav5" title="课程管理后台">
-                                    <Link href="#toc-nav6" title="1、点击左侧目录栏中的课程管理后台" />
-                                    <Link href="#toc-nav7" title="2、查看课程系列" />
-                                    <Link href="#toc-nav8" title="3、查看课程" />
+                                <Link href="#toc-nav5" title="个人中心">
+                                    <Link href="#toc-nav6" title="1、点击左侧目录栏中的个人中心" />
+                                    <Link href="#toc-nav7" title="2、选择感兴趣的标签" />
+                                    <Link href="#toc-nav8" title="3、查看学习进度" />
+                                    <Link href="#toc-nav9" title="4、查看收藏夹" />
+                                    <Link href="#toc-nav10" title="5、设置目标" />
+                                    <Link href="#toc-nav11" title="6、课程推荐" />
                                 </Link>
-                                <Link href="#toc-nav9" title="在线编程学习" >
-                                    <Link href="#toc-nav10" title="1、点击左侧目录栏中的所有课程" />
-                                    <Link href="#toc-nav11" title="2、查看所有课程系列" />
-                                    <Link href="#toc-nav12" title="3、查看具体课程" />
-                                    <Link href="#toc-nav13" title="4、课程学习，代码运行" />
+                                <Link href="#toc-nav12" title="课程管理后台">
+                                    <Link href="#toc-nav13" title="1、点击左侧目录栏中的课程管理后台" />
+                                    <Link href="#toc-nav14" title="2、查看课程系列" />
+                                    <Link href="#toc-nav15" title="3、查看课程" />
+                                </Link>
+                                <Link href="#toc-nav16" title="在线编程学习" >
+                                    <Link href="#toc-nav17" title="1、点击左侧目录栏中的所有课程" />
+                                    <Link href="#toc-nav18" title="2、查看所有课程系列" />
+                                    <Link href="#toc-nav19" title="3、查看具体课程" />
+                                    <Link href="#toc-nav20" title="4、课程学习 代码运行" />
                                 </Link>
                             </Link>
 

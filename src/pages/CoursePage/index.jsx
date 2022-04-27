@@ -7,6 +7,7 @@ import { getTopic, search } from '@/services/course/api';
 import { Footer } from 'antd/es/layout/layout';
 import Banner from '@/pages/utils/coursePage/animBanner';
 import './coursePage.less'
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 const { Option } = Select;
 
@@ -86,7 +87,7 @@ export default class welcome extends Component {
 
     return (
       <PageContainer
-      header={{title: "课程"}}>
+      header={{title: /*'课程'*/<FormattedMessage id="pages.coursePage.title" />}}>
         <div>
           <Banner />
         </div>
@@ -94,7 +95,7 @@ export default class welcome extends Component {
         <ProCard
           title={
             <Button type="text" onClick={() => this.props.history.push('/courses/allCourses')}>
-              所有课程
+              {/*'所有课程'*/} <FormattedMessage id="pages.courseList.title" />
               <RightOutlined />
             </Button>
           }
@@ -103,19 +104,19 @@ export default class welcome extends Component {
           extra={
             <div>
               <span>
-                Search course here: <SearchOutlined />
+                {/*Search course here:*/} <FormattedMessage id="pages.coursePage.search" /><SearchOutlined />
               </span>
               <Select
                 showSearch
                 showArrow={false}
                 value={this.state.value}
                 style={{ width: 150 }}
-                placeholder="input search text"
+                placeholder=/*"input search text"*/{<FormattedMessage id="pages.coursePage.des.search" />}
                 defaultActiveFirstOption={false}
                 onSearch={this.handleSearch}
                 onChange={this.handleChange}
                 filterOption={false}
-                notFoundContent="No such course"
+                notFoundContent=/*"No such course"*/{<FormattedMessage id="pages.coursePage.notFound" />}
               >
                 {options}
               </Select>
@@ -124,6 +125,7 @@ export default class welcome extends Component {
         >
           {topics.map((item, index) => {
             return (
+              // eslint-disable-next-line react/jsx-key
               <ProCard
                 layout="center"
                 bordered

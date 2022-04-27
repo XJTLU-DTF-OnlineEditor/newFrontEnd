@@ -10,6 +10,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { message, Select } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import PubSub from 'pubsub-js';
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 const { Option } = Select;
 
@@ -36,6 +37,7 @@ export default function Input() {
       PubSub.publish('showRes', { error_code: 0 });
 
       ws.current = new WebSocket(`ws://47.111.13.213:8001/V1/editor/${id}/`);
+      // ws.current = new WebSocket(`ws://127.0.0.1:8000/V1/editor/${id}/`);
 
       ws.current.onopen = e => {
         PubSub.publish('ws', { 'ws': 1 });
@@ -111,7 +113,6 @@ export default function Input() {
     }
   };
 
-
   // 交互模式选择
   const operations = (
     <>
@@ -121,7 +122,7 @@ export default function Input() {
         style={{ width: 180 }}
       >
         {/* <Option value="Split">Split input/output</Option> */}
-        <Option value="Interactive">Interactive Terminal</Option>
+        <Option value="Interactive">{/*Interactive Terminal*/}{<FormattedMessage id="pages.editor.terminal" />}</Option>
       </Select>
     </>
   );
@@ -133,7 +134,7 @@ export default function Input() {
     cursorScrollMargin: 5,
     smartIndent: false,
     scrollbarStyle: 'simple',
-    placeholder: 'input goes here',
+    placeholder: /*'input goes here'*/getLocale()=='zh-CN'?"获取键盘输入...":"input goes here",
     autofocus: input, //自动获取焦点
     lineNumbers: true, //显示行号
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'], //end

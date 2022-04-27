@@ -3,6 +3,7 @@ import React from "react";
 import {CheckCircleOutlined, RightOutlined} from "@ant-design/icons";
 import {Tag} from "antd";
 import {useHistory} from "react-router-dom";
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 function GuestContent(props) {
   const history = useHistory()
@@ -21,7 +22,8 @@ function GuestContent(props) {
               <center>
                 <font face="verdana">
                   <cnter>
-                    登录来使用全部功能
+                    {/*登录来使用全部功能*/}
+                    {<FormattedMessage id="pages.guest.allFunc" />}
                   </cnter>
                   <RightOutlined />
                 </font>
@@ -56,7 +58,8 @@ function GuestContent(props) {
               <center>
                 <font face="verdana">
                   <cnter>
-                    线上编辑器体验
+                     {/*线上编辑器体验*/}
+                     {<FormattedMessage id="pages.guest.experience" />}
                   </cnter>
                   <RightOutlined />
                 </font>

@@ -4,6 +4,7 @@ import QueueAnim from 'rc-queue-anim';
 import TweenOne from 'rc-tween-one';
 import { Button } from 'antd';
 import BannerSVGAnim from './BannerSVGAnim';
+import { FormattedMessage } from 'umi';
 
 function Banner(props) {
   return (
@@ -33,11 +34,14 @@ function Banner(props) {
         <div key="button" className="button-wrapper">
           <a href="http://preview.pro.ant.design" target="_blank" rel="noopener noreferrer">
             <Button type="primary">
-              预览
+              {/* 预览 */}
+              <FormattedMessage id="pages.banner.preview" />
             </Button>
+
           </a>
           <Button style={{ margin: '0 16px' }} type="primary" ghost>
-            开始使用
+            <FormattedMessage id='pages.banner.startToUse' />
+            {/* 开始使用 */}
           </Button>
         </div>
       </QueueAnim>

@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import ProCard from "@ant-design/pro-card";
 import {deleteCollection} from "@/services/course/api";
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 const {Meta} = Card;
 
@@ -36,7 +37,7 @@ function Collected (props){
             <center>
               <font face="verdana">
                 <cnter>
-                  收藏课程以方便随时查看
+                  {/*收藏课程以方便随时查看*/}{<FormattedMessage id="pages.personal.des.collections" />}
                 </cnter>
                 <RightOutlined />
               </font>
@@ -45,7 +46,7 @@ function Collected (props){
           <ProCard>
             <center>
               <Tag icon={<CheckCircleOutlined />} color="processing">
-                Personal Collection
+                {/*Personal Collection*/}{<FormattedMessage id="pages.personal.des.personalCollection" />}
               </Tag>
             </center>
           </ProCard>
@@ -53,6 +54,7 @@ function Collected (props){
       )}
       {collection.map((item, index) => {
         return (
+          // eslint-disable-next-line react/jsx-key
           <ProCard
             colSpan="50%"
             layout="default"

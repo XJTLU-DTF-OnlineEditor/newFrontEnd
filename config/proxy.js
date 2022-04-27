@@ -16,7 +16,6 @@ export default {
       },
     },
     '/server/': {
-      // target: 'https://preview.pro.ant.design',
       // target: 'http://47.102.132.205:30142/',
       // target: 'http://127.0.0.1:8000/',
       target: 'http://47.111.13.213:8001/',
@@ -41,15 +40,30 @@ export default {
       pathRewrite: {
         '^': '',
       },
-    },
-  },
-  pre: {
-    '/api/': {
-      target: 'your pre url',
-      changeOrigin: true,
-      pathRewrite: {
-        '^': '',
+      '/server/': {
+        // target: 'http://127.0.0.1:8000/',
+        target: 'http://47.111.13.213:8001/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/server': '',
+        },
+      },
+      '/media/': {
+        target: 'http://127.0.0.1:8000/',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/media': '/media',
+        },
       },
     },
-  },
-};
+    pre: {
+      '/api/': {
+        target: 'your pre url',
+        changeOrigin: true,
+        pathRewrite: {
+          '^': '',
+        },
+      },
+    },
+  }
+}

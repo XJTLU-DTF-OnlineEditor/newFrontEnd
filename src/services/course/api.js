@@ -29,6 +29,18 @@ export const changeUserIcon = async () => {
 
 }
 
+export const addCourseProgress = async (value) => {
+  console.log(value)
+  return request('/server/V1/course/add_user_progress/', {
+    method: 'POST',
+    data: value,
+    headers: {
+      Token: localStorage.getItem('token'),
+      currentAuthority: localStorage.getItem('currentAuthority'),
+    }
+  })
+}
+
 export const changeCourseProgress = async (value) => {
   console.log(value)
   return request('/server/V1/course/change_user_progress/', {
