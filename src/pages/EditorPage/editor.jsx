@@ -40,6 +40,7 @@ import React, { Component } from 'react';
 import { run_interactive, terminate } from '@/services/editor';
 import PubSub from 'pubsub-js';
 import { nanoid } from 'nanoid';
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 import {
   ModalForm,
   ProFormText,
@@ -50,7 +51,7 @@ import { currentUser } from '@/services/ant-design-pro/api';
 const { TabPane } = Tabs;
 
 const initialPanes = [
-  { title: 'main.py', content: '', key: '0', closable: false, lang: 'python', placeholder: 'code goes here' },
+  { title: 'main.py', content: '', key: '0', closable: false, lang: 'python', placeholder: /*'code goes here'*/ getLocale()=='zh-CN'?"代码输入区...":"code goes here"  },
   {
     title: 'requirements.txt', content: '', key: '1', closable: false, lang: 'properties',
     placeholder: 'To add dependencies of the program as the following format:\n\'\'\'\nmatplotlib\npython-dateutil>=2.7\ncycler==0.10\nsix>=1.5\n\'\'\''
@@ -222,15 +223,15 @@ export default class Editor extends Component {
     return (
       <>
         <ModalForm
-          title="new file"
+          title=/*"new file"*/ {<FormattedMessage id="pages.editor.newFile" />}
           visible={modalVisit}
           formRef={this.restFormRef}
           width="500px"
           onVisibleChange={value => this.setState({ modalVisit: value })}
           submitter={{
             searchConfig: {
-              submitText: 'confirm',
-              resetText: 'cancel',
+              submitText: /*'confirm'*/<FormattedMessage id="pages.common.confirm" />,
+              resetText: /*'cancel'*/<FormattedMessage id="pages.common.cancel" />,
             },
             resetButtonProps: {
               onClick: () => {
@@ -242,7 +243,7 @@ export default class Editor extends Component {
           onFinish={async (values) => {
             const activeKey = `${panes.length}`;
             const newPanes = [...panes];
-            newPanes.push({ title: values.filename, content: '', key: activeKey, lang: values.lang, closable: true, placeholder: 'code goes here' });
+            newPanes.push({ title: values.filename, content: '', key: activeKey, lang: values.lang, closable: true, placeholder: /*'code goes here'*/ getLocale()=='zh-CN'?"代码输入区":"code goes here" });
             this.setState({
               panes: newPanes,
               activeKey,
@@ -254,12 +255,12 @@ export default class Editor extends Component {
           <ProFormText
             width="md"
             name="filename"
-            label="filename"
-            placeholder="please input the filename"
+            label=/*"filename"*/{<FormattedMessage id="pages.editor.filename" />}
+            placeholder=/*"please input the filename"*/{getLocale()=='zh-CN'?"请输入新建的文件名":"please input the filename"}
           />
           <ProFormSelect
             name="lang"
-            label="lang"
+            label=/*"lang"*/{<FormattedMessage id="pages.editor.lang" />}
             valueEnum={{
               python: 'python',
               java: 'java',

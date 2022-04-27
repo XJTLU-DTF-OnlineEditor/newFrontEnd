@@ -8,6 +8,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { Popconfirm } from 'antd';
 import { Typography } from 'antd';
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 const { Title } = Typography;
 
@@ -50,8 +51,9 @@ export default class App extends Component {
                         breadcrumb: {},
                         extra: [
                             <Button key="1" onClick={() => this.props.history.push(`/courseAdmin/courseManager?topic_title=${topic_title}&id=${id}`)} type='primary'>EDIT</Button>,
+                            // eslint-disable-next-line react/jsx-key
                             <Popconfirm
-                                title="Are you sure to delete this course?"
+                                title=/*"Are you sure to delete this course?"*/ {<FormattedMessage id="pages.des.del" />}
                                 onConfirm={async () => {
                                     const result = await deleteCourse(this.props.location.query.topic_title, [id,]);
                                     if (result['error_code'] == 200) {
@@ -70,11 +72,11 @@ export default class App extends Component {
                     }}
                     content={
                         <Descriptions column={3} style={{ marginBottom: -12, marginLeft: 15 }}>
-                            <Descriptions.Item label="RELATED TOPIC">
+                            <Descriptions.Item label=/*"RELATED TOPIC"*/{<FormattedMessage id="pages.common.relatedTopic" />}>
                                 {topic_title}
                             </Descriptions.Item>
-                            <Descriptions.Item label="UPDATE DATE">{courseDetail.update_date}</Descriptions.Item>
-                            <Descriptions.Item label="VIEWS">{courseDetail.views}</Descriptions.Item>
+                            <Descriptions.Item label=/*"UPDATE DATE"*/{<FormattedMessage id="pages.common.updateDate" />}>{courseDetail.update_date}</Descriptions.Item>
+                            <Descriptions.Item label=/*"VIEWS"*/{<FormattedMessage id="pages.common.views" />}>{courseDetail.views}</Descriptions.Item>
                         </Descriptions>
                     }
                 >
@@ -98,10 +100,10 @@ export default class App extends Component {
                             }}
                         />
                     </ProCard>
-                    <ProCard title="answer" style={{ minHeight: 100 }}>
+                    <ProCard title=/*"answer"*/{<FormattedMessage id="pages.common.answer" />} style={{ minHeight: 100 }}>
                         {courseDetail?.answer}
                     </ProCard>
-                    <ProCard title="hint" style={{ minHeight: 100 }}>
+                    <ProCard title=/*"hint"*/{<FormattedMessage id="pages.common.hint" />} style={{ minHeight: 100 }}>
                         {courseDetail?.hint}
                     </ProCard>
                 </PageContainer>

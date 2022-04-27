@@ -38,7 +38,7 @@ export const editCourse = async (id, related_topic, title, content, answer, hint
   });
 };
 
-export const newTopic = async (topic_title, topic_content, topic_img, teacher_id) => {
+export const newTopic = async (topic_title, topic_content, topic_description, topic_img, teacher_id) => {
   const url = `/server/V1/course/create/`;
   return request(url, {
     method: 'post',
@@ -47,6 +47,7 @@ export const newTopic = async (topic_title, topic_content, topic_img, teacher_id
       content: {
         topic_title,
         topic_content,
+        topic_description,
         topic_img,
         teacher_id,
       },

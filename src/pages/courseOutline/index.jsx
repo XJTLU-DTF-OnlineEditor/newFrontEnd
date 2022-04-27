@@ -1,15 +1,28 @@
-import React, {Component} from 'react';
-import {Typography, message, Descriptions, Image, Button, Space, Tag} from 'antd';
-import {PageContainer} from '@ant-design/pro-layout';
-import {getExerciseList} from '@/services/course';
+import React, { Component } from 'react';
+import { Typography, message, Descriptions, Image, Button, Space, Tag, Progress, Empty } from 'antd';
+import { PageContainer } from '@ant-design/pro-layout';
+import { getExerciseList } from '@/services/course';
 import ProCard from '@ant-design/pro-card';
-import ProList from '@ant-design/pro-list';
-import {CodeTwoTone} from '@ant-design/icons';
+import { CodeTwoTone } from '@ant-design/icons';
 import './CourseOutline.less'
-import {addUserCollection, changeCourseProgress} from "@/services/course/api";
+import { addUserCollection, changeCourseProgress } from "@/services/course/api";
 import moment from "moment";
+import { setLocale, getLocale, FormattedMessage } from 'umi';
+import { currentUser } from '@/services/user/api';
+import { PageHeader, Menu, Dropdown, Row } from 'antd';
+import { MoreOutlined } from '@ant-design/icons';
+import { Layout } from 'antd';
 
-const {Title} = Typography;
+const { Header, Footer, Sider, Content } = Layout;
+const { Paragraph } = Typography;
+
+const gridStyle = {
+  width: '30%',
+  margin: '12px',
+  textAlign: 'center',
+};
+
+const { Title } = Typography;
 
 export default class CourseOutline extends Component {
   state = {
@@ -17,7 +30,9 @@ export default class CourseOutline extends Component {
     course_list: [],
     views: '',
     topic_content: '',
+    topic_description: '',
     topic_img: '',
+    progress: ''
   };
 
   listData = [];
@@ -25,25 +40,42 @@ export default class CourseOutline extends Component {
   componentDidMount() {
     // 获取目录 & 初始化课程内容
     this.getCatalog();
+    this.getProgressInfo();
   }
 
   getCatalog = async () => {
     // 获取目录
-    const {related_topic} = this.props.match.params;
+    const { related_topic } = this.props.match.params;
     const res = await getExerciseList(related_topic);
-    // console.log(res)
     if (res.error_code == 200) {
-      let {course_list, topic_content, topic_img} = res;
+      let { course_list, topic_content, topic_img, topic_description } = res;
       course_list = course_list.map((i) => {
         i.fields.id = i.pk;
         return i.fields;
       });
-      this.setState({course_list, related_topic, topic_content, topic_img});
+      this.setState({ course_list, related_topic, topic_content, topic_img, topic_description });
+    } else if (res.error_code == 204) {
+      let { topic_content, topic_img, topic_description } = res;
+      this.setState({ related_topic, topic_content, topic_img, topic_description, course_list: null });
     } else {
       message.error(res.msg);
     }
-    console.log(this.state.course_list);
   };
+
+  getProgressInfo = async () => {
+    const { related_topic } = this.props.match.params;
+    const res = await currentUser();
+    console.log(res, 777777777777777)
+    if (res.error_code == 200) {
+      let progress = res.data.history;
+      progress?.map(element => {
+        if (element.topic == related_topic) {
+          this.setState({ progress: element });
+        }
+      });
+    }
+  }
+
 
   render() {
     const topic = this.props.match.params.related_topic
@@ -56,118 +88,98 @@ export default class CourseOutline extends Component {
       },
     ];
 
+    const { course_list, progress, topic_description } = this.state;
+
     return (
-      <PageContainer
-        header={{
-          title: <Title level={2}>{topic}</Title>,
-          breadcrumb: {},
-        }}
-        content={
-          <ProCard split="vertical" layout="center">
-            <ProCard colSpan="28%">
-              <Image src={'/media/' + this.state.topic_img} width={180}/>
-            </ProCard>
-            <ProCard colSpan="60%">
-              <Descriptions>
-                <Descriptions.Item
-                  contentStyle={{
-                    color: 'rgba(0, 0, 0, 0.45)',
-                    fontSize: '16px',
-                    lineHeight: 1.5715,
-                  }}
-                >
-                  {this.state.topic_content}
-                </Descriptions.Item>
-              </Descriptions>
-            </ProCard>
-          </ProCard>
-        }
-      >
-        <ProList
-          toolBarRender={() => {
-            return [
-              <Button onClick={ async () => {
-                const msg = await addUserCollection({topic: topic,
-                  collect_time: moment().format('YYYY-MM-DD HH:mm:ss')})
-                console.log(msg)
-                if (msg.error_code === 204) {
-                  message.error("User collection already exists!")
-                } else if (msg.error_code === 200) {
-                  message.success("user collection add success")
-                }
-              }} key="add" type="primary">
-                Add to Collection
-              </Button>,
-            ];
-          }}
-          rowKey="id"
-          headerTitle="Course List"
-          dataSource={this.state.course_list}
-          showActions="hover"
-          onRow={record => {
-            return {
-              onClick: async event => {
-                console.log(record)
-                const msg = await changeCourseProgress({topic: topic,
-                course_id: record.subtopic_id,
-                last_practice_time: moment().format('YYYY-MM-DD HH:mm:ss')})
-                console.log(msg)
+      <>
+        <PageHeader
+          title={<Title level={2} > {topic}</Title>}
+          className="site-page-header"
+          tags={<Tag color="blue">python</Tag>}
+          subTitle={topic_description}
+          onBack={() => this.props.history.go(-1)}
+          extra={[
+            <Button onClick={async () => {
+              const msg = await addUserCollection({
+                topic: topic,
+                collect_time: moment().format('YYYY-MM-DD HH:mm:ss')
+              })
+              console.log(msg)
+              if (msg.error_code === 204) {
+                message.error("User collection already exists!")
+              } else if (msg.error_code === 200) {
+                message.success("user collection add success")
               }
-            }
-          }}
-          showExtra="hover"
-          metas={{
-            title: {
-              dataIndex: 'title',
-              render: (title, item) => {
-                return (
-                  <>
-                    <Typography.Text mark>[{item.subtopic_id}]</Typography.Text>
-                    <a  href={this.props.location.pathname + '/' + item.id}
-                       style={{textDecoration: 'none', color: 'black'}}
-                    >{item.title}</a>
-                    {/* </a> */}
-                  </>
-                );
-              },
-            },
-            avatar: {
-              render: () => <CodeTwoTone style={{fontSize: 'inherit'}}/>,
-            },
-            // actions: {
-            //   render: (text, row) => [
-            //     <a
-            //       href={this.props.location.pathname + '/' + row.id}
-            //       target="_blank"
-            //       // style={{ textDecoration: 'none', color: 'black' }}
-            //       key="study"
-            //     >
-            //       study
-            //     </a>,
-            //   ],
-            // },
-            subTitle: {
-              dataIndex: 'labels',
-              render: (_, row) => {
-                return (
-                  <Space size={0}>
-                    <Tag color="blue" key={row.id}>
-                      in process
-                    </Tag>
-                    <Tag color="green" key={row.id}>
-                      done
-                    </Tag>
-                    <Tag color="red" key={row.id}>
-                      to do
-                    </Tag>
-                  </Space>
-                );
-              },
-              search: false,
-            },
-          }}
-        />
-      </PageContainer>
+            }} key="add" type="primary" /*style={{ margin: "37px 58px 0 0", float: 'right' }}*/>
+              {/*Add to Collection*/} <FormattedMessage id="pages.courseOutline.collection" />
+            </Button>
+          ]}
+        >
+          <Row>
+            <Space size={100}>
+              <div style={{ flex: 2, paddingLeft: '100px' }}>
+                <Paragraph>
+                  {this.state.topic_content}
+                </Paragraph>
+              </div>&nbsp;
+              <div className="image" style={{ flex: 2, paddingRight: '100px' }}><Image src={'/media/' + this.state.topic_img} width={200} /></div>
+            </Space>
+          </Row>
+        </PageHeader>
+        <Layout>
+          <Content>
+            <ProCard
+              ghost
+              wrap
+              gutter={{ xs: 8, sm: 16, md: 24 }}
+              style={{ margin: '12px 0' }}
+            >
+              {course_list ?
+                course_list?.map((item, index) => {
+                  // eslint-disable-next-line react/jsx-key
+                  return <ProCard
+                    hoverable
+                    bordered
+                    colSpan={{ xs: 24, sm: 8, md: 8, lg: 8, xl: 8 }}
+                    // layout="center"
+                    // href={this.props.location.pathname + '/' + item.id}
+                    style={{ minHeight: '200px' }}
+                    title={
+                      <Space>
+                        <CodeTwoTone style={{ fontSize: 'inherit' }} />
+                        <Typography.Text mark>[{item.subtopic_id}]</Typography.Text>
+                        {item.title}
+                      </Space>}
+                    onClick={() => {
+                      // this.handleCourseProgress(item)
+                      window.location.href = this.props.location.pathname + '/' + item.id
+                    }}
+                  >
+                    &nbsp;
+                    <Descriptions size="middle" column={1}>
+                      <Descriptions.Item label=/*"UPDATE DATE"*/{<FormattedMessage id="pages.common.updateDate" />}>
+                        <a>{new Date(item.update_date).toLocaleString()}</a>
+                      </Descriptions.Item>
+                      <Descriptions.Item label=/*"VIEWS"*/{<FormattedMessage id="pages.common.views" />} >
+                        <a>{item.views}</a>
+                      </Descriptions.Item>
+                    </Descriptions>
+                    &nbsp;
+                    {
+                      progress?.finished_courses?.includes(item.title) ? <Progress type="circle" width={80} style={{ float: 'right' }} percent={100} format={() => 'Done'} />
+                        : progress?.progress_course?.title == item.title ? <Progress type="circle" width={80} percent={50} format={percent => `In progress`} />
+                          : progress?.unfinished_courses?.includes(item.title) ? <Progress type="circle" width={80} percent={0} format={percent => `To do`} status='active' />
+                            : ''
+                    }
+                  </ProCard>
+                })
+                :
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="pages.common.des.empty" />} />
+              }
+            </ProCard>
+          </Content>
+        </Layout>
+      </>
     );
   }
 }

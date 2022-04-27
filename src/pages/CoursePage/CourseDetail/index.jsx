@@ -5,6 +5,7 @@ import ProCard from "@ant-design/pro-card";
 import {Button, Card, Select} from "antd";
 import {getAllTopic, getNewTopic, search} from "@/services/course/api";
 import {RightOutlined, SearchOutlined} from "@ant-design/icons";
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 let timeout;
 let currentValue;
@@ -96,23 +97,23 @@ export default class CoursePage extends Component {
     return (
       <PageContainer
         header={{
-        title: '所有课程',
+        title: /*'所有课程'*/ <FormattedMessage id="pages.courseList.title" />,
         breadcrumb: {},
         }}
         extra={
         <div>
-          <span>Search course here:  <SearchOutlined/></span>
+          <span>{/*Search course here:*/} <FormattedMessage id="pages.coursePage.search" />  <SearchOutlined/></span>
           <Select
             showSearch
             showArrow={false}
             value={this.state.value}
             style={{width: 150}}
-            placeholder="input search text"
+            placeholder=/*"input search text"*/{<FormattedMessage id="pages.coursePage.des.search" />}
             defaultActiveFirstOption={false}
             onSearch={this.handleSearch}
             onChange={this.handleChange}
             filterOption={false}
-            notFoundContent="No such course"
+            notFoundContent=/*"No such course"*/{<FormattedMessage id="pages.coursePage.notFound" />}
           >
             {options}
           </Select>
@@ -125,15 +126,16 @@ export default class CoursePage extends Component {
           }}
           extra={
             <Button type="text" onClick={() => this.props.history.push('/courses')}>
-              返回
+              {/*返回*/}<FormattedMessage id="pages.common.goBack" />
               <RightOutlined />
             </Button>
           }
         >
-          <ProCard.TabPane key="tab1" tab="最热">
+          <ProCard.TabPane key="tab1" tab=/*最热*/{<FormattedMessage id="pages.coursePage.hot" />}>
             <ProCard style={{marginTop: 8}} gutter={[8, 16]} wrap>
               {hot_topic_list.map((item, index) => {
                 return (
+                  // eslint-disable-next-line react/jsx-key
                   <ProCard colSpan="33%"
                            layout="default"
                            bordered
@@ -152,10 +154,11 @@ export default class CoursePage extends Component {
               })}
             </ProCard>
           </ProCard.TabPane>
-          <ProCard.TabPane key="tab2" tab="最新">
+          <ProCard.TabPane key="tab2" tab=/*最新*/{<FormattedMessage id="pages.common.latest" />}>
             <ProCard style={{marginTop: 8}} gutter={[8, 16]} wrap>
               {new_topic_list.map((item, index) => {
                 return (
+                  // eslint-disable-next-line react/jsx-key
                   <ProCard
                     colSpan="33%"
                     layout="default"

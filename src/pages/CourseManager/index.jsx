@@ -8,6 +8,7 @@ import { editCourse, getCourseDetail, newCourse } from '@/services/course';
 import ProCard from '@ant-design/pro-card';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import { Typography } from 'antd';
+import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 const { Title } = Typography;
 export default class App extends Component {
@@ -84,7 +85,8 @@ export default class App extends Component {
         ghost
         onBack={() => this.props.history.go(-1)}
         header={{
-          title: <Title level={2}>{courseDetail.id ? 'Edit Course' : 'Add Course'}</Title>,
+          title: <Title level={2}>{courseDetail.id ? /*'Edit Course'*/<FormattedMessage id="pages.courseManager.editCourse" /> 
+          : /*'Add Course'*/<FormattedMessage id="pages.courseManager.addCourse" />}</Title>,
         }}
       >
         <ProCard>
@@ -93,7 +95,7 @@ export default class App extends Component {
               render: (_, dom) => <FooterToolbar>{dom}</FooterToolbar>,
               // 配置按钮文本
               searchConfig: {
-                submitText: 'Submit',
+                submitText: /*'submit'*/ <FormattedMessage id="pages.common.submit" />,
               },
               resetButtonProps: {
                 style: {
@@ -106,15 +108,15 @@ export default class App extends Component {
             <ProFormText
               width="md"
               name="title"
-              label="Course Title"
-              placeholder="input course title here"
+              label=/*"Course Title"*/{<FormattedMessage id="pages.common.courseTitle" />}
+              placeholder=/*"please input a course title"*/{getLocale()=='zh-CN'?"请输入该课程的标题":"please input a course title"}
               value={courseDetail?.title}
               onChange={(e) => {
                 courseDetail.title = e.target.value;
                 this.setState({ courseDetail });
               }}
             />
-            <ProForm.Item name="content" label="Course Content" value={courseDetail?.content}>
+            <ProForm.Item name="content" label=/*"Course Content"*/{<FormattedMessage id="pages.courseManager.courseContent" />} value={courseDetail?.content}>
               <CKEditor
                 editor={ClassicEditor}
                 data={courseDetail.content}
@@ -184,9 +186,9 @@ export default class App extends Component {
             </ProForm.Item>
             <ProFormTextArea
               name="answer"
-              label="Answer"
+              label=/*"answer"*/{<FormattedMessage id="pages.common.answer" />}
               value={courseDetail?.answer}
-              placeholder="Please input the answer for the code"
+              placeholder=/*"Please input the answer for the code"*/ {getLocale()=='zh-CN'?"请输入该代码练习的答案":"Please input the answer for the code"}
               onChange={(e) => {
                 courseDetail.answer = e.target.value;
                 this.setState({ courseDetail });
@@ -194,9 +196,9 @@ export default class App extends Component {
             />
             <ProFormTextArea
               name="hint"
-              label="Hint"
+              label=/*"hint"*/{<FormattedMessage id="pages.common.hint" />}
               value={courseDetail?.hint}
-              placeholder="Please input the hint for the code exercise"
+              placeholder=/*"Please input the hint for the code exercise"*/ {getLocale()=='zh-CN'?"请输入该代码练习的提示信息":"Please input the hint for the code exercise"}
               onChange={(e) => {
                 courseDetail.hint = e.target.value;
                 this.setState({ courseDetail });

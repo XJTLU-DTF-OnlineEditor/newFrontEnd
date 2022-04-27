@@ -4,69 +4,70 @@ import OverPack from 'rc-scroll-anim/lib/ScrollOverPack';
 import Parallax from 'rc-scroll-anim/lib/ScrollParallax';
 import QueueAnim from 'rc-queue-anim';
 import TweenOne from 'rc-tween-one';
+import { FormattedMessage } from 'umi';
 
 const { TweenOneGroup } = TweenOne;
 
 const featuresCN = [
   {
-    title: '个性化推荐',
-    content: '基于个人兴趣进行课程推荐',
+    title: /*'个性化推荐'*/ <FormattedMessage id="pages.page1.recommendation" />,
+    content: /*'基于个人兴趣进行课程推荐'*/ <FormattedMessage id="pages.page1.des.recommendation" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/VriUmzNjDnjoFoFFZvuh.svg',
     color: '#13C2C2',
     shadowColor: 'rgba(19,194,194,.12)',
   },
   {
-    title: '交互式',
-    content: '及时得到反馈和代码运行结果',
+    title: /*'交互式'*/ <FormattedMessage id="pages.page1.interactive" />,
+    content: /*'及时得到反馈和代码运行结果'*/ <FormattedMessage id="pages.page1.des.interactive" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/smwQOoxCjXVbNAKMqvWk.svg',
     color: '#2F54EB',
     shadowColor: 'rgba(47,84,235,.12)',
   },
   {
-    title: '课程实时更新',
-    content: '老师设计的课程使得学习更加高效',
+    title: /*'课程实时更新'*/ <FormattedMessage id="pages.page1.realtime" />,
+    content: /*'老师设计的课程使得学习更加高效'*/ <FormattedMessage id="pages.page1.des.realtime" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/hBbIHzUsSbSxrhoRFYzi.svg',
     color: '#F5222D',
     shadowColor: 'rgba(245,34,45,.12)',
   },
   {
-    title: '响进度追踪',
-    content: '针对学习进度进行管理',
+    title: /*'响进度追踪'*/ <FormattedMessage id="pages.page1.tracking" />,
+    content: /*'针对学习进度进行管理'*/ <FormattedMessage id="pages.page1.des.realtime" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/BISfzKcCNCYFmTYcUygW.svg',
     color: '#1AC44D',
     shadowColor: 'rgba(26,196,77,.12)',
   },
   {
-    title: '课程设计',
-    content: '老师可通过西浦邮箱账号进行课程发布',
+    title: /*'课程设计'*/ <FormattedMessage id="pages.page1.design" />,
+    content: /*'老师可通过西浦邮箱账号进行课程发布'*/ <FormattedMessage id="pages.page1.des.design" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/XxqEexmShHOofjMYOCHi.svg',
     color: '#FAAD14',
     shadowColor: 'rgba(250,173,20,.12)',
   },
   {
-    title: '免环境安装',
-    content: '编辑器内置常用python包，无需配置复杂环境',
+    title: /*'免环境安装'*/ <FormattedMessage id="pages.page1.environmentFree" />,
+    content: /*'编辑器内置常用python包，无需配置复杂环境'*/ <FormattedMessage id="pages.page1.des.environmentFree" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/JsixxWSViARJnQbAAPkI.svg',
     color: '#722ED1',
     shadowColor: 'rgba(114,46,209,.12)',
   },
   {
-    title: '最佳实践',
-    content: '循序渐进的课程模式助你高效学习',
+    title: /*'最佳实践'*/ <FormattedMessage id="pages.page1.practice" />,
+    content: /*'循序渐进的课程模式助你高效学习'*/ <FormattedMessage id="pages.page1.des.practice" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/pbmKMSFpLurLALLNliUQ.svg',
     color: '#FA8C16',
     shadowColor: 'rgba(250,140,22,.12)',
   },
   {
-    title: '自定义编辑器',
-    content: '编辑器可以自定义安装依赖，以适应不同需求',
+    title: /*'自定义编辑器'*/ <FormattedMessage id="pages.page1.customEditor" />,
+    content: /*'编辑器可以自定义安装依赖，以适应不同需求'*/ <FormattedMessage id="pages.page1.des.customEditor" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/aLQyKyUyssIUhHTZqCIb.svg',
     color: '#EB2F96',
     shadowColor: 'rgba(235,45,150,.12)',
   },
   {
-    title: '线上IDE',
-    content: '代码高亮，自动补全，输入联想,随时随地',
+    title: /*'线上IDE'*/ <FormattedMessage id="pages.page1.ide" />,
+    content: /*'代码高亮，自动补全，输入联想,随时随地'*/ <FormattedMessage id="pages.page1.des.ide" />,
     src: 'https://gw.alipayobjects.com/zos/rmsportal/RpJIQitGbSCHwLMimybX.svg',
     color: '#1890FF',
     shadowColor: 'rgba(24,144,255,.12)',

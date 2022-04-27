@@ -1,15 +1,36 @@
 import React, { Component } from 'react';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, message } from 'antd';
+import { Button, Card, message, Row } from 'antd';
 import { DragSortTable } from '@ant-design/pro-table';
 import { request } from 'umi';
 import { deleteCourse, updateSubtopicId } from '@/services/course';
-import { Popconfirm } from 'antd';
+import { Popconfirm, Empty } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
 import './courseList.less';
 import { Typography } from 'antd';
 import { currentUser } from '@/services/user/api';
+import { setLocale, getLocale, FormattedMessage } from 'umi';
+import { MenuOutlined } from '@ant-design/icons';
+import { MeasuringStrategy } from '@dnd-kit/core';
+import PubSub from 'pubsub-js';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    MouseSensor,
+    TouchSensor,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { SortableItem } from './SortableItem';
 
 const { Title } = Typography;
 
@@ -17,25 +38,45 @@ export default class App extends Component {
 
     state = {
         selectedRowKeys: [],
-        dataSource: []
+        dataSource: [],
     }
     teacher_info = React.createRef();
 
+    color = ['#7193f1', '#ffda6c', '#00bcd4', '#ef769f']
+    overColor = ['#F6F8FE', '#FFFDF5', '#EEFBFC', '#FEF6F9']
 
-    getDataSource = async (params) => {
+    componentDidMount() {
+        this.getDataSource()
+        PubSub.subscribe('update', (msg, data) => {
+            this.getDataSource()
+        })
+    }
+
+    handleDragEnd = (event) => {
+        const { active, over } = event;
+        let { dataSource } = this.state
+
+        if (active.id !== over.id) {
+
+            const oldIndex = dataSource.map(i => i.id).indexOf(active.id);
+            const newIndex = dataSource.map(i => i.id).indexOf(over.id);
+            console.log(oldIndex, newIndex, 444)
+
+
+            dataSource = arrayMove(dataSource, oldIndex, newIndex);
+
+            this.setState({ dataSource });
+
+            this.handleDragSortEnd(dataSource);
+        }
+    }
+
+    getDataSource = async () => {
         const teacher = await currentUser();
         this.teacher_info.current = teacher.data;
 
-        const topic_title = this.props.location.query.topic_title
-        let result
-        if (params.title) {
-            result = await request(`/server/V1/course/search/?keyword=${params.title}`, {
-                teacher_id: this.teacher_info.current.userid
-            });
-        } else {
-            result = await request(`/server/V1/course/courses/${topic_title}/`);
-        }
-        console.log(result)
+        const topic_title = this.props.topic_info.topic_title
+        let result = await request(`/server/V1/course/courses/${topic_title}/`);
 
         if (result.error_code == 200) {
             let course_list = result.course_list.map(i => {
@@ -47,114 +88,45 @@ export default class App extends Component {
             course_list.forEach(element => {
                 element['update_date'] = new Date(element['update_date']);
             });
+
             this.setState({ dataSource: course_list })
-            return {
-                data: course_list,
-                success: true,
-                total: course_list.length,
-                "page": params.current
-            }
         } else {
-            return {
-                success: false,
-                "page": params.current
-            }
+            this.setState({ dataSource: null })
         }
 
     }
 
-    handleDragSortEnd = async(newDataSource) => {
+    handleDragSortEnd = async (newDataSource) => {
         console.log('排序后的数据', newDataSource);
-        const topic_title = this.props.location.query.topic_title
+        const topic_title = this.props.topic_info.topic_title
 
         const oldDataSource = this.state.dataSource
-        let oldSeq = oldDataSource.map((i,index)=>{
-            return {id: i.id, subtopic_id: index+1}
+        let oldSeq = oldDataSource.map((i, index) => {
+            return { id: i.id, subtopic_id: index + 1 }
         })
-        let newSeq = newDataSource.map((i,index)=>{
-            return {id: i.id, subtopic_id: index+1}
+        let newSeq = newDataSource.map((i, index) => {
+            return { id: i.id, subtopic_id: index + 1 }
         })
-        let updateSeq = newSeq.filter((element, index)=>{
+        let updateSeq = newSeq.filter((element, index) => {
             return element.id != oldSeq[index].id
         })
 
         const res = await updateSubtopicId(topic_title, updateSeq)
 
-        if(res.error_code==200){
-            this.setState({dataSource: newDataSource});
+        if (res.error_code == 200) {
+            this.setState({ dataSource: newDataSource });
             message.success('Modified course order successfully');
-        }else{
+        } else {
             message.error('Failed to modify course order! ', res.msg);
         }
 
     };
 
-    columns = [
-        {
-            title: 'INDEX',
-            dataIndex: 'sort',
-            hideInSearch: true,
-            width: 60,
-            render: (dom, rowData, index) => {
-                return <span className="customRender">{`${index+1}`}</span>;
-            },
-        },
-        {
-            title: 'COURSE TITLE',
-            dataIndex: 'title',
-            copyable: true,
-            ellipsis: true,
-            filters: true,
-            onFilter: true,
-        },
-        {
-            title: 'UPDATED TIME',
-            key: 'since',
-            dataIndex: 'update_date',
-            valueType: 'dateTime',
-            hideInSearch: true,
-        },
-        {
-            title: 'VIEWS',
-            dataIndex: 'views',
-            valueType: 'digit',
-            width: 100,
-            hideInSearch: true,
-        },
-        {
-            title: 'OPERATIONS',
-            key: 'option',
-            valueType: 'option',
-            render: (_, row, index, action) => [
-                <a key="1" onClick={() => this.props.history.push('/courseAdmin/courseDisplay?topic_title=' + this.props.location.query.topic_title + '&id=' + row.id)}>view</a>,
-                <a key="2" onClick={() => this.props.history.push('/courseAdmin/courseManager?topic_title=' + this.props.location.query.topic_title + '&id=' + row.id)}>edit</a>,
-                <Popconfirm
-                    title="Are you sure to delete the course?"
-                    onConfirm={async () => {
-                        const { table } = this
-                        const result = await deleteCourse(this.props.location.query.topic_title, [row.id,]);
-                        if (result['error_code'] == 200) {
-                            message.success('Delete success');
-                        } else {
-                            message.error('Delete error');
-                        }
-                        table.reload();
-                    }}
-                    okText="Yes"
-                    cancelText="No"
-                >
-                    <a key="3">delete</a>
-                </Popconfirm>
-
-            ],
-        },
-    ];
-
     handleDelete = async () => {
         const { table } = this
         const { selectedRowKeys } = this.state;
         // console.log(selectedRowKeys)
-        const result = await deleteCourse(this.props.location.query.topic_title, selectedRowKeys);
+        const result = await deleteCourse(this.props.topic_info.topic_title, selectedRowKeys);
         if (result['error_code'] == 200) {
             message.success('Delete success');
         } else {
@@ -165,63 +137,47 @@ export default class App extends Component {
 
 
     render() {
-        const topic_title = this.props.location.query.topic_title
         const onSelectChange = selectedRowKeys => {
             this.setState({ selectedRowKeys });
         };
+        const { dataSource } = this.state;
+        const { topic_info } = this.props;
 
+        console.log()
         return (
-            <PageContainer
-                ghost
-                onBack={() => this.props.history.push('/courseAdmin')}
-                header={{
-                    title: <Title level={2}>{topic_title}</Title>,
-                }}
-            >
-                <ProCard>
-                    <DragSortTable actionRef={c => this.table = c} columns={this.columns} request={async (params = {}) => this.getDataSource(params)} rowSelection={{
-                        selectedRowKeys: this.state.selectedRowKeys,
-                        onChange: onSelectChange,
-                    }} editable={{
-                        type: 'multiple',
-                    }} columnsState={{
-                        persistenceKey: 'pro-table-singe-demos',
-                        persistenceType: 'localStorage',
-                    }} rowKey={"id"}
-                        search={{
-                            labelWidth: 'auto',
-                            // filterType: 'light'
-                        }} form={{
-                            // 由于配置了 transform，提交的参与与定义的不同这里需要转化一下
-                            syncToUrl: (values, type) => {
-                                if (type === 'get') {
-                                    return Object.assign(Object.assign({}, values), { created_at: [values.startTime, values.endTime] });
-                                }
-                                return values;
-                            },
-                        }} pagination={{
-                            pageSize: 10,
-                        }} dateFormatter="string" headerTitle={"course list"} toolBarRender={() => [
-                            <Popconfirm
-                                title="Are you sure to delete the chosen courses?"
-                                onConfirm={this.handleDelete}
-                                okText="Yes"
-                                cancelText="No"
-                            >
-                                <Button key="button" icon={<DeleteOutlined />} type="primary" danger disabled={this.state.selectedRowKeys.length == 0} >
-                                    Delete
-                                </Button>
-                            </Popconfirm>,
-                            <Button key="button" icon={<PlusOutlined />} type="primary">
-                                <a href={"/courseAdmin/courseManager?topic_title=" + topic_title} rel="noopener noreferrer" key="view" style={{ color: 'inherit' }}>
-                                    New
-                                </a>
-                            </Button>,
-                        ]} dragSortKey="sort" dataSource={this.state.dataSource} onDragSortEnd={this.handleDragSortEnd}
-                    />
-                </ProCard>
-            </PageContainer>
+            <>
+                {dataSource ?
+                    <DndContext
+                        // sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={this.handleDragEnd}
+                    >
+                        <SortableContext
+                            items={this.state.dataSource}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {this.state.dataSource.map(item => <SortableItem item={item} id={item.id} key={item.id} topic_info={topic_info} />)}
+                        </SortableContext>
+                    </DndContext>
+                    :
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={<FormattedMessage id="pages.common.des.empty" />} />
+                }
 
+                <Card
+                    className='item'
+                    bordered={false}
+                    style={{ backgroundColor: `${this.overColor[(topic_info.topic_id - 1) % 4]}`, cursor: 'pointer', margin: '10px' }}
+                    onClick={() => {
+                        window.location.href = "/courseAdmin/courseManager?topic_title=" + topic_info.topic_title
+                    }}
+                >
+                    <Row justify="center">
+                        <Title level={5} style={{ color: 'grey', fontWeight: 'normal' }}>
+                            <PlusOutlined />&nbsp;<FormattedMessage id="pages.courseList.newCourse" />
+                        </Title>
+                    </Row>
+                </Card>
+            </>
         );
     };
 }

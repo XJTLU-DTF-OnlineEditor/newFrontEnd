@@ -63,6 +63,7 @@ const Login = () => {
         // 存储登录Token
         localStorage.setItem('token', msg.token);
         localStorage.setItem('currentAuthority', msg.currentAuthority);
+        localStorage.setItem('currentAuthority', msg.currentAuthority);
         fetchUserInfo(); // fetch user information again and refresh token
         // console.log("jump to welcome")
         // Jump to welcome
@@ -206,7 +207,7 @@ const Login = () => {
           )}
           {type === 'login' && (
             <Tabs tabPosition="top" activeKey={userType} onChange={setUserType}>
-              <Tabs.TabPane tab="我是同学" key="student">
+              <Tabs.TabPane tab=/*"我是同学"*/{<FormattedMessage id="pages.login.student" />} key="student">
                 <>
                   <ProForm
                     initialValues={{
@@ -293,7 +294,7 @@ const Login = () => {
                   </div>
                 </>
               </Tabs.TabPane>
-              <Tabs.TabPane tab="我是老师" key="teacher">
+              <Tabs.TabPane tab=/*"我是老师"*/{<FormattedMessage id="pages.login.teacher" />} key="teacher">
                 <>
                   <ProForm
                     initialValues={{
@@ -389,7 +390,7 @@ const Login = () => {
           {type === 'register' && (
             <>
               <Tabs tabPosition="top" onChange={setUserType}>
-                <Tabs.TabPane tab="我是同学" key="student">
+                <Tabs.TabPane tab=/*"我是同学"*/{<FormattedMessage id="pages.login.student" />} key="student">
                   <>
                     <ProForm
                       initialValues={{
@@ -522,7 +523,7 @@ const Login = () => {
                     </ProForm>
                   </>
                 </Tabs.TabPane>
-                <Tabs.TabPane tab="我是老师" key="teacher">
+                <Tabs.TabPane tab=/*"我是老师"*/{<FormattedMessage id="pages.login.teacher" />} key="teacher">
                   <>
                     <ProForm
                       initialValues={{
