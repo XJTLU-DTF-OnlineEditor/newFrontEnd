@@ -50,13 +50,7 @@ import { currentUser } from '@/services/ant-design-pro/api';
 
 const { TabPane } = Tabs;
 
-const initialPanes = [
-  { title: 'main.py', content: '', key: '0', closable: false, lang: 'python', placeholder: /*'code goes here'*/ getLocale()=='zh-CN'?"代码输入区...":"code goes here"  },
-  {
-    title: 'requirements.txt', content: '', key: '1', closable: false, lang: 'properties',
-    placeholder: 'To add dependencies of the program as the following format:\n\'\'\'\nmatplotlib\npython-dateutil>=2.7\ncycler==0.10\nsix>=1.5\n\'\'\''
-  },
-];
+
 
 export default class Editor extends Component {
   state = {
@@ -64,17 +58,23 @@ export default class Editor extends Component {
     isFullScreen: false,
     disable: false,
     input: '',
-    activeKey: initialPanes[0].key,
-    panes: initialPanes,
+    activeKey: '0',
+    panes: [
+      { title: 'main.py', content: '', key: '0', closable: false, lang: 'python', placeholder: /*'code goes here'*/ getLocale() == 'zh-CN' ? "代码输入区..." : "code goes here" },
+      {
+        title: 'requirements.txt', content: '', key: '1', closable: false, lang: 'properties',
+        placeholder: 'To add dependencies of the program as the following format:\n\'\'\'\nmatplotlib\npython-dateutil>=2.7\ncycler==0.10\nsix>=1.5\n\'\'\''
+      },
+    ],
     modalVisit: false
   };
   rootRef = React.createRef();
   ws = React.createRef(null)
   restFormRef = React.createRef()
+  flag = 0
+
 
   componentDidMount() {
-    
-    console.log(this.props, "===")
     PubSub.subscribe('editor', (msg, data) => {
       this.setState(data);
     });
@@ -209,7 +209,7 @@ export default class Editor extends Component {
         >
           {id ? 'Edit' : 'Run'}
         </Button>
-        <Button icon={<SettingOutlined />} />
+        {/* <Button icon={<SettingOutlined />} /> */}
         {isFullScreen ? (
           <Button icon={<FullscreenExitOutlined />} onClick={this.exitFullScreen} />
         ) : (
@@ -219,6 +219,15 @@ export default class Editor extends Component {
     );
 
     const { panes, activeKey } = this.state;
+
+    if (this.props.code&&this.flag==0) {
+      let iniPanes = this.state.panes;
+      iniPanes[0].content = this.props.code;
+      console.log(iniPanes, this.props.code, 99999)
+      this.setState({ panes: iniPanes })
+      this.flag = 1;
+    }
+
 
     return (
       <>
@@ -243,7 +252,7 @@ export default class Editor extends Component {
           onFinish={async (values) => {
             const activeKey = `${panes.length}`;
             const newPanes = [...panes];
-            newPanes.push({ title: values.filename, content: '', key: activeKey, lang: values.lang, closable: true, placeholder: /*'code goes here'*/ getLocale()=='zh-CN'?"代码输入区":"code goes here" });
+            newPanes.push({ title: values.filename, content: '', key: activeKey, lang: values.lang, closable: true, placeholder: /*'code goes here'*/ getLocale() == 'zh-CN' ? "代码输入区" : "code goes here" });
             this.setState({
               panes: newPanes,
               activeKey,
@@ -256,7 +265,7 @@ export default class Editor extends Component {
             width="md"
             name="filename"
             label=/*"filename"*/{<FormattedMessage id="pages.editor.filename" />}
-            placeholder=/*"please input the filename"*/{getLocale()=='zh-CN'?"请输入新建的文件名":"please input the filename"}
+            placeholder=/*"please input the filename"*/{getLocale() == 'zh-CN' ? "请输入新建的文件名" : "please input the filename"}
           />
           <ProFormSelect
             name="lang"

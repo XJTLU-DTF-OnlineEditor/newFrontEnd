@@ -36,7 +36,7 @@ export default function Input() {
       setInput('')
       PubSub.publish('showRes', { error_code: 0 });
 
-      ws.current = new WebSocket(`ws://47.111.13.213:8001/V1/editor/${id}/`);
+      ws.current = new WebSocket(`ws://114.115.249.201:8001/V1/editor/${id}/`);
       // ws.current = new WebSocket(`ws://127.0.0.1:8000/V1/editor/${id}/`);
 
       ws.current.onopen = e => {

@@ -120,7 +120,10 @@ export default {
 
   'pages.courseAdmin.title': 'Course Management',
   'pages.courseAdmin.topicTitle': 'Topic title',
-  'pages.courseAdmin.topicContent': 'Topic description',
+  'pages.courseAdmin.topicDescription': 'Topic description',
+  'pages.courseAdmin.topicContent': 'Topic introduction',
+  'pages.courseAdmin.topicInfo': 'Topic info',
+  'pages.courseAdmin.topicCover': 'Topic cover',
   'pages.courseAdmin.upload': 'Upload',
   'pages.courseAdmin.topics': 'Topics',
   'pages.courseAdmin.newTopic': 'Add a new topic',
@@ -130,6 +133,7 @@ export default {
   'pages.courseManager.addCourse': 'Add course',
   'pages.courseManager.editCourse': 'Edit course',
   'pages.courseManager.courseContent': 'Course content',
+  'pages.courseManager.code': 'Skeletal code',
 
   'pages.courseList.index': 'Index',
   'pages.courseList.operations': 'Operations',

@@ -118,7 +118,10 @@ export default {
 
   'pages.courseAdmin.title': '课程管理',
   'pages.courseAdmin.topicTitle': '主题标题',
-  'pages.courseAdmin.topicContent': '主题描述',
+  'pages.courseAdmin.topicInfo': '主题信息',
+  'pages.courseAdmin.topicContent': '主题内容介绍',
+  'pages.courseAdmin.topicCover': '主题封面',
+  'pages.courseAdmin.topicDescription': '主题描述',
   'pages.courseAdmin.upload': '上传',
   'pages.courseAdmin.topics': '所有主题',
   'pages.courseAdmin.newTopic': '增加一个新主题',
@@ -128,6 +131,7 @@ export default {
   'pages.courseManager.addCourse': '增加课程',
   'pages.courseManager.editCourse': '修改课程',
   'pages.courseManager.courseContent': '课程内容',
+  'pages.courseManager.code': '骨架代码',
 
   'pages.courseList.index': '索引',
   'pages.courseList.operations': '操作',
@@ -146,7 +150,6 @@ export default {
   'pages.coursePage.hot': '最热',
   'pages.common.latest': '最新',
   'pages.common.des.empty': '暂时没有课程',
-
 
   'pages.editor.last': '上一课',
   'pages.editor.next': '下一课',

@@ -58,6 +58,7 @@ export default function MainPage(props) {
     props.history.push(`${id}`);
     const res = await getCourseDetail(topic_title, id);
     if (res.error_code == 200) {
+      console.log(res.data, 9999)
       setCourseDetail(res.data);
     } else {
       message.error(res.msg);
@@ -143,7 +144,7 @@ export default function MainPage(props) {
         </ProCard>
         {/* 代码运行 */}
         <ProCard ghost colSpan={11}>
-          <Editor currentUser={initialState.currentUser} courseid={props.match.params.id} />
+          <Editor currentUser={initialState.currentUser} courseid={props.match.params.id} code={courseDetail?.code} />
           <Input />
         </ProCard>
         <ProCard ghost colSpan={6}>
