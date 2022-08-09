@@ -42,6 +42,9 @@ export default class App extends Component {
     }
     teacher_info = React.createRef();
 
+    topic_info = this.props.topic_info || this.props.location.query
+    
+
     color = ['#7193f1', '#ffda6c', '#00bcd4', '#ef769f']
     overColor = ['#F6F8FE', '#FFFDF5', '#EEFBFC', '#FEF6F9']
 
@@ -75,7 +78,7 @@ export default class App extends Component {
         const teacher = await currentUser();
         this.teacher_info.current = teacher.data;
 
-        const topic_title = this.props.topic_info.topic_title
+        const topic_title = this.topic_info.topic_title
         let result = await request(`/server/V1/course/courses/${topic_title}/`);
 
         if (result.error_code == 200) {
@@ -98,7 +101,7 @@ export default class App extends Component {
 
     handleDragSortEnd = async (newDataSource) => {
         console.log('排序后的数据', newDataSource);
-        const topic_title = this.props.topic_info.topic_title
+        const topic_title = this.topic_info.topic_title
 
         const oldDataSource = this.state.dataSource
         let oldSeq = oldDataSource.map((i, index) => {
@@ -126,7 +129,7 @@ export default class App extends Component {
         const { table } = this
         const { selectedRowKeys } = this.state;
         // console.log(selectedRowKeys)
-        const result = await deleteCourse(this.props.topic_info.topic_title, selectedRowKeys);
+        const result = await deleteCourse(this.topic_info.topic_title, selectedRowKeys);
         if (result['error_code'] == 200) {
             message.success('Delete success');
         } else {
@@ -141,7 +144,7 @@ export default class App extends Component {
             this.setState({ selectedRowKeys });
         };
         const { dataSource } = this.state;
-        const { topic_info } = this.props;
+        const { topic_info } = this;
 
         console.log()
         return (

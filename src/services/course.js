@@ -1,6 +1,8 @@
 import { request } from 'umi';
 
 export const getTopicByTeacher = async (teacher_id) => {
+  console.log(9999)
+  console.log(teacher_id, 9999)
   const url = `/server/V1/course/topicsByTeacher/?teacher_id=${teacher_id}`;
   return request(url);
 };
@@ -19,8 +21,9 @@ export const editTopic = async (topic_id, topic_info) => {
   });
 };
 
-export const editCourse = async (id, related_topic, title, content, answer, hint, teacher_id) => {
+export const editCourse = async (id, related_topic, title, content, answer, hint, code) => {
   const url = `/server/V1/course/edit/`;
+  
   return request(url, {
     method: 'post',
     data: {
@@ -32,7 +35,7 @@ export const editCourse = async (id, related_topic, title, content, answer, hint
         content,
         answer,
         hint,
-        teacher_id,
+        code
       },
     },
   });
@@ -55,7 +58,7 @@ export const newTopic = async (topic_title, topic_content, topic_description, to
   });
 };
 
-export const newCourse = async (related_topic, title, content, answer, hint) => {
+export const newCourse = async (related_topic, title, content, answer, hint, code) => {
   const url = `/server/V1/course/create/`;
   return request(url, {
     method: 'post',
@@ -67,6 +70,7 @@ export const newCourse = async (related_topic, title, content, answer, hint) => 
         content,
         answer,
         hint,
+        code
       },
     },
   });

@@ -41,17 +41,17 @@ export default function ResultSection(props) {
     });
 
     PubSub.subscribe('id', (msg, data) => {
-      if(data.id != id){
+      if (data.id != id) {
         setId(data.id)
       }
     });
   });
 
-  useEffect(()=>{
-    if(id && pics.length>0){
+  useEffect(() => {
+    if (id && pics.length > 0) {
       handlePicCancel(pics);
     }
-  },[id])
+  }, [id])
 
   const showModal = () => {
     setVisible(true)
@@ -96,12 +96,14 @@ export default function ResultSection(props) {
             width={800}
             footer=''
           >
-            <TextArea value={res_status=='info' ? getLocale()=='zh-CN'?"--- 结果将会显示在这里 ---":'--- Results will be shown here ---' : result ? <TextArea value={result} autoSize bordered={false} status="error" /> : ''} autoSize bordered={false} status="error" />
+            <TextArea value={res_status == 'info' ? getLocale() == 'zh-CN' ? "--- 结果将会显示在这里 ---" : '--- Results will be shown here ---'
+              : result ? result : ''} autoSize bordered={false} status={res_status} />
           </Modal>
         </Space>}>
           <Alert
             message={res_status}
-            description={res_status=='info' ? getLocale()=='zh-CN'?"--- 结果将会显示在这里 ---":'--- Results will be shown here ---' : result ? <TextArea value={result} autoSize bordered={false} status="error" /> : ''}
+            description={res_status == 'info' ? getLocale() == 'zh-CN' ? "--- 结果将会显示在这里 ---" : '--- Results will be shown here ---' 
+            : result ? <TextArea value={result} autoSize bordered={false} status="error" /> : ''}
             type={res_status}
             showIcon
           />
@@ -110,8 +112,8 @@ export default function ResultSection(props) {
       <div className="site-drawer-render-in-current-wrapper">
         <Drawer
           placement="right"
-          onClose={()=>handlePicCancel(pics)}
-          onCancel={()=>handlePicCancel(pics)}
+          onClose={() => handlePicCancel(pics)}
+          onCancel={() => handlePicCancel(pics)}
           visible={pic_visible}
           getContainer={false}
           style={{ position: 'absolute' }}

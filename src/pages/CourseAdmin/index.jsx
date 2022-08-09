@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Popconfirm, message, Row, Col, Space } from 'antd';
+import { Button, Popconfirm, message, Row, Col, Space, Modal, Image } from 'antd';
 import { EyeOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import ProList from '@ant-design/pro-list';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -15,6 +15,7 @@ import { setLocale, getLocale, FormattedMessage } from 'umi';
 import CourseList from '../CourseList'
 
 import { Card } from 'antd';
+import ProDescriptions from '@ant-design/pro-descriptions';
 
 const { Meta } = Card;
 
@@ -38,6 +39,7 @@ export default class App extends Component {
     this.teacher_info.current = teacher.data;
 
     const res = await getTopicByTeacher(this.teacher_info.current.userid);
+    console.log(this.teacher_info.current.userid, 88888)
     // const res = await getTopicByTeacher(1);
 
     if (res.error_code == 200) {
@@ -144,14 +146,72 @@ export default class App extends Component {
                     hoverable
                     className='course-card'
                     style={{ marginTop: '20px' }}
-                    cover={<img alt={item.topic_img.title} src={item.topic_img.url} onClick={() => {
-                      this.props.history.push(`/courseAdmin/courseList?topic_title=${item.topic_title}`)
-                    }} />}
+                    cover={<img alt={item.topic_img.title} src={item.topic_img.url} />}
                     actions={[
                       // eslint-disable-next-line react/jsx-key
-                      <a href={`/courseAdmin/courseList?topic_title=${item.topic_title}`}>
-                        <IconText icon={EyeOutlined} text=/*"view"*/{<FormattedMessage id="pages.common.view" />} key="list-vertical-message" />
-                      </a>,
+                      <ModalForm
+                        title=/*"VIEW"*/{<FormattedMessage id="pages.common.view" />}
+                        initialValues={item}
+                        trigger={
+                          <a>
+                            <IconText icon={EyeOutlined} text=/*"view"*/{<FormattedMessage id="pages.common.view" />} key="list-vertical-message" />
+                          </a>
+                        }
+                        submitter={{
+                          render: (props, defaultDoms) => {
+                            return [];
+                          },
+                        }}
+                      >
+                        <ProDescriptions column={2}>
+                          <ProDescriptions.Item
+                            span={2}
+                            valueType="text"
+                            contentStyle={{
+                              maxWidth: '80%',
+                            }}
+                            label={<b><FormattedMessage id="pages.courseAdmin.topicTitle" /></b>}
+                          >
+                            {item.topic_title}
+                          </ProDescriptions.Item>
+                          <ProDescriptions.Item
+                            span={2}
+                            valueType="text"
+                            contentStyle={{
+                              maxWidth: '80%',
+                            }}
+                            label=/*"topic description"*/{<b><FormattedMessage id="pages.courseAdmin.topicDescription" /></b>}
+                          >
+                            {item.topic_description}
+                          </ProDescriptions.Item>
+                          <ProDescriptions.Item
+                            span={2}
+                            valueType="text"
+                            contentStyle={{
+                              maxWidth: '80%',
+                            }}
+                            label=/*"topic content"*/{<b><FormattedMessage id="pages.courseAdmin.topicContent" /></b>}
+                          >
+                            {item.topic_content}
+                          </ProDescriptions.Item>
+                          <ProDescriptions.Item
+                            span={2}
+                            valueType="avatar"
+                            contentStyle={{
+                              maxWidth: '80%',
+                            }}
+                            label=/*"topic cover"*/{<b><FormattedMessage id="pages.courseAdmin.topicCover" /></b>}
+                          >
+                            <Image
+                              // width={100}
+                              alt={item.name}
+                              height={200}
+                              src={item.topic_img.url}
+                              fallback="data:image/png;base64,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"
+                            />
+                          </ProDescriptions.Item>
+                        </ProDescriptions>
+                      </ModalForm>,
                       // eslint-disable-next-line react/jsx-key
                       <ModalForm
                         title=/*"EDIT"*/{<FormattedMessage id="pages.common.edit" />}
@@ -201,13 +261,13 @@ export default class App extends Component {
 
                         <ProFormTextArea
                           name="topic_description"
-                          label="topic description"
+                          label=/*"topic description"*/{<FormattedMessage id="pages.courseAdmin.topicDescription" />}
                           placeholder=/*"please input the topic description"*/{getLocale() == 'zh-CN' ? "请输入该主题的描述" : "please input a topic description"}
                         // value={item.topic_content}
                         />
                         <ProFormTextArea
                           name="topic_content"
-                          label="topic content"
+                          label=/*"topic content"*/{<FormattedMessage id="pages.courseAdmin.topicContent" />}
                           placeholder=/*"please input the topic content"*/{getLocale() == 'zh-CN' ? "请输入该主题的内容介绍" : "please input a topic content"}
                         // value={item.topic_content}
                         />
@@ -268,7 +328,7 @@ export default class App extends Component {
                     ]}
                   >
                     <Meta title={item.topic_title} description={item.topic_description} onClick={() => {
-                      this.props.history.push(`/courseAdmin/courseList?topic_title=${item.topic_title}`)
+                      this.props.history.push(`/courseAdmin/courseList?topic_title=${item.topic_title}&topic_id=${item.topic_id}`)
                     }} />
                     <ProCard title={<FormattedMessage id="pages.courseList.showCourses" />} ghost gutter={8} collapsible defaultCollapsed>
                       <CourseList topic_info={{ topic_title: item.topic_title, topic_id: item.topic_id }} />

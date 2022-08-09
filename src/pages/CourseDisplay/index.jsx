@@ -9,6 +9,36 @@ import ProCard from '@ant-design/pro-card';
 import { Popconfirm } from 'antd';
 import { Typography } from 'antd';
 import { setLocale, getLocale, FormattedMessage } from 'umi';
+import { Controlled as CodeMirror } from 'react-codemirror2';
+import 'codemirror/lib/codemirror.js';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/darcula.css';
+// ctrl+空格代码提示补全
+import 'codemirror/addon/hint/show-hint.js';
+import 'codemirror/addon/hint/show-hint.css';
+import 'codemirror/addon/hint/anyword-hint.js';
+// 代码高亮
+import 'codemirror/addon/selection/active-line';
+//折叠代码
+import 'codemirror/addon/fold/foldgutter.css';
+import 'codemirror/addon/fold/foldcode.js';
+import 'codemirror/addon/fold/foldgutter.js';
+import 'codemirror/addon/fold/brace-fold.js';
+import 'codemirror/addon/fold/comment-fold.js';
+// 补全括号
+import 'codemirror/addon/edit/closebrackets.js';
+import 'codemirror/addon/edit/matchBrackets';
+// 代码模式，clike是包含java,c++等模式的
+import 'codemirror/mode/clike/clike'; // java: text/x-java
+import 'codemirror/mode/css/css';
+import 'codemirror/mode/python/python.js';  // python
+import 'codemirror/mode/properties/properties.js';
+// 全屏显示
+import 'codemirror/addon/display/fullscreen.js';
+import 'codemirror/addon/display/fullscreen.css';
+import 'codemirror/addon/display/placeholder.js';
+import 'codemirror/addon/scroll/simplescrollbars.css';
+import 'codemirror/addon/scroll/simplescrollbars.js';
 
 const { Title } = Typography;
 
@@ -97,6 +127,47 @@ export default class App extends Component {
                                 if (willEditorRestart) {
                                     this.editor.ui.view.toolbar.element.remove();
                                 }
+                            }}
+                        />
+                    </ProCard>
+                    <ProCard title=/*"code"*/{<FormattedMessage id="pages.courseManager.code" />} style={{ minHeight: 100 }}>
+                        <CodeMirror
+                            className="editor"
+                            options={{
+                                mode: 'python',
+                                readOnly: true,
+                                // theme: 'darcula',
+                                autofocus: true, // 自动获取焦点
+                                styleActiveLine: true, // 光标代码高亮
+                                lineNumbers: true, // 显示行号
+                                smartIndent: true, // 自动缩进
+                                // start-设置支持代码折叠
+                                lineWrapping: true,
+                                foldGutter: true,
+                                placeholder: /*'code goes here'*/ getLocale() == 'zh-CN' ? "代码输入区..." : "code goes here",
+                                gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], //end
+                                matchBrackets: true, // 括号匹配，光标旁边的括号都高亮显示
+                                autoCloseBrackets: true, // 键入时将自动关闭()[]{}''""
+                                // fullScreen: isFullScreen, // 全屏显示
+                                scrollbarStyle: 'simple',
+                                cursorScrollMargin: 5,
+                                extraKeys: {
+                                    Ctrl: 'autocomplete',
+                                    'Ctrl-S': function (editor) {
+                                        editor.codeSave(editor);
+                                    },
+                                    'Ctrl-Z': function (editor) {
+                                        editor.undo();
+                                    },
+                                    F8: function (editor) {
+                                        editor.redo();
+                                    },
+                                },
+                            }}
+                            value={courseDetail?.code}
+                            onBeforeChange={(editor, data, value) => {
+                                courseDetail.code = value;
+                                this.setState({ courseDetail });
                             }}
                         />
                     </ProCard>
