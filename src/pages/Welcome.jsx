@@ -38,13 +38,13 @@ class Welcome extends React.PureComponent {
       >
         <ProCard>
           <div className="home-wrapper">
-            <Banner isMobile={this.state.isMobile} />
+            <Banner isMobile={this.state.isMobile} history={this.props.history}/>
             <Page1 isMobile={this.state.isMobile} />
           </div>
         </ProCard>
       </PageContainer>
       </ConfigProvider>
-      
+
     );
   }
 }

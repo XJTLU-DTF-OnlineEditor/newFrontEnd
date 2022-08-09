@@ -32,14 +32,15 @@ function Banner(props) {
           交互式编程学习平台
         </p>
         <div key="button" className="button-wrapper">
-          <a href="http://preview.pro.ant.design" target="_blank" rel="noopener noreferrer">
-            <Button type="primary">
+          <Button type="primary"
+                  onClick={() => props.history.push('/helper')}>
               {/* 预览 */}
-              <FormattedMessage id="pages.banner.preview" />
-            </Button>
-
-          </a>
-          <Button style={{ margin: '0 16px' }} type="primary" ghost>
+            <FormattedMessage id="pages.banner.preview" />
+          </Button>
+          <Button style={{ margin: '0 16px' }}
+                  type="primary"
+                  ghost
+                  onClick={()=> props.history.push('/courses')}>
             <FormattedMessage id='pages.banner.startToUse' />
             {/* 开始使用 */}
           </Button>
