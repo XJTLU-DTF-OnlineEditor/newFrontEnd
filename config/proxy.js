@@ -18,14 +18,14 @@ export default {
     '/server/': {
       // target: 'http://47.102.132.205:30142/',
       // target: 'http://127.0.0.1:8000/',
-      target: 'http://47.111.13.213:8001/',
+      target: 'http://114.115.249.201:8001/',
       changeOrigin: true,
       pathRewrite: {
         '^/server': '',
       },
     },
     '/media/': {
-      target: 'http://47.111.13.213:8001/',
+      target: 'http://114.115.249.201:8001/',
       // target: "http://127.0.0.1:8000/",
       changeOrigin: true,
       pathRewrite: {
