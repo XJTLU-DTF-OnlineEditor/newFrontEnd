@@ -182,6 +182,26 @@ function tagRender(props) {
   );
 }
 
+function defaultTag(props) {
+  console.log(props);
+  let nums = props;
+  console.log(nums)
+  let defaultOptionNum = [];
+  let defaultOptions = [];
+  // 获得标签对应的数字转化
+  while (nums > 0) {
+    defaultOptionNum.push(nums % 10);
+    nums = nums / 10;
+    nums = parseInt(nums)
+  }
+  // console.log(defaultOptionNum)
+  // 将标签对应的数字转化成options
+  defaultOptionNum.map((item, index) => {
+    defaultOptions.push(options[item])
+  })
+  return defaultOptions
+}
+
 const onTagSearch = async (label) => {
   console.log(label);
   const res = await updateTag(label);
@@ -216,6 +236,7 @@ export default class personal extends Component {
       this.setState({access: true})
     }
     console.log(this.state)
+    console.log(this.state.currentUser.tags)
   }
 
   render() {
@@ -260,7 +281,7 @@ export default class personal extends Component {
                   showArrow
                   tagRender={tagRender}
                   placeholder= /*'Choose your interests'*/{getLocale()=='zh-CN'?"选择你感兴趣的":"Choose your interests"}
-                  defaultValue={this.state.tag}
+                  defaultValue={defaultTag(this.state.currentUser.tags)}
                   style={{width: '90%'}}
                   options={options}
                   onChange={onTagSearch}
