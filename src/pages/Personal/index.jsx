@@ -190,7 +190,7 @@ function defaultTag(props) {
   let defaultOptions = [];
   // 获得标签对应的数字转化
   while (nums > 0) {
-    defaultOptionNum.push(nums % 10);
+    defaultOptionNum.push(nums % 10 - 1);
     nums = nums / 10;
     nums = parseInt(nums)
   }
