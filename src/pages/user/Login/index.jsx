@@ -207,7 +207,10 @@ const Login = () => {
           )}
           {type === 'login' && (
             <Tabs tabPosition="top" activeKey={userType} onChange={setUserType}>
-              <Tabs.TabPane tab=/*"我是同学"*/{<FormattedMessage id="pages.login.student" />} key="student">
+              <Tabs.TabPane
+                tab=/*"我是同学"*/ {<FormattedMessage id="pages.login.student" />}
+                key="student"
+              >
                 <>
                   <ProForm
                     initialValues={{
@@ -294,7 +297,10 @@ const Login = () => {
                   </div>
                 </>
               </Tabs.TabPane>
-              <Tabs.TabPane tab=/*"我是老师"*/{<FormattedMessage id="pages.login.teacher" />} key="teacher">
+              <Tabs.TabPane
+                tab=/*"我是老师"*/ {<FormattedMessage id="pages.login.teacher" />}
+                key="teacher"
+              >
                 <>
                   <ProForm
                     initialValues={{
@@ -390,7 +396,10 @@ const Login = () => {
           {type === 'register' && (
             <>
               <Tabs tabPosition="top" onChange={setUserType}>
-                <Tabs.TabPane tab=/*"我是同学"*/{<FormattedMessage id="pages.login.student" />} key="student">
+                <Tabs.TabPane
+                  tab=/*"我是同学"*/ {<FormattedMessage id="pages.login.student" />}
+                  key="student"
+                >
                   <>
                     <ProForm
                       initialValues={{
@@ -523,7 +532,10 @@ const Login = () => {
                     </ProForm>
                   </>
                 </Tabs.TabPane>
-                <Tabs.TabPane tab=/*"我是老师"*/{<FormattedMessage id="pages.login.teacher" />} key="teacher">
+                <Tabs.TabPane
+                  tab=/*"我是老师"*/ {<FormattedMessage id="pages.login.teacher" />}
+                  key="teacher"
+                >
                   <>
                     <ProForm
                       initialValues={{
@@ -648,7 +660,7 @@ const Login = () => {
               </Tabs>
             </>
           )}
-          <Space className={styles.other}></Space>
+          <Space className={styles.other} />
         </div>
       </div>
       <Footer />

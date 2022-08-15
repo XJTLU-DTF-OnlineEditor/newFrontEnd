@@ -173,7 +173,7 @@ export default class Banner extends React.Component {
           onMouseLeave={this.prevLeave}
           animation={{ left: this.state.prevEnter ? 0 : -120 }}
         >
-          <div className="arrow"></div>
+          <div className="arrow" />
           <TweenOneGroup
             enter={{ opacity: 0, type: 'from' }}
             leave={{ opacity: 0 }}
@@ -196,7 +196,7 @@ export default class Banner extends React.Component {
           onMouseLeave={this.nextLeave}
           animation={{ right: this.state.nextEnter ? 0 : -120 }}
         >
-          <div className="arrow"></div>
+          <div className="arrow" />
           <TweenOneGroup
             enter={{ opacity: 0, type: 'from' }}
             leave={{ opacity: 0 }}

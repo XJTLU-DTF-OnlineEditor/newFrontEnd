@@ -1,18 +1,18 @@
-import React, {Component} from 'react';
-import {GridContent, PageContainer} from '@ant-design/pro-layout';
-import {Col, Descriptions, Row, Card, Divider, Calendar, Menu} from 'antd';
-import {Avatar, Tag, Select, Typography, Radio} from 'antd';
-import { LogoutOutlined} from '@ant-design/icons';
+import React, { Component } from 'react';
+import { GridContent, PageContainer } from '@ant-design/pro-layout';
+import { Col, Descriptions, Row, Card, Divider, Calendar, Menu } from 'antd';
+import { Avatar, Tag, Select, Typography, Radio } from 'antd';
+import { LogoutOutlined } from '@ant-design/icons';
 import { updateTag } from '@/services/user/api';
 import Collected from '@/pages/Personal/components/Collected';
-import {currentUser as queryCurrentUser} from "@/services/user/api";
-import {Access} from "@/.umi/plugin-access/access";
-import HeaderDropdown from "@/components/HeaderDropdown";
-import GuestContent from "@/pages/Personal/components/GuestContent";
+import { currentUser as queryCurrentUser } from '@/services/user/api';
+import { Access } from '@/.umi/plugin-access/access';
+import HeaderDropdown from '@/components/HeaderDropdown';
+import GuestContent from '@/pages/Personal/components/GuestContent';
 import '../utils/static/style';
-import CourseProgress from "@/pages/Personal/components/Progress";
-import ProCard from "@ant-design/pro-card";
-import './index.less'
+import CourseProgress from '@/pages/Personal/components/Progress';
+import ProCard from '@ant-design/pro-card';
+import './index.less';
 import { setLocale, getLocale, FormattedMessage } from 'umi';
 
 const targetCalendar = () => {
@@ -20,7 +20,7 @@ const targetCalendar = () => {
     <div className="site-calendar-customize-header-wrapper">
       <Calendar
         fullscreen={false}
-        headerRender={({value, type, onChange, onTypeChange}) => {
+        headerRender={({ value, type, onChange, onTypeChange }) => {
           const start = 0;
           const end = 12;
           const monthOptions = [];
@@ -52,8 +52,11 @@ const targetCalendar = () => {
             );
           }
           return (
-            <div style={{padding: 8}}>
-              <Typography.Title level={4}>{/*目标*/}{<FormattedMessage id="pages.personal.goals" />}</Typography.Title>
+            <div style={{ padding: 8 }}>
+              <Typography.Title level={4}>
+                {/*目标*/}
+                {<FormattedMessage id="pages.personal.goals" />}
+              </Typography.Title>
               <Row gutter={8}>
                 <Col>
                   <Radio.Group
@@ -107,13 +110,15 @@ const target = () => {
     <Row gutter={24}>
       <Col lg={14} md={24}>
         <div>
-          {/*打卡数目：*/}{<FormattedMessage id="pages.personal.punchingNumber" />}
+          {/*打卡数目：*/}
+          {<FormattedMessage id="pages.personal.punchingNumber" />}
           <span>10000</span>
         </div>
       </Col>
       <Col>
         <div>
-          {/*目标数目：*/}{<FormattedMessage id="pages.personal.targetNumber" />}
+          {/*目标数目：*/}
+          {<FormattedMessage id="pages.personal.targetNumber" />}
           <span>10000</span>
         </div>
       </Col>
@@ -124,26 +129,30 @@ const target = () => {
 const recommendedCourses = () => {
   return (
     <div>
-      <Descriptions column={1} title=/*"推荐课程"*/{<FormattedMessage id="pages.personal.recommended" />} bordered>
+      <Descriptions
+        column={1}
+        title=/*"推荐课程"*/ {<FormattedMessage id="pages.personal.recommended" />}
+        bordered
+      >
         <Descriptions.Item>
           This is the first Column
-          <br/>
+          <br />
         </Descriptions.Item>
         <Descriptions.Item>
           This is the first Column
-          <br/>
+          <br />
         </Descriptions.Item>
         <Descriptions.Item>
           This is the first Column
-          <br/>
+          <br />
         </Descriptions.Item>
         <Descriptions.Item>
           This is the first Column
-          <br/>
+          <br />
         </Descriptions.Item>
         <Descriptions.Item>
           This is the first Column
-          <br/>
+          <br />
         </Descriptions.Item>
       </Descriptions>
     </div>
@@ -151,18 +160,18 @@ const recommendedCourses = () => {
 };
 
 const options = [
-  {label: 'java', value: '1'},
-  {label: 'python', value: '2'},
-  {label: 'C++', value: '3'},
-  {label: 'Machine Learning', value: '4'},
-  {label: 'Java Web', value: '5'},
-  {label: 'distributed system', value: '6'},
-  {label: 'matlab', value: '7'},
-  {label: 'react', value: '8'},
+  { label: 'java', value: '1' },
+  { label: 'python', value: '2' },
+  { label: 'C++', value: '3' },
+  { label: 'Machine Learning', value: '4' },
+  { label: 'Java Web', value: '5' },
+  { label: 'distributed system', value: '6' },
+  { label: 'matlab', value: '7' },
+  { label: 'react', value: '8' },
 ];
 
 function tagRender(props) {
-  const {label, value, closable, onClose} = props;
+  const { label, value, closable, onClose } = props;
 
   const onPreventMouseDown = (event) => {
     event.preventDefault();
@@ -175,7 +184,7 @@ function tagRender(props) {
       onMouseDown={onPreventMouseDown}
       closable={closable}
       onClose={onClose}
-      style={{marginRight: 2}}
+      style={{ marginRight: 2 }}
     >
       {label}
     </Tag>
@@ -189,7 +198,6 @@ const onTagSearch = async (label) => {
 };
 
 export default class personal extends Component {
-
   state = {
     currentUser: {},
     access: false,
@@ -205,35 +213,37 @@ export default class personal extends Component {
     // 初始化数据
     // console.log('Did Mount');
     this.getData();
-
   }
 
   getData = async () => {
-    const currentUser = await queryCurrentUser()
-    console.log(currentUser)
-    this.setState({currentUser: currentUser.data})
-    if (currentUser.data.currentAuthority === "user") {
-      this.setState({access: true})
+    const currentUser = await queryCurrentUser();
+    console.log(currentUser);
+    this.setState({ currentUser: currentUser.data });
+    if (currentUser.data.currentAuthority === 'user') {
+      this.setState({ access: true });
     }
-    console.log(this.state)
-  }
+    console.log(this.state);
+  };
 
   render() {
     const menuHeaderDropdown = (
-      <Menu onClick={() => {
-        this.props.history.push('/user/login')
-      }}>
+      <Menu
+        onClick={() => {
+          this.props.history.push('/user/login');
+        }}
+      >
         <Menu.Item key="logout">
-          <LogoutOutlined/>
-          {/*登录*/}{<FormattedMessage id="pages.login.submit" />}
+          <LogoutOutlined />
+          {/*登录*/}
+          {<FormattedMessage id="pages.login.submit" />}
         </Menu.Item>
       </Menu>
-    )
+    );
 
     return (
       <PageContainer
         header={{
-          title: /*'个人中心'*/<FormattedMessage id="pages.personal.title" />,
+          title: /*'个人中心'*/ <FormattedMessage id="pages.personal.title" />,
           breadcrumb: {},
         }}
         content={
@@ -242,48 +252,51 @@ export default class personal extends Component {
             fallback={
               <HeaderDropdown overlay={menuHeaderDropdown}>
                 <Avatar
-                  size={{xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100}}
-                  src='https://joeschmoe.io/api/v1/random' alt="avatar"/>
+                  size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
+                  src="https://joeschmoe.io/api/v1/random"
+                  alt="avatar"
+                />
               </HeaderDropdown>
             }
           >
-            <Descriptions column={3} style={{marginBottom: -16}}>
-              <Descriptions.Item style={{width: '20%'}}>
+            <Descriptions column={3} style={{ marginBottom: -16 }}>
+              <Descriptions.Item style={{ width: '20%' }}>
                 <Avatar
-                  size={{xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100}}
-                  src={this.state.currentUser.avator} alt='https://joeschmoe.io/api/v1/random'
+                  size={{ xs: 24, sm: 32, md: 40, lg: 64, xl: 80, xxl: 100 }}
+                  src={this.state.currentUser.avator}
+                  alt="https://joeschmoe.io/api/v1/random"
                 />
               </Descriptions.Item>
-              <Descriptions.Item label="tags" style={{width: '100%'}}>
+              <Descriptions.Item label="tags" style={{ width: '100%' }}>
                 <Select
                   mode="multiple"
                   showArrow
                   tagRender={tagRender}
-                  placeholder= /*'Choose your interests'*/{getLocale()=='zh-CN'?"选择你感兴趣的":"Choose your interests"}
+                  placeholder=/*'Choose your interests'*/ {
+                    getLocale() == 'zh-CN' ? '选择你感兴趣的' : 'Choose your interests'
+                  }
                   defaultValue={this.state.tag}
-                  style={{width: '90%'}}
+                  style={{ width: '90%' }}
                   options={options}
                   onChange={onTagSearch}
                 />
               </Descriptions.Item>
-              <Descriptions.Item label=/*'In Progress'*/{<FormattedMessage id="pages.personal.inProgress" />} style={{width: '30%'}}>
-                <div>
-                  10000
-                </div>
+              <Descriptions.Item
+                label=/*'In Progress'*/ {<FormattedMessage id="pages.personal.inProgress" />}
+                style={{ width: '30%' }}
+              >
+                <div>10000</div>
               </Descriptions.Item>
-              <Descriptions.Item>
-                {this.state.currentUser.username}
-              </Descriptions.Item>
-              <Descriptions.Item>
-              </Descriptions.Item>
-              <Descriptions.Item label=/*'Completed'*/{<FormattedMessage id="pages.personal.completed" />} style={{width: '30%'}}>
-                <div>
-                  10000
-                </div>
+              <Descriptions.Item>{this.state.currentUser.username}</Descriptions.Item>
+              <Descriptions.Item />
+              <Descriptions.Item
+                label=/*'Completed'*/ {<FormattedMessage id="pages.personal.completed" />}
+                style={{ width: '30%' }}
+              >
+                <div>10000</div>
               </Descriptions.Item>
             </Descriptions>
           </Access>
-
         }
       >
         <Access accessible={this.state.access}>
@@ -291,7 +304,12 @@ export default class personal extends Component {
             <Row gutter={24}>
               <Col lg={17} md={24}>
                 <ProCard
-                  title={<b>{/*课程进度*/}{<FormattedMessage id="pages.personal.progress" />}</b>}
+                  title={
+                    <b>
+                      {/*课程进度*/}
+                      {<FormattedMessage id="pages.personal.progress" />}
+                    </b>
+                  }
                   direction="column"
                   gutter={[0, 8]}
                   bordered={true}
@@ -302,13 +320,19 @@ export default class personal extends Component {
                   <CourseProgress history={this.state.currentUser.history} />
                 </ProCard>
                 <ProCard
-                  title={<b>{/*收藏课程*/}{<FormattedMessage id="pages.personal.collection" />}</b>}
+                  title={
+                    <b>
+                      {/*收藏课程*/}
+                      {<FormattedMessage id="pages.personal.collection" />}
+                    </b>
+                  }
                   direction="column"
                   gutter={[0, 8]}
                   bordered={true}
                   style={{
                     marginBottom: 24,
-                  }}>
+                  }}
+                >
                   <Collected collection={this.state.currentUser.collections} />
                 </ProCard>
               </Col>
@@ -320,7 +344,7 @@ export default class personal extends Component {
                   }}
                 >
                   {targetCalendar()}
-                  <Divider dashed/>
+                  <Divider dashed />
                   {target()}
                 </Card>
                 <Card>{recommendedCourses()}</Card>
@@ -332,6 +356,6 @@ export default class personal extends Component {
           <GuestContent />
         </Access>
       </PageContainer>
-    )
+    );
   }
 }

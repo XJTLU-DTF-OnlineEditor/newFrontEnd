@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Select } from 'antd';
+import { Button, Card, Divider, Select } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { RightOutlined, SearchOutlined } from '@ant-design/icons';
 import { getTopic, search } from '@/services/course/api';
 import { Footer } from 'antd/es/layout/layout';
 import Banner from '@/pages/utils/coursePage/animBanner';
-import './coursePage.less'
+import './coursePage.less';
 import { setLocale, getLocale, FormattedMessage } from 'umi';
+import Meta from 'antd/lib/card/Meta';
 
 const { Option } = Select;
 
@@ -87,7 +88,8 @@ export default class welcome extends Component {
 
     return (
       <PageContainer
-      header={{title: /*'课程'*/<FormattedMessage id="pages.coursePage.title" />}}>
+        header={{ title: /*'课程'*/ <FormattedMessage id="pages.coursePage.title" /> }}
+      >
         <div>
           <Banner />
         </div>
@@ -99,24 +101,28 @@ export default class welcome extends Component {
               <RightOutlined />
             </Button>
           }
-          direction="column"
           gutter={[0, 8]}
           extra={
             <div>
               <span>
-                {/*Search course here:*/} <FormattedMessage id="pages.coursePage.search" /><SearchOutlined />
+                {/*Search course here:*/} <FormattedMessage id="pages.coursePage.search" />
+                <SearchOutlined />
               </span>
               <Select
                 showSearch
                 showArrow={false}
                 value={this.state.value}
                 style={{ width: 150 }}
-                placeholder=/*"input search text"*/{<FormattedMessage id="pages.coursePage.des.search" />}
+                placeholder=/*"input search text"*/ {
+                  <FormattedMessage id="pages.coursePage.des.search" />
+                }
                 defaultActiveFirstOption={false}
                 onSearch={this.handleSearch}
                 onChange={this.handleChange}
                 filterOption={false}
-                notFoundContent=/*"No such course"*/{<FormattedMessage id="pages.coursePage.notFound" />}
+                notFoundContent=/*"No such course"*/ {
+                  <FormattedMessage id="pages.coursePage.notFound" />
+                }
               >
                 {options}
               </Select>
@@ -127,32 +133,20 @@ export default class welcome extends Component {
             return (
               // eslint-disable-next-line react/jsx-key
               <ProCard
-                layout="center"
+                colSpan="33%"
+                layout="default"
                 bordered
                 hoverable
-                split="vertical"
-                onClick={() => {
-                  this.props.history.push(`/course/exercise/${item.topic_title}`);
-                }}
+                style={{ height: '100%' }}
+                onClick={() => this.props.history.push(`/course/exercise/${item.topic_title}`)}
               >
-                <ProCard colSpan="30%" ghost>
-                  <center>
-                    <font face="verdana">
-                      {item.topic_title}
-                      <RightOutlined />
-                    </font>
-                  </center>
-                </ProCard>
-                <ProCard>
-                  <div>
-                    <center>{item.topic_content}</center>
-                  </div>
-                </ProCard>
+                <Card bordered={false} cover={<img alt={item.topic_title} src={item.topic_img} />}>
+                  <Meta title={item.topic_title} description={item.topic_content} />
+                </Card>
               </ProCard>
             );
           })}
         </ProCard>
-        <Footer style={{ textAlign: 'center' }}>XJTLU ©2022 Online Editor</Footer>
       </PageContainer>
     );
   }
