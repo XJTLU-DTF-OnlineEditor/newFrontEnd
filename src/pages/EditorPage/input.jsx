@@ -15,87 +15,86 @@ import { setLocale, getLocale, FormattedMessage } from 'umi';
 const { Option } = Select;
 
 export default function Input() {
-
   const [id, setId] = useState('');
   const [input, setInput] = useState(''); // input区域的内容
   const [noeditarea, setNoeditarea] = useState(0);
 
   const ws = useRef(null);
   const editor = useRef(null);
-  const inputValue = useRef('')
-  const old_input = useRef('')  // 未输入前input区域的内容
+  const inputValue = useRef('');
+  const old_input = useRef(''); // 未输入前input区域的内容
 
   useEffect(() => {
     PubSub.subscribe('id', (msg, data) => {
-      setId(data.id)
-    })
-  })
+      setId(data.id);
+    });
+  });
 
   useEffect(() => {
     if (id) {
-      setInput('')
+      setInput('');
       PubSub.publish('showRes', { error_code: 0 });
 
       ws.current = new WebSocket(`ws://114.115.249.201:8001/V1/editor/${id}/`);
       // ws.current = new WebSocket(`ws://127.0.0.1:8000/V1/editor/${id}/`);
 
-      ws.current.onopen = e => {
-        PubSub.publish('ws', { 'ws': 1 });
-      }
+      ws.current.onopen = (e) => {
+        PubSub.publish('ws', { ws: 1 });
+      };
 
-      ws.current.onerror = e => {
+      ws.current.onerror = (e) => {
         ws.current = null;
-        PubSub.publish('ws', { 'ws': null });
-        PubSub.publish('id', { 'id': '' });
-        message.error("Something wrong happens. Please try again later")
-      }
+        PubSub.publish('ws', { ws: null });
+        PubSub.publish('id', { id: '' });
+        message.error('Something wrong happens. Please try again later');
+      };
 
-      ws.current.onclose = e => {
+      ws.current.onclose = (e) => {
         ws.current = null;
-        PubSub.publish('ws', { 'ws': null });
-        PubSub.publish('id', { 'id': '' });
-      }
+        PubSub.publish('ws', { ws: null });
+        PubSub.publish('id', { id: '' });
+      };
 
-      ws.current.onmessage = e => {
-        const res = JSON.parse(e.data)
-        if (res.message == "output") {
-          const new_input = inputValue.current + res.data
-          inputValue.current = new_input
-          setInput(new_input)
-          old_input.current = new_input
-        } else if (res.message == "result") {
+      ws.current.onmessage = (e) => {
+        const res = JSON.parse(e.data);
+        if (res.message == 'output') {
+          const new_input = inputValue.current + res.data;
+          inputValue.current = new_input;
+          setInput(new_input);
+          old_input.current = new_input;
+        } else if (res.message == 'result') {
           PubSub.publish('showRes', { error_code: 200, output: res.data });
           PubSub.publish('editor', { id: '' });
-          setId('')
-        } else if (res.message == "warning") {
+          setId('');
+        } else if (res.message == 'warning') {
           PubSub.publish('showRes', { error_code: 410, output: res.data });
           PubSub.publish('editor', { id: '' });
-          setId('')
-        }else if (res.message == "error") {
+          setId('');
+        } else if (res.message == 'error') {
           PubSub.publish('showRes', { error_code: 500, output: res.data });
           PubSub.publish('editor', { id: '' });
-          setId('')
-        }else if(res.message == "pic"){
+          setId('');
+        } else if (res.message == 'pic') {
           PubSub.publish('showPic', { url: res.data });
-        }else if(res.message == "file"){
+        } else if (res.message == 'file') {
           PubSub.publish('newFile', { filename: res.filename, content: res.data });
         }
-      }
+      };
     } else {
-      ws.current?.close()
-      PubSub.publish('ws', { 'ws': null });
+      ws.current?.close();
+      PubSub.publish('ws', { ws: null });
       ws.current = null;
-      inputValue.current = ''
-      old_input.current = ''
-      setNoeditarea(0)
+      inputValue.current = '';
+      old_input.current = '';
+      setNoeditarea(0);
     }
-  }, [id])
+  }, [id]);
 
   const handleChange = (editor, data, value) => {
     if (data.origin === 'setValue' || typeof data.origin === 'undefined') {
       editor.focus();
       editor.execCommand('goDocEnd');
-      setNoeditarea(editor.lastLine())
+      setNoeditarea(editor.lastLine());
     }
   };
 
@@ -107,8 +106,8 @@ export default function Input() {
 
   const handleKey = (editor, name) => {
     if (name === 'Enter') {
-      const new_input = inputValue.current.replace(old_input.current, "")
-      old_input.current = inputValue.current
+      const new_input = inputValue.current.replace(old_input.current, '');
+      old_input.current = inputValue.current;
       ws.current.send(new_input);
     }
   };
@@ -116,13 +115,12 @@ export default function Input() {
   // 交互模式选择
   const operations = (
     <>
-      <Select
-        className="selectMode"
-        defaultValue="Interactive"
-        style={{ width: 180 }}
-      >
+      <Select className="selectMode" defaultValue="Interactive" style={{ width: 180 }}>
         {/* <Option value="Split">Split input/output</Option> */}
-        <Option value="Interactive">{/*Interactive Terminal*/}{<FormattedMessage id="pages.editor.terminal" />}</Option>
+        <Option value="Interactive">
+          {/*Interactive Terminal*/}
+          {<FormattedMessage id="pages.editor.terminal" />}
+        </Option>
       </Select>
     </>
   );
@@ -134,15 +132,13 @@ export default function Input() {
     cursorScrollMargin: 5,
     smartIndent: false,
     scrollbarStyle: 'simple',
-    placeholder: /*'input goes here'*/getLocale()=='zh-CN'?"获取键盘输入...":"input goes here",
     autofocus: input, //自动获取焦点
     lineNumbers: true, //显示行号
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter', 'CodeMirror-lint-markers'], //end
   };
 
-
   return (
-    <ProCard title="Input / Output / Terminal" ghost extra={operations}>
+    <ProCard ghost title={operations}>
       <CodeMirror
         ref={editor}
         className="input"
@@ -150,7 +146,7 @@ export default function Input() {
         options={options}
         onBeforeChange={(editor, data, value) => {
           setInput(value);
-          inputValue.current = value
+          inputValue.current = value;
         }}
         onCursorActivity={(editor) => {
           handleCursorActivity(editor);
@@ -162,7 +158,7 @@ export default function Input() {
           editor.scrollIntoView();
         }}
         onKeyHandled={(editor, name) => {
-         handleKey(editor, name);
+          handleKey(editor, name);
         }}
       />
     </ProCard>

@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Editor from './editor.jsx';
 import { BarsOutlined, ArrowRightOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import Input from './input.jsx';
 import ResultSection from './result.jsx';
 import ProCard from '@ant-design/pro-card';
-import { Dropdown, Menu, Descriptions, Button, message, Typography } from 'antd';
+import { Dropdown, Menu, Descriptions, Button, message, Typography, Divider } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getCourseDetail, getExerciseList } from '@/services/course.js';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import './custom-dark.css';
+// import './custom-dark.css';
 import './index.less';
-import moment from "moment";
+import moment from 'moment';
 import { useModel } from 'umi';
 import { setLocale, getLocale, FormattedMessage } from 'umi';
 import { changeCourseProgress } from '@/services/course/api.js';
 
-const { Title } = Typography;
+const { Text, Paragraph, Title } = Typography;
 
 export default function MainPage(props) {
   const [course_list, setCourse_list] = useState([]);
@@ -50,15 +49,15 @@ export default function MainPage(props) {
     const msg = await changeCourseProgress({
       topic: related_topic,
       course_id: id,
-      last_practice_time: moment().format('YYYY-MM-DD HH:mm:ss')
-    })
-  }
+      last_practice_time: moment().format('YYYY-MM-DD HH:mm:ss'),
+    });
+  };
 
   const getExercise = async (topic_title, id) => {
     props.history.push(`${id}`);
     const res = await getCourseDetail(topic_title, id);
     if (res.error_code == 200) {
-      console.log(res.data, 9999)
+      console.log(res.data, 9999);
       setCourseDetail(res.data);
     } else {
       message.error(res.msg);
@@ -69,10 +68,10 @@ export default function MainPage(props) {
     <Menu onClick={({ key }) => getExercise(topic_title, +key)}>
       {typeof course_list == 'object'
         ? course_list.map((item) => (
-          <Menu.Item key={item.id}>
-            <a target="_blank">{item.title}</a>
-          </Menu.Item>
-        ))
+            <Menu.Item key={item.id}>
+              <a target="_blank">{item.title}</a>
+            </Menu.Item>
+          ))
         : []}
     </Menu>
   );
@@ -87,15 +86,6 @@ export default function MainPage(props) {
         breadcrumb: {},
       }}
       // onBack={() => props.history.go(-1)}
-      content={
-        <Descriptions size="middle" column={3}>
-          <Descriptions.Item label=/*"RELATED TOPIC"*/{<FormattedMessage id="pages.common.relatedTopic" />}>{topic_title}</Descriptions.Item>
-          <Descriptions.Item label=/*"UPDATE DATE"*/{<FormattedMessage id="pages.common.updateDate" />}>{courseDetail.update_date}</Descriptions.Item>
-          <Descriptions.Item label=/*"VIEWS"*/{<FormattedMessage id="pages.common.views" />} >
-            <a>{courseDetail.views}</a>
-          </Descriptions.Item>
-        </Descriptions>
-      }
       extra={[
         <Button
           key="3"
@@ -104,7 +94,6 @@ export default function MainPage(props) {
         >
           <ArrowLeftOutlined />
           {/* last exercise */} <FormattedMessage id="pages.editor.last" />
-
         </Button>,
         <Button
           key="2"
@@ -124,8 +113,20 @@ export default function MainPage(props) {
       ]}
     >
       {/* 课程展示 */}
-      <ProCard ghost gutter={15} style={{ minHeight: 1000 }} className={`custom-dark`}>
-        <ProCard colSpan={7} style={{ minHeight: 600 }} className={'course'} ghost>
+      <ProCard
+        ghost
+        gutter={15}
+        // style={{ minHeight: 1000 }}
+        split="vertical"
+        //  className={`custom-dark`}
+      >
+        <ProCard
+          colSpan={5}
+          //  style={{ minHeight: 600 }}
+          className={'course'}
+          ghost
+        >
+          <Divider style={{ margin: 0 }} />
           <CKEditor
             editor={ClassicEditor}
             disabled={true}
@@ -141,14 +142,35 @@ export default function MainPage(props) {
               }
             }}
           />
+
+          <Typography>
+            <Text type="secondary" /*"RELATED TOPIC"*/>
+              <FormattedMessage id="pages.common.relatedTopic" />:{topic_title}
+            </Text>
+            <br />
+            <Text type="secondary" /*"UPDATE DATE"*/>
+              <FormattedMessage id="pages.common.updateDate" />:{courseDetail.update_date}
+            </Text>
+            <br />
+            <Text type="secondary" /*"VIEWS"*/>
+              <FormattedMessage id="pages.common.views" />:{courseDetail.views}
+            </Text>
+          </Typography>
         </ProCard>
         {/* 代码运行 */}
-        <ProCard ghost colSpan={11}>
-          <Editor currentUser={initialState.currentUser} courseid={props.match.params.id} code={courseDetail?.code} />
-          <Input />
+        <ProCard ghost colSpan={13}>
+          <Editor
+            currentUser={initialState.currentUser}
+            courseid={props.match.params.id}
+            code={courseDetail?.code}
+          />
         </ProCard>
         <ProCard ghost colSpan={6}>
-          <ResultSection hint={courseDetail?.hint} related_topic={props.match.params.related_topic} id={props.match.params.id} />
+          <ResultSection
+            hint={courseDetail?.hint}
+            related_topic={props.match.params.related_topic}
+            id={props.match.params.id}
+          />
         </ProCard>
       </ProCard>
     </PageContainer>

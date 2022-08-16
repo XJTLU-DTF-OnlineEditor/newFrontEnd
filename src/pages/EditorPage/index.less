@@ -1,4 +1,4 @@
-@import '~antd/dist/antd.dark.less'; // 引入官方提供的暗色 less 样式入口文件
+@import '~antd/dist/antd.less'; // 引入官方提供的暗色 less 样式入口文件
 // @import '~antd/dist/antd.compact.less'; // 引入官方提供的紧凑 less 样式入口文件
 
 // body{
@@ -59,45 +59,49 @@ element.style {
   padding-top: 0%;
 }
 
-.ant-descriptions-item-label, .ant-descriptions-item-content {
-  // font-size: 14px;
-  // line-height: 2;
-  color: rgba(255, 255, 255, 0.55);
-}
+// .ant-descriptions-item-label, .ant-descriptions-item-content {
+//   // font-size: 14px;
+//   // line-height: 2;
+//   color: rgba(206, 38, 38, 0.55);
+// }
 
 // .CodeMirror pre.CodeMirror-line, .CodeMirror pre.CodeMirror-line-like {
 //     font-size: 14px;
 // }
 
 .editor .CodeMirror {
-    /* Set height, width, borders, and global font properties here */
-    height: 500px;
-  }
-
-.editor .CodeMirror-scroll, .input .CodeMirror-scroll {
-    overflow: hidden !important;
-  }
-
-.editor .CodeMirror-simplescroll-horizontal, .editor .CodeMirror-simplescroll-vertical, .input .CodeMirror-simplescroll-horizontal, .input .CodeMirror-simplescroll-vertical {
-    background: #949494;
+  /* Set height, width, borders, and global font properties here */
+  min-height: 530px;
 }
 
+.editor .CodeMirror-scroll,
+.input .CodeMirror-scroll {
+  overflow: hidden !important;
+}
 
-.editor .CodeMirror-simplescroll-horizontal div, .editor .CodeMirror-simplescroll-vertical div, .input .CodeMirror-simplescroll-horizontal div, .input .CodeMirror-simplescroll-vertical div {
+.editor .CodeMirror-simplescroll-horizontal,
+.editor .CodeMirror-simplescroll-vertical,
+.input .CodeMirror-simplescroll-horizontal,
+.input .CodeMirror-simplescroll-vertical {
+  background: #949494;
+}
+
+.editor .CodeMirror-simplescroll-horizontal div,
+.editor .CodeMirror-simplescroll-vertical div,
+.input .CodeMirror-simplescroll-horizontal div,
+.input .CodeMirror-simplescroll-vertical div {
   background: #47413a;
 }
 
-
 .input .CodeMirror {
-    /* Set height, width, borders, and global font properties here */
-    min-height: 300px;
-  }
-
+  /* Set height, width, borders, and global font properties here */
+  min-height: 300px;
+}
 
 .reshint {
+  width: 100%;
   background-color: '#222222';
   opacity: 0.8;
-  width: 100%
 }
 
 // .ant-result {
@@ -116,12 +120,11 @@ element.style {
   background-color: #ff4d4f94;
 }
 
-
 // div.ant-result-subtitle > div {
 //    font-size: 15px;
 //  }
 
- .ck-editor__editable {
+.ck-editor__editable {
   min-height: 500px;
 }
 
@@ -129,14 +132,16 @@ element.style {
   min-height: 50px;
 }
 
-.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
   background-color: transparent;
   border-color: transparent;
 }
 
 .ck.ck-editor__top .ck-sticky-panel .ck-toolbar {
-  border-bottom-width: 0px;
   display: none;
+  border-bottom-width: 0;
 }
 
-
+#codeeditor .ant-tabs-nav {
+  margin-bottom: 0 !important;
+}

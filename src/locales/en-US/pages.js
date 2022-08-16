@@ -77,7 +77,8 @@ export default {
   'pages.searchTable.batchApproval': 'batch approval',
 
   'pages.des.del': 'Are you sure to delete this course?',
-  'pages.des.delTopic': 'Are you sure to delete this topic? This action will also delets all courses attached to this topic',
+  'pages.des.delTopic':
+    'Are you sure to delete this topic? This action will also delets all courses attached to this topic',
   'pages.common.yes': 'Yes',
   'pages.common.no': 'No',
   'pages.common.submit': 'Submit',
@@ -97,7 +98,7 @@ export default {
   'pages.welcome.welcome': 'welcome',
   'pages.banner.preview': 'Preview',
   'pages.banner.startToUse': 'Getting Started',
-  
+
   'pages.page1.recommendation': 'Personalized recommendation',
   'pages.page1.interactive': 'Interactive',
   'pages.page1.realtime': 'Real-time course updates',
@@ -113,10 +114,13 @@ export default {
   'pages.page1.des.realtime': 'Manage learning progress',
   'pages.page1.des.tracking': 'Manage learning progress',
   'pages.page1.des.design': 'Teachers can publish courses through xipu email account',
-  'pages.page1.des.environmentFree': 'Common Python packages are built into the editor without the need to configure a complex environment',
+  'pages.page1.des.environmentFree':
+    'Common Python packages are built into the editor without the need to configure a complex environment',
   'pages.page1.des.practice': 'Step-by-step classes help you learn efficiently',
-  'pages.page1.des.customEditor': 'Code highlighting, autocomplete, input association, anytime, anywhere',
-  'pages.page1.des.ide': 'The editor can customize installation dependencies to suit different needs',
+  'pages.page1.des.customEditor':
+    'Code highlighting, autocomplete, input association, anytime, anywhere',
+  'pages.page1.des.ide':
+    'The editor can customize installation dependencies to suit different needs',
 
   'pages.courseAdmin.title': 'Course Management',
   'pages.courseAdmin.topicTitle': 'Topic title',
@@ -160,7 +164,7 @@ export default {
   'pages.editor.lang': 'lang',
   'pages.editor.terminal': 'Interactive Terminal',
   'pages.editor.showHints': 'Show hints',
-  'pages.editor.result': 'Result',
+  'pages.editor.result': 'JudgeResult',
   'pages.editor.detail': 'Detail',
   'pages.editor.des.result': '--- Results will be shown here ---',
 

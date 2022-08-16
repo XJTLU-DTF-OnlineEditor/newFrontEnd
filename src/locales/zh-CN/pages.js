@@ -95,7 +95,7 @@ export default {
   'pages.welcome.welcome': '欢迎',
   'pages.banner.preview': '预览',
   'pages.banner.startToUse': '开始使用',
-  
+
   'pages.page1.recommendation': '个性化推荐',
   'pages.page1.interactive': '交互式',
   'pages.page1.realtime': '课程实时更新',
@@ -127,7 +127,7 @@ export default {
   'pages.courseAdmin.newTopic': '增加一个新主题',
   'pages.courseAdmin.des.topicTitle': '请输入该主题的标题',
   'pages.courseAdmin.des.topicContent': '请输入该主题的描述',
-  
+
   'pages.courseManager.addCourse': '增加课程',
   'pages.courseManager.editCourse': '修改课程',
   'pages.courseManager.courseContent': '课程内容',
@@ -158,7 +158,7 @@ export default {
   'pages.editor.lang': '语言',
   'pages.editor.terminal': '交互式终端',
   'pages.editor.showHints': '提示',
-  'pages.editor.result': '结果',
+  'pages.editor.result': '判题结果',
   'pages.editor.detail': '详细',
   'pages.editor.des.result': '--- 结果将会显示在这里 ---',
 

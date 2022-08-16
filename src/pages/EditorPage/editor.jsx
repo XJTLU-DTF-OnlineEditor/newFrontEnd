@@ -20,7 +20,7 @@ import 'codemirror/addon/edit/matchBrackets';
 // 代码模式，clike是包含java,c++等模式的
 import 'codemirror/mode/clike/clike'; // java: text/x-java
 import 'codemirror/mode/css/css';
-import 'codemirror/mode/python/python.js';  // python
+import 'codemirror/mode/python/python.js'; // python
 import 'codemirror/mode/properties/properties.js';
 // 全屏显示
 import 'codemirror/addon/display/fullscreen.js';
@@ -41,16 +41,10 @@ import { run_interactive, terminate } from '@/services/editor';
 import PubSub from 'pubsub-js';
 import { nanoid } from 'nanoid';
 import { setLocale, getLocale, FormattedMessage } from 'umi';
-import {
-  ModalForm,
-  ProFormText,
-  ProFormSelect,
-} from '@ant-design/pro-form';
+import { ModalForm, ProFormText, ProFormSelect } from '@ant-design/pro-form';
 import { currentUser } from '@/services/ant-design-pro/api';
 
 const { TabPane } = Tabs;
-
-
 
 export default class Editor extends Component {
   state = {
@@ -60,19 +54,31 @@ export default class Editor extends Component {
     input: '',
     activeKey: '0',
     panes: [
-      { title: 'main.py', content: '', key: '0', closable: false, lang: 'python', placeholder: /*'code goes here'*/ getLocale() == 'zh-CN' ? "代码输入区..." : "code goes here" },
       {
-        title: 'requirements.txt', content: '', key: '1', closable: false, lang: 'properties',
-        placeholder: 'To add dependencies of the program as the following format:\n\'\'\'\nmatplotlib\npython-dateutil>=2.7\ncycler==0.10\nsix>=1.5\n\'\'\''
+        title: 'main.py',
+        content: '',
+        key: '0',
+        closable: false,
+        lang: 'python',
+        placeholder:
+          /*'code goes here'*/ getLocale() == 'zh-CN' ? '代码输入区...' : 'code goes here',
+      },
+      {
+        title: 'requirements.txt',
+        content: '',
+        key: '1',
+        closable: false,
+        lang: 'properties',
+        placeholder:
+          "To add dependencies of the program as the following format:\n'''\nmatplotlib\npython-dateutil>=2.7\ncycler==0.10\nsix>=1.5\n'''",
       },
     ],
-    modalVisit: false
+    modalVisit: false,
   };
   rootRef = React.createRef();
-  ws = React.createRef(null)
-  restFormRef = React.createRef()
-  flag = 0
-
+  ws = React.createRef(null);
+  restFormRef = React.createRef();
+  flag = 0;
 
   componentDidMount() {
     PubSub.subscribe('editor', (msg, data) => {
@@ -80,18 +86,25 @@ export default class Editor extends Component {
     });
 
     PubSub.subscribe('newFile', (msg, data) => {
-      console.log(data)
+      console.log(data);
       this.setState({
-        panes: [...this.state.panes, {
-          title: data.filename, content: data.content, key: String(this.state.panes.length - 1), closable: true, lang: 'python'
-        }]
-      })
+        panes: [
+          ...this.state.panes,
+          {
+            title: data.filename,
+            content: data.content,
+            key: String(this.state.panes.length - 1),
+            closable: true,
+            lang: 'python',
+          },
+        ],
+      });
     });
 
     PubSub.subscribe('ws', (msg, data) => {
       if (data.ws != this.ws.current) {
-        this.ws.current = data.ws
-        if (data.ws === 1) this.runcode()
+        this.ws.current = data.ws;
+        if (data.ws === 1) this.runcode();
       }
     });
 
@@ -117,62 +130,68 @@ export default class Editor extends Component {
 
   // start & stop run
   handeleRun = () => {
-    if (this.state.id) { //运行
-      this.terminate()
-    } else {  // 终止
-      const id = nanoid().replace(/-/g, "");
+    if (this.state.id) {
+      //运行
+      this.terminate();
+    } else {
+      // 终止
+      const id = nanoid().replace(/-/g, '');
       PubSub.publish('id', { id });
-      this.setState({ id })
+      this.setState({ id });
     }
   };
-
 
   runcode = async () => {
     let result;
     const { id, panes } = this.state;
 
-    let filelist = panes.map(file => {
-      return { title: file.title, content: file.content, id: file.key }
-    })
-    result = await run_interactive(id, panes[0].lang, filelist, this.props.courseid, this.props.currentUser.userid);
-
+    let filelist = panes.map((file) => {
+      return { title: file.title, content: file.content, id: file.key };
+    });
+    result = await run_interactive(
+      id,
+      panes[0].lang,
+      filelist,
+      this.props.courseid,
+      this.props.currentUser.userid,
+    );
 
     if (result.error_code != 200) {
-      message.error(result.msg)
+      message.error(result.msg);
     }
-  }
+  };
 
   terminate = async () => {
     this.setState({ disable: true });
     const result = await terminate(this.state.id);
 
     if (result.error_code !== 200) {
-      message.error("Something wrong happens. Please try again later")
+      message.error('Something wrong happens. Please try again later');
     }
 
     PubSub.publish('id', { id: '' });
-    this.setState({ id: '' })
-    this.ws.current = 0
+    this.setState({ id: '' });
+    this.ws.current = 0;
 
     setTimeout(() => {
       this.setState({ disable: false });
     }, 1000);
-  }
+  };
 
-  onChange = activeKey => {
+  onChange = (activeKey) => {
     this.setState({ activeKey });
   };
 
   onEdit = (targetKey, action) => {
-    console.log(action, targetKey)
+    console.log(action, targetKey);
     this[action](targetKey);
   };
 
   add = () => {
-    this.setState({ modalVisit: true })
+    this.setState({ modalVisit: true });
   };
 
-  remove = targetKey => {
+  remove = (targetKey) => {
     const { panes, activeKey } = this.state;
     let newActiveKey = activeKey;
     let lastIndex;
@@ -181,7 +200,7 @@ export default class Editor extends Component {
         lastIndex = i - 1;
       }
     });
-    const newPanes = panes.filter(pane => pane.key !== targetKey);
+    const newPanes = panes.filter((pane) => pane.key !== targetKey);
     if (newPanes.length && newActiveKey === targetKey) {
       if (lastIndex >= 0) {
         newActiveKey = newPanes[lastIndex].key;
@@ -220,14 +239,13 @@ export default class Editor extends Component {
 
     const { panes, activeKey } = this.state;
 
-    if (this.props.code&&this.flag==0) {
+    if (this.props.code && this.flag == 0) {
       let iniPanes = this.state.panes;
       iniPanes[0].content = this.props.code;
-      console.log(iniPanes, this.props.code, 99999)
-      this.setState({ panes: iniPanes })
+      console.log(iniPanes, this.props.code, 99999);
+      this.setState({ panes: iniPanes });
       this.flag = 1;
     }
-
 
     return (
       <>
@@ -236,27 +254,35 @@ export default class Editor extends Component {
           visible={modalVisit}
           formRef={this.restFormRef}
           width="500px"
-          onVisibleChange={value => this.setState({ modalVisit: value })}
+          onVisibleChange={(value) => this.setState({ modalVisit: value })}
           submitter={{
             searchConfig: {
-              submitText: /*'confirm'*/<FormattedMessage id="pages.common.confirm" />,
-              resetText: /*'cancel'*/<FormattedMessage id="pages.common.cancel" />,
+              submitText: /*'confirm'*/ <FormattedMessage id="pages.common.confirm" />,
+              resetText: /*'cancel'*/ <FormattedMessage id="pages.common.cancel" />,
             },
             resetButtonProps: {
               onClick: () => {
                 this.restFormRef.current?.resetFields();
-                this.setState({ modalVisit: false })
+                this.setState({ modalVisit: false });
               },
             },
           }}
           onFinish={async (values) => {
             const activeKey = `${panes.length}`;
             const newPanes = [...panes];
-            newPanes.push({ title: values.filename, content: '', key: activeKey, lang: values.lang, closable: true, placeholder: /*'code goes here'*/ getLocale() == 'zh-CN' ? "代码输入区" : "code goes here" });
+            newPanes.push({
+              title: values.filename,
+              content: '',
+              key: activeKey,
+              lang: values.lang,
+              closable: true,
+              placeholder:
+                /*'code goes here'*/ getLocale() == 'zh-CN' ? '代码输入区' : 'code goes here',
+            });
             this.setState({
               panes: newPanes,
               activeKey,
-              modalVisit: false
+              modalVisit: false,
             });
             this.restFormRef.current?.resetFields();
           }}
@@ -264,17 +290,19 @@ export default class Editor extends Component {
           <ProFormText
             width="md"
             name="filename"
-            label=/*"filename"*/{<FormattedMessage id="pages.editor.filename" />}
-            placeholder=/*"please input the filename"*/{getLocale() == 'zh-CN' ? "请输入新建的文件名" : "please input the filename"}
+            label=/*"filename"*/ {<FormattedMessage id="pages.editor.filename" />}
+            placeholder=/*"please input the filename"*/ {
+              getLocale() == 'zh-CN' ? '请输入新建的文件名' : 'please input the filename'
+            }
           />
           <ProFormSelect
             name="lang"
-            label=/*"lang"*/{<FormattedMessage id="pages.editor.lang" />}
+            label=/*"lang"*/ {<FormattedMessage id="pages.editor.lang" />}
             valueEnum={{
               python: 'python',
               java: 'java',
               c: 'c',
-              "c++": 'c++',
+              'c++': 'c++',
               shell: 'shell',
               properties: 'properties',
               css: 'css',
@@ -291,10 +319,11 @@ export default class Editor extends Component {
           activeKey={activeKey}
           onEdit={this.onEdit}
           tabBarExtraContent={operations}
+          id="codeeditor"
         >
-          {panes.map(pane => (
+          {panes.map((pane) => (
             <TabPane tab={pane.title} key={pane.key} closable={pane.closable}>
-              <div ref={this.rootRef} >
+              <div ref={this.rootRef}>
                 <CodeMirror
                   className="editor"
                   value={pane.content}
@@ -329,9 +358,9 @@ export default class Editor extends Component {
                     },
                   }}
                   onBeforeChange={(editor, data, value) => {
-                    let prevPanes = panes
+                    let prevPanes = panes;
                     prevPanes[parseInt(pane.key)].content = value;
-                    this.setState({ panes: [...prevPanes] })
+                    this.setState({ panes: [...prevPanes] });
                   }}
                 />
               </div>
