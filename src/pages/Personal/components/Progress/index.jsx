@@ -51,6 +51,7 @@ function CourseProgress(props) {
           </ProCard>
         </ProCard>
       )}
+      {/*如果课程长度不为0，遍历出课程，Unfinished course 为未完成课程， finished course为完成的课程*/}
       {courses.map((item, index) => {
         const unfinished_course = [];
         const finished_course = [];
@@ -93,8 +94,16 @@ function CourseProgress(props) {
             <ProCard colSpan="20%" ghost>
               <center>
                 <div>last practice time: {item.last_practice_time.substr(0, 10)}</div>
+                <div>last practice time: {item.last_practice_time.substr(0, 10)}</div>
                 <div>
-                  <Button style={{ marginTop: '5%' }} type="primary">
+                  <Button
+                    style={{ marginTop: '5%' }}
+                    type="primary"
+                    onClick={() => {
+                      history.push(`/course/exercise/${item.topic}/${item.progress_course.id}`);
+                      console.log('click');
+                    }}
+                  >
                     resume
                   </Button>
                 </div>

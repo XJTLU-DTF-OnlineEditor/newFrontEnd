@@ -80,10 +80,10 @@ export const delTag = async (data) => {
 
 export const updateTag = async (params) => {
   console.log(params);
-  return request('/api/V1/user/updateTag', {
+  return request('/server/V1/user/updateTag/', {
     method: 'POST',
     data: {
-      value: params,
+      tags: params,
     },
   });
 };
