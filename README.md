@@ -28,6 +28,12 @@ Scripts provided in `package.json`. It's safe to modify or add additional script
 npm start
 ```
 
+### Not to use mock API
+
+```bash
+npm run start:no-mock
+```
+
 ### Build project
 
 ```bash
@@ -55,3 +61,16 @@ npm test
 ## More
 
 You can view full document on our [official website](https://pro.ant.design). And welcome any feedback in our [github](https://github.com/ant-design/ant-design-pro).
+
+# Deployment
+
+## Using docker nginx image
+
+1. npm run build
+
+2. replace the output `./docker/dist` directory in  `./docker` with the newly generated `./dist` directory.
+
+3. docker build ./docker -t frontend-dev
+
+4. docker run -d -p 80:8002 frontend-dev
+
