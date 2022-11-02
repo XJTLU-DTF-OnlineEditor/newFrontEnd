@@ -6,7 +6,7 @@ import { LogoutOutlined } from '@ant-design/icons';
 import { updateTag } from '@/services/user/api';
 import Collected from '@/pages/Personal/components/Collected';
 import { currentUser as queryCurrentUser } from '@/services/user/api';
-import { Access } from '@/.umi/plugin-access/access';
+import { Access } from 'umi';
 import HeaderDropdown from '@/components/HeaderDropdown';
 import GuestContent from '@/pages/Personal/components/GuestContent';
 import '../utils/static/style';

@@ -16,7 +16,7 @@ import 'codemirror/addon/fold/brace-fold.js';
 import 'codemirror/addon/fold/comment-fold.js';
 // 补全括号
 import 'codemirror/addon/edit/closebrackets.js';
-import 'codemirror/addon/edit/matchBrackets';
+import 'codemirror/addon/edit/matchbrackets.js';
 // 代码模式，clike是包含java,c++等模式的
 import 'codemirror/mode/clike/clike'; // java: text/x-java
 import 'codemirror/mode/css/css';
