@@ -72,5 +72,5 @@ You can view full document on our [official website](https://pro.ant.design). An
 
 3. docker build ./docker -t frontend-dev
 
-4. docker run -d -p 80:8002 frontend-dev
+4. docker run -d -p 8002:80 frontend-dev
 
